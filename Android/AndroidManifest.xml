@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="edu.sjsu.cinequest">
+   
+   <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+   <uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
+   <uses-sdk android:minSdkVersion="7" /> <!-- Android 2.1 -->
+   <application android:icon="@drawable/icon" android:label="@string/app_name">
+      <activity android:name=".HomeActivity"
+                android:label="@string/app_name">
+         <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+         </intent-filter>
+      </activity>
+      <activity android:name=".MainTab" 
+                android:configChanges="orientation"/>		
+      <activity android:name=".DVDActivity" 
+                android:configChanges="orientation" />
+      <activity android:name=".EventsActivity" 
+                android:configChanges="orientation" />
+      <activity android:name=".FilmsActivity" 
+                android:configChanges="orientation" />
+      <activity android:name=".FilmsActivity1" 
+                android:configChanges="orientation" />
+      <activity android:name=".FilmDetail" 
+                android:configChanges="orientation" />
+      <activity android:name=".ForumsActivity" 
+                android:configChanges="orientation" />
+      <activity android:name=".ScheduleActivity"
+                android:configChanges="orientation" />
+      <activity android:name=".LoginActivity"
+                android:configChanges="orientation" />		
+      <activity android:name=".RegistrationActivity"
+                android:configChanges="orientation">
+      </activity>
+   </application>
+
+</manifest> 

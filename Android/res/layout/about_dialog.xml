@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical" 
+  android:layout_height="fill_parent" android:layout_width="fill_parent">
+	<ImageView android:id="@+id/sjsu_logo" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:background="#FFFFFF"
+		android:layout_centerHorizontal="true" />
+
+	<TextView android:id="@+id/about_dialog_version"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:gravity="center_horizontal|center_vertical" />
+
+	<ScrollView android:id="@+id/about_dialog_scrollview"
+		android:layout_width="fill_parent" android:layout_below="@+id/sjsu_logo"
+		android:layout_height="175dip">
+		<TextView android:id="@+id/about_dialog_credits"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:textColor="#FFFFFF" android:paddingTop="20dip"
+			android:lineSpacingMultiplier="1.4" android:gravity="center_horizontal|center_vertical"
+			android:text="@string/about_screen_credits" />
+	</ScrollView>
+	<Button android:id="@+id/about_dialog_okbutton"
+		android:layout_below="@id/about_dialog_scrollview"
+		android:layout_width="80dip" android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true" android:text="Cancel" />
+</LinearLayout> 
+
+ 
+ 

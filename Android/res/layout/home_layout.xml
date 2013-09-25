@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:background="@android:color/transparent"
+>
+	
+   <RelativeLayout
+    android:id="@+id/home_action_bar"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#6D7B8D"
+    android:visibility="visible"
+    >    
+    
+    <Button
+		android:id="@+id/goto_festival_button"
+    	android:text="Festival"
+    	android:layout_width="80dip"
+    	android:layout_height="38dip"
+    	android:layout_alignParentLeft="true"
+    	android:layout_marginLeft="3dip"
+    	android:layout_marginTop="5dip"
+	/>
+	
+    <Button
+		android:id="@+id/goto_dvd_button"
+    	android:text="DVDs"
+    	android:layout_width="80dip"
+    	android:layout_height="38dip"
+    	android:layout_alignParentRight="true"
+    	android:layout_marginRight="3dip"
+    	android:layout_marginTop="5dip"    	    	
+	/>
+    </RelativeLayout>
+   
+  
+  <ImageView
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:id="@+id/homescreen_title_image"
+  	android:maxHeight="160dip"  	
+  	/>
+  	
+  	<ListView
+		  android:id="@+id/home_newslist"
+		  android:layout_width="fill_parent"
+		  android:layout_height="wrap_content"
+		  android:background="@android:color/transparent" 
+		  android:drawSelectorOnTop="false"
+	  />
+  
+</LinearLayout>

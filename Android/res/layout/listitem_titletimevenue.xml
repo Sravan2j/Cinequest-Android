@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:padding="6dip"    
+    >
+    
+    <CheckBox
+    	android:layout_height="wrap_content"
+    	android:layout_width="wrap_content"
+    	android:paddingRight="15dip"
+    	android:visibility="gone"
+    	android:id="@+id/myschedule_checkbox"
+    	android:focusable="false"
+    />
+    
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_weight="1"
+        android:layout_height="fill_parent">
+        <TextView
+            android:id="@+id/titletext"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textStyle="normal"
+            android:textColor="#ffffff"
+        />
+        
+        <TextView
+            android:id="@+id/timetext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="italic"
+            android:textSize="10dip"
+            android:textColor="#ffffff"
+            android:layout_below="@id/titletext"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="8dip"
+        />
+        <TextView
+            android:id="@+id/venuetext"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="10dip"
+            android:textColor="#ffffff"
+            android:layout_toRightOf="@id/timetext"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/titletext"
+            android:layout_marginLeft="30dip"
+            android:layout_marginTop="8dip"
+        />
+    </RelativeLayout>
+</LinearLayout>
+
+
+<!-- <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:padding="6dip"    
+    >
+    
+    <CheckBox
+    	android:layout_height="wrap_content"
+    	android:layout_width="wrap_content"
+    	android:paddingRight="15dip"
+    	android:visibility="gone"
+    	android:id="@+id/myschedule_checkbox"
+    	android:focusable="false"
+    />
+    
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_height="fill_parent">
+        <TextView
+            android:id="@+id/titletext"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textStyle="normal"
+            android:textColor="#ffffff"
+        />
+        
+        <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        >
+        
+        <TextView
+            android:id="@+id/timetext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="italic"
+            android:textSize="10dip"
+            android:textColor="#ffffff"
+            android:layout_alignParentLeft="true"
+        />
+        <TextView
+            android:id="@+id/venuetext"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" 
+            
+            android:textSize="10dip"
+            android:textColor="#ffffff"
+            android:layout_toRightOf="@id/timetext"
+            android:layout_alignParentRight="true"
+            android:paddingLeft="30dip"
+        />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>
+-->

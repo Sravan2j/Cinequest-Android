@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?> 
+ <TextView
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/listitem_titletext"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:singleLine="true"
+      android:ellipsize="end"
+      android:textStyle="normal"
+      android:textColor="#ffffff"
+      android:textSize="18dip"
+      android:paddingTop="10dip"
+      android:paddingBottom="10dip"
+      android:paddingLeft="10px"
+      android:paddingRight="6px"
+   />
+ 
+

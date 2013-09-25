@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  
+  
+   
+   
+   
+   <item 
+   	android:id="@+id/menu_option_refine" android:title="Refine"/>
+   
+   <item 
+   	android:title="Add" android:id="@+id/menu_option_add"/>
+   
+  
+   
+   
+   
+   
+   
+   
+
+<item android:title="Home" android:id="@+id/menu_option_home"></item>
+<item android:title="About" android:id="@+id/menu_option_about"></item>
+</menu>

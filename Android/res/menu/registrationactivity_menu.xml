@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  
+  <item 
+   	android:id="@+id/menu_option_goback"
+    android:title="Back" 
+   />
+   
+   <item 
+   	android:id="@+id/menu_option_reload"
+    android:title="Refresh" 
+   />
+   
+   <item 
+   	android:id="@+id/menu_option_goforward"
+    android:title="Forward" 
+   />
+  
+</menu>

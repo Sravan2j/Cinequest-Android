@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  
+  
+   
+   
+   
+   <item 
+   	android:title="CQ Pick" android:id="@+id/menu_option_cqpick"/>
+   
+   <item 
+   	android:title="New Release" android:id="@+id/menu_option_newrelease"/>
+   
+  
+   
+   
+   
+   
+   
+   
+</menu>
