@@ -19,6 +19,8 @@
 
 package edu.sjsu.cinequest.comm.cinequestitem;
 
+import java.io.Serializable;
+
 import net.rim.device.api.util.Persistable;
 
 /**
@@ -30,7 +32,7 @@ import net.rim.device.api.util.Persistable;
  * @version 0.1
  */
 
-public class Schedule implements Persistable {
+public class Schedule implements Serializable {
 	/**
 	 * @return the venue
 	 */

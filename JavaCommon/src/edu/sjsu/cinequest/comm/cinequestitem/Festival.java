@@ -18,6 +18,7 @@
  */
 
 package edu.sjsu.cinequest.comm.cinequestitem;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -31,7 +32,7 @@ import net.rim.device.api.util.Persistable;
  * @version 0.1
  */
 
-public class Festival implements Persistable {
+public class Festival implements Serializable {
 	private Vector programItems;
 	private Vector films;
 	private Vector schedules;

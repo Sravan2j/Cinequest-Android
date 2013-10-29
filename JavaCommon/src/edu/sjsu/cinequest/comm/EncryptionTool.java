@@ -17,7 +17,8 @@ public class EncryptionTool
 	public static String SHA1(String text) throws UnsupportedEncodingException
 	{
 	   MessageDigest md = Platform.getInstance().getMessageDigestInstance("SHA-1");
-	   md.update(text.getBytes("iso-8859-1"));
+	  // md.update(text.getBytes("iso-8859-1"));
+	   md.update(text.getBytes("UTF-8"));
 	   byte[] sha1Hash =md.digest();
 	   return convertToHex(sha1Hash);
 	}
