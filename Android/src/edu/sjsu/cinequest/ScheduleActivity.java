@@ -1,29 +1,29 @@
 package edu.sjsu.cinequest;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.TreeMap;
 
 import android.app.Activity;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.ContentUris;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.provider.CalendarContract.Events;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.CheckBox;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckedTextView;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-import edu.sjsu.cinequest.comm.Action;
-import edu.sjsu.cinequest.comm.Callback;
-import edu.sjsu.cinequest.comm.CallbackException;
-import edu.sjsu.cinequest.comm.Platform;
-import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
-import edu.sjsu.cinequest.comm.cinequestitem.User;
 
 /**
  * The Schedule Tab of the app 
@@ -31,350 +31,185 @@ import edu.sjsu.cinequest.comm.cinequestitem.User;
  * @author Prabhjeet Ghuman
  *
  */
-public class ScheduleActivity extends CinequestBottomBarActivity {	
-    private static final int SUB_ACTIVITY_SYNC_SCHEDULE = 0;
+
+class EventData {
+    public int eid;
+    public String name;
     
-    private Callback loginCallback = null;
-    
-    //unique id's for menu options
-	private static final int LOGOUT_MENUOPTION_ID = Menu.FIRST;
-	private static final int SYNC_MENUOPTION_ID = Menu.FIRST + 1;
-	private static final int DELETE_CONTEXTMENU_ID = Menu.FIRST + 3;
-
-    
-    /**
-     * Gets called when user returns to this tab. Also gets called once after the 
-     * onCreate() method too.
-     */
-    @Override
-    public void onResume(){
-    	super.onResume();
-    	
-    	//refresh the listview on screen and update the movieidlist
-    	refreshListContents(null);
-    }
-    
-    /**
-     * This method gets called before onResume(). Do all the first time initialization
-     * here
-     */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setEmptyListviewMessage(R.string.myschedule_msg_for_emptyschd);
-		
-		setBottomBarEnabled(true);
-		
-		//add delete button to bottom bar
-		addBottomBarButton(ButtonType.LELT, "Delete", new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				deleteSelected();
-				hideBottomBar();
-			}
-        });
-		
-		//add cancel button to bottom bar
-		addBottomBarButton(ButtonType.RIGHT, "Cancel", new OnClickListener(){
-
-			@Override
-			public void onClick(View arg0) {
-				if(mCheckBoxMap == null || mCheckBoxMap.size() == 0){
-					hideBottomBar();
-					return;
-				}
-				
-				mCheckBoxMap.uncheckAll();
-			}
-        });
-		
-	}
-
-	@Override
-	protected void fetchServerData() {
-		//Since in this activity's case, the data is not fetched from server 
-		//till user clicks "Sync", we dont need to implement this method here
-		
-	}
-
-	@Override
-	protected void refreshListContents(List<?> listItems) {		
-		// TODO: Lots of code duplication with other schedules list
-	  	Schedule[] scheduleItems = HomeActivity.getUser().getSchedule().getScheduleItems();
-	  	
-      	if (scheduleItems.length == 0) {
-      		setListViewAdapter(new SeparatedListAdapter(this));	
-      		return;
-      	}
-      	
-      	SeparatedListIndexedAdapter adapter = new SeparatedListIndexedAdapter(this);
-		DateUtils du = new DateUtils();
-
-      	TreeMap<String, ArrayList<Schedule>> scheduleMap 
-      						= new TreeMap<String, ArrayList<Schedule>>();
-  		
-  		for(Schedule s : scheduleItems) {
-  			String day = s.getStartTime().substring(0, 10);
-  			
-  			if(!scheduleMap.containsKey(day))
-  				scheduleMap.put(day, new ArrayList<Schedule>());
-			scheduleMap.get(day).add(s);
-  		}
-  			
-  		for (String day : scheduleMap.keySet()) { 
-  			ArrayList<Schedule> schedulesForDay = scheduleMap.get(day);
-  			
-  			String header = du.format(day, DateUtils.DATE_DEFAULT);
- 			String key = du.format(day, DateUtils.DAY_ONLY);
-  			
-			adapter.addSection(header, key,	
-				new ScheduleListAdapter(this, schedulesForDay) {
-		  			@Override
-		  			protected void configureCheckBox(View v, CheckBox checkbox, Schedule s) {
-		  				// Configure checkbox to manage bottom bar
-		  				ScheduleActivity.this.configureCheckBox(v, checkbox, s);
-		  			}
-		
-		  			@Override
-		  			protected void formatContents(View v, TextView title, TextView time, TextView venue, DateUtils du, Schedule schd) {			
-		  				/*
-		  				TODO: Which of these do we want?
-		  				
-						final int mConflictScheduleColor = Color.parseColor("#E42217");//Firebrick2
-					    final int mMovedScheduleColor = Color.parseColor("#E41B17");//Red2
-					    int mNormalScheduleTextColor = Color.parseColor("#FFFFFF");
-							  				
-		  				User user = HomeActivity.getUser();
-		  	            if(schd != null && user.getSchedule().isScheduled(schd))
-		  	               	title.setTypeface(null, Typeface.BOLD);
-		
-		  	            
-		  				//if this schedule item conflicts with another, 
-		  	            //use ConflictScheduleColor for title
-		  				if (user.getSchedule().conflictsWith(schd) 
-		  						&& user.getSchedule().isScheduled(schd)){
-		  	            	title.setTextColor( mConflictScheduleColor );
-		  	            } else {
-		  	            	title.setTextColor( mNormalScheduleTextColor );
-		  	            }
-		
-		  				//if this schedule has moved, highlight it in MovedScheduleColor
-		  	            if(HomeActivity.getUser().getSchedule().getType( schd ) == UserSchedule.MOVED){
-		  	            	row.setBackgroundColor(mMovedScheduleColor);
-		  	            }else{
-		  	            	row.setBackgroundColor(android.R.color.transparent);
-		  	            }
-		  				*/
-		  			}
-					
-				});
-  		}
-  		
-  		
-  		setListViewAdapter(adapter);		
-	}
-     
-	
-	/** 
-	 * When user clicks Delete, delete all selected movies
-	 **/
-    private void deleteSelected(){
-    	
-		//remove the items that user checked on edit screen from user.getSchedule()
-    	ArrayList<Schedule> allcheckedfilms = mCheckBoxMap.allTags();
-    	for(Schedule s : allcheckedfilms){
-    		HomeActivity.getUser().getSchedule().remove(s);
-    	}
-		
-		mCheckBoxMap.clear();
-		//show the schedule on screen
-		refreshListContents(null);		
-    }
-    
-    /**
-     * Called when sub activity finishes
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // TODO: Remove
-        if (resultCode == Activity.RESULT_CANCELED) {
-        	loginCallback.failure(new CallbackException("Login canceled", CallbackException.IGNORE));
-        }
-        else if (resultCode == Activity.RESULT_OK){
-        	loginCallback.invoke(new User.Credentials(data.getStringExtra("email"),
-					data.getStringExtra("password")));
-        }    	
-    }
-    
-    /** When user clicks SYNC, do this*/
-    private void performSync(){
-		if (!Platform.getInstance().isNetworkAvailable()) {
-    		Toast.makeText(this, getResources().getString(R.string.no_network_msg), 
-    				Toast.LENGTH_LONG).show();
-    		return;
-		}
-
-    	final User user = HomeActivity.getUser();
-    	
-    	user.syncSchedule(/*credentialAction*/ new Action(){
-
-					@Override
-					public void start(Object in, Callback cb) {
-						// LoginPrompt.showPrompt(ScheduleActivity.this);
-						// TODO: Use in
-						loginCallback = cb;
-					   	Intent i = new Intent(ScheduleActivity.this, LoginActivity.class);
-					   	User.Credentials creds = (User.Credentials) in; 
-					   	i.putExtra("email", creds.email);
-					   	i.putExtra("password", creds.password);
-				        //Instead of startActivity(i), use startActivityForResult, 
-					   	//so we could return back to this activity after login finishes
-						startActivityForResult(i, SUB_ACTIVITY_SYNC_SCHEDULE);
-					}
-    		
-    		}, /*syncAction*/new Action(){
-
-				@Override
-				public void start(Object in, final Callback cb) {
-					DialogPrompt.showOptionDialog(ScheduleActivity.this, 
-						getResources().getString(R.string.schedule_conflict_dialogmsg), 
-						"Keep Server", new DialogInterface.OnClickListener(){
-							public void onClick(DialogInterface dialog,	int which) {
-								cb.invoke(new Integer(User.SYNC_REVERT));									
-							}
-						}
-						,"Keep Device", new DialogInterface.OnClickListener(){
-							public void onClick(DialogInterface dialog,	int which) {									
-								cb.invoke(new Integer(User.SYNC_SAVE));
-							}
-						},
-						"Merge Both", new DialogInterface.OnClickListener() {
-							
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								cb.invoke(new Integer(User.SYNC_MERGE));								
-							}
-						}
-					);					
-				}
-    			
-    		}, new ProgressMonitorCallback(this, "Synchronizing..."),
-    		new Callback() {
-				@Override
-				public void starting() {
-				}
-				@Override
-				public void invoke(Object result) {
-					refreshListContents(null);
-					//Display a confirmation notification
-					Toast.makeText(ScheduleActivity.this, 
-							getString(R.string.myschedule_synced_msg), 
-							Toast.LENGTH_LONG).show();					
-				}
-				@Override
-				public void failure(Throwable t) {
-					if (t instanceof CallbackException && ((CallbackException) t).getLevel() == CallbackException.IGNORE)
-						Platform.getInstance().log(t);					
-				}
-    		}, HomeActivity.getQueryManager());
+    public String stime;
+    public String etime;
+    public EventData(int _eid,String _name, String _stime, String _etime) {
+        eid = _eid;
+        name = _name;
+        stime = _stime;
+        etime = _etime;
     }
 
-	
-	/**
-     * log the user out from cinequest scheduler account
-     */
-    private void logOut(){
-    	HomeActivity.getUser().logout();
-    	refreshListContents(null);
-    	// TODO: String resource
-    	Toast.makeText(this, "You have been logged out!", Toast.LENGTH_LONG).show();
+    public String getName() {
+        return name;
     }
-    
-    /**
-     * Create a menu to be displayed when user hits Menu key on device
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	menu.add(0, SYNC_MENUOPTION_ID, 0,"Sync").setIcon(R.drawable.sync);
-        menu.add(0, LOGOUT_MENUOPTION_ID, 0,"Logout").setIcon(R.drawable.logout);
+    public String getStime() {
+        return stime;
+    }
+    public String getEtime() {
+        return etime;
+    }
+    public int getEId() {
+        return eid;
+    }    
+}
+public class ScheduleActivity extends Activity {
+    ListView listView;
+    private List<EventData> events = new ArrayList<EventData>();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.schedulelayout);
+        String calendarName="Cinequest Calendar";
+        String m_selectedCalendarId = "Cinequest Calendar";
         
-        //Home and About menu options will be added here
-        super.onCreateOptionsMenu(menu);
+        //**************
+        String[] proj = new String[]{"_id", "calendar_displayName"};
         
-        return true;
-    }
-    
-    /** Menu Item Click Listener*/
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-        	
-	        case LOGOUT_MENUOPTION_ID:
-	            logOut();
-	            return true;
-	        case SYNC_MENUOPTION_ID:
-	            performSync();
-	            return true;
-	        
-	        default:
-	            return super.onOptionsItemSelected(item);
+        String calSelection = 
+                "(calendar_displayName= ?) ";
+        String[] calSelectionArgs = new String[] {
+                calendarName                                        
+        }; 
+
+        Uri event = Uri.parse("content://com.android.calendar/calendars");        
+
+        Cursor l_managedCursor = managedQuery(event, proj, calSelection, calSelectionArgs, null );
+        
+        if (l_managedCursor.moveToFirst()) {                        
+                     
+            int l_idCol = l_managedCursor.getColumnIndex(proj[0]);
+            do {                
+            	m_selectedCalendarId = l_managedCursor.getString(l_idCol);                
+            } while (l_managedCursor.moveToNext());
         }
         
-    }
-    
-    /** 
-     * This method is called before showing the menu to user after 
-     * user clicks menu button
-     **/
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-    	
-	    	/* if user is logged out, don't show LogOut option in menu, 
-    		show Login instead. And vice-versa */
-	        if( HomeActivity.getUser().isLoggedIn() ){
-	        	menu.findItem(LOGOUT_MENUOPTION_ID).setVisible(true);
-	        }else{
-	        	menu.findItem(LOGOUT_MENUOPTION_ID).setVisible(false);
-	        }
+        l_managedCursor.close();
+        
+        Uri l_eventUri;
+        
+            l_eventUri = Uri.parse("content://com.android.calendar/events");
+        String[] l_projection = new String[]{"_id","title", "dtstart", "dtend"};
+        
+        l_managedCursor = this.managedQuery(l_eventUri, l_projection, "calendar_id=" + m_selectedCalendarId, null, "dtstart DESC, dtend DESC");
 
-    	return super.onPrepareOptionsMenu(menu);
+        //Cursor l_managedCursor = this.managedQuery(l_eventUri, l_projection, null, null, null);
+        if (l_managedCursor.moveToFirst()) {
+            //int l_cnt = 0;
+            
+            String l_title;
+            String l_begin;
+            String l_end;
+            int e_id;
+            int l_colid = l_managedCursor.getColumnIndex(l_projection[0]);
+            int l_colTitle = l_managedCursor.getColumnIndex(l_projection[1]);
+            int l_colBegin = l_managedCursor.getColumnIndex(l_projection[2]);
+            int l_colEnd = l_managedCursor.getColumnIndex(l_projection[3]);
+            do {
+                e_id = l_managedCursor.getInt(l_colid);
+                l_title = l_managedCursor.getString(l_colTitle);
+                l_begin = getDateTimeStr(l_managedCursor.getString(l_colBegin));
+                l_end = getDateTimeStr(l_managedCursor.getString(l_colEnd));
+                EventData edata= new EventData(e_id, l_title, l_begin, l_end);
+                events.add(edata);
+                //l_displayText.append(l_title + "\n" + l_begin + "\n" + l_end + "\n----------------\n");
+                //++l_cnt;
+            } 
+            //while (l_managedCursor.moveToNext() && l_cnt < 3);
+            while (l_managedCursor.moveToNext());
+            
+            //m_text_event.setText(l_displayText.toString());
+        }
+
+        ArrayAdapter<EventData> adapter = new ArrayAdapter<EventData>(
+                //this.getApplicationContext(), R.layout.event_details, Collections.unmodifiableList(events)) {
+              this.getApplicationContext(), R.layout.eventlistview, events) {
+            @Override
+            public View getView(final int position, View v, ViewGroup parent) {
+
+                LayoutInflater inflater = LayoutInflater.from(getContext());
+                final EventData q = getItem(position);                                
+                if (v == null) v = inflater.inflate(R.layout.eventlistview, null);                                
+                TextView textView = (TextView) v.findViewById(R.id.eventName);
+                textView.setText(q.getName());
+
+                TextView textView1 = (TextView) v.findViewById(R.id.startTime);
+                textView1.setText(q.getStime());
+
+                TextView textView2 = (TextView) v.findViewById(R.id.endTime);
+                textView2.setText(q.getEtime());              
+                Button button1 = (Button) v.findViewById(R.id.remove);
+                button1.setOnClickListener( new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Uri eventUri;                    
+                        if (Build.VERSION.SDK_INT >= 8) {
+                            eventUri = Uri.parse("content://com.android.calendar/events");
+                        } else {
+                            eventUri = Uri.parse("content://calendar/events");
+                        }                        
+                            Uri deleteUri = ContentUris.withAppendedId(eventUri, q.getEId());
+                            int rows = getContentResolver().delete(deleteUri, null, null);
+                            Log.i("DEBUG_TAG", "Rows deleted: " + rows);                          
+                            if (rows==1){
+                                events.remove(position);
+                                listView.invalidateViews();
+                            }
+                    }
+                });
+
+
+                return v;                                
+            }                            
+        };
+        listView = (ListView) findViewById(R.id.schedule_listview);
+        listView.setAdapter(adapter);
+        listView.setItemsCanFocus(false);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                    long arg3) {
+
+                CheckedTextView tt = (CheckedTextView) arg1.findViewById(R.id.eventName);
+                if (!tt.isChecked()) {
+                    tt.setChecked(true);
+                    //tt.setCheckMarkDrawable(android.R.drawable.checkbox_on_background);
+                } else {
+                    tt.setChecked(false);
+                    //tt.setCheckMarkDrawable(android.R.drawable.checkbox_off_background);
+                }                
+            }
+        });
+        l_managedCursor.close();
+
     }
-    
-    /**
-     * Called when creating the context menu (for our list items)
+
+
+    /************************************************
+     * utility part
      */
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenuInfo menuInfo) {
-      menu.add(0, DELETE_CONTEXTMENU_ID, 0, "Delete");
-      super.onCreateContextMenu(menu, v, menuInfo);
+    private static final String DATE_TIME_FORMAT = "yyyy MMM dd, HH:mm:ss";
+    public static String getDateTimeStr(int p_delay_min) {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
+        if (p_delay_min == 0) {
+            return sdf.format(cal.getTime());
+        } else {
+            Date l_time = cal.getTime();
+            l_time.setMinutes(l_time.getMinutes() + p_delay_min);
+            return sdf.format(l_time);
+        }
     }
-    
-    /**
-     * Called when an item in context menu is selected
-     */
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-      AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();      
-      
-      switch (item.getItemId()) {
-      		//If user chose delete option
-	      case DELETE_CONTEXTMENU_ID:
-	    	Schedule s = (Schedule) getListview().getItemAtPosition(info.position);
-	    	
-	    	//delete this schedule from the list 
-	    	HomeActivity.getUser().getSchedule().remove(s);
-	    	
-	    	//refresh list: show the edited schedule on screen
-	    	refreshListContents(null);
-	        return true;	        
-      
-      default:
-        return super.onContextItemSelected(item);
-      }
+    public static String getDateTimeStr(String p_time_in_millis) {
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
+        Date l_time = new Date(Long.parseLong(p_time_in_millis));
+        return sdf.format(l_time);
     }
+
 }

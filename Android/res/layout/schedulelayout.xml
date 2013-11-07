@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+	  android:layout_width="fill_parent"
+	  android:layout_height="fill_parent"
+	  android:layout_weight="1"
+	  >
+
+	<ListView 
+		android:id="@+id/schedule_listview"
+	 	android:layout_width="fill_parent"
+	 	android:layout_height="wrap_content"
+	 	
+	 	android:background="@android:color/transparent"
+	 	android:layout_weight="1" 
+	 />
+	 
+	 <TextView
+	  	android:id="@+id/msg_for_empty_schedyle"
+	  	android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:textColor="#FFFFFF"
+		android:textStyle="italic"
+		android:layout_gravity="center_vertical|center_horizontal"		
+		android:layout_margin="14dip"
+		android:layout_weight="1"
+		android:visibility="gone"
+		/>
+	 
+	</LinearLayout>
+
+
+<LinearLayout
+    android:id="@+id/bottom_action_bar"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/schedule_bottom_actionbar_border"
+    android:layout_marginBottom="2dip"
+    android:layout_gravity="bottom"
+    android:visibility="gone"
+    >
+    
+    <Button
+		android:id="@+id/bottomActionBar_button_01"
+    	android:text="Add"
+    	android:layout_width="wrap_content"
+    	android:layout_height="40dip"
+    	android:layout_alignParentLeft="true"
+    	android:layout_marginLeft="3dip"
+    	android:layout_marginTop="3dip"
+    	android:visibility="invisible"
+	/>
+	
+	<Button
+		android:id="@+id/bottomActionBar_button_02"
+    	android:text="Refine"
+    	android:layout_width="wrap_content"
+    	android:layout_height="40dip"
+    	android:layout_marginRight="3dip"
+    	android:layout_marginTop="3dip"
+    	android:visibility="invisible"
+	/>
+	
+	<Button
+		android:id="@+id/bottomActionBar_button_03"
+    	android:text="Cancel"
+    	android:layout_width="wrap_content"
+    	android:layout_height="40dip"
+    	android:layout_alignParentRight="true"
+    	android:layout_marginRight="3dip"
+    	android:layout_marginTop="3dip"
+    	android:visibility="invisible"
+	/>    
+</LinearLayout>
+
+
+    
+    
+
+</LinearLayout>

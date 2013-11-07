@@ -1,24 +1,35 @@
 package edu.sjsu.cinequest;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Typeface;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.CalendarContract.Events;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
@@ -118,7 +129,7 @@ public class CinequestActivity extends Activity
 	 * (when sorted by date), Events and Forums tabs, (2) in each film detail,
 	 * and (3) in the Schedule tab.
 	 */
-	protected static class ScheduleListAdapter extends ArrayAdapter<Schedule> {
+	protected  class ScheduleListAdapter extends ArrayAdapter<Schedule> {
 		private static final int RESOURCE_ID = R.layout.listitem_titletimevenue;
 		private DateUtils du = new DateUtils();
 		
@@ -137,12 +148,13 @@ public class CinequestActivity extends Activity
         	TextView title = (TextView) v.findViewById(R.id.titletext);
         	TextView time = (TextView) v.findViewById(R.id.timetext);
             TextView venue = (TextView) v.findViewById(R.id.venuetext);
-            CheckBox checkbox = (CheckBox) v.findViewById(R.id.myschedule_checkbox);	                
+            //CheckBox checkbox = (CheckBox) v.findViewById(R.id.myschedule_checkbox);
+            Button checkbox = (Button) v.findViewById(R.id.myschedule_checkbox);	                
 	        Schedule result = getItem(position);            
 	        title.setText(result.getTitle());	                 
 			if (result.isSpecialItem())
                	title.setTypeface(null, Typeface.ITALIC);
-        	String startTime = du.format(result.getStartTime(), DateUtils.TIME_SHORT);
+        	String startTime = du.format(result.getStartTime(), DateUtils.TIME_SHORT);        	
         	String endTime = du.format(result.getEndTime(), DateUtils.TIME_SHORT);
 	        time.setText("Time: " + startTime + " - " + endTime);
 	        venue.setText("Venue: " + result.getVenue());
@@ -163,7 +175,8 @@ public class CinequestActivity extends Activity
 		 * the checkbox adds or removes the schedule item in the user's schedule.
 		 * Override if you want a different behavior.
 	     */
-		protected void configureCheckBox(View v, CheckBox checkbox, final Schedule result) {
+	    
+	    /*protected void configureCheckBox(View v, CheckBox checkbox, final Schedule result) {
 			checkbox.setVisibility(View.VISIBLE);
 			checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
 				public void onCheckedChanged(CompoundButton buttonView,
@@ -178,6 +191,141 @@ public class CinequestActivity extends Activity
 			});
 			
 			checkbox.setChecked(HomeActivity.getUser().getSchedule().contains(result));
+		}*/
+		protected void configureCheckBox(View v, Button checkbox, final Schedule result) {
+			checkbox.setVisibility(View.VISIBLE);
+			checkbox.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					Schedule s = (Schedule) v.getTag();
+					//Toast.makeText(getContext(), s.getTitle()+" end time :"+s.getEndTime()+" start time"+s.getStartTime()+" id "+s.getId()+" item id "+s.getItemId()+" venue "+s.getVenue(), Toast.LENGTH_SHORT).show();
+					
+					
+					String calendarName="Cinequest Calendar";
+			        String m_selectedCalendarId = "Cinequest Calendar";
+			        
+			        //**************
+			        String[] proj = new String[]{"_id", "calendar_displayName"};
+			        
+			        String calSelection = 
+			                "(calendar_displayName= ?) ";
+			        String[] calSelectionArgs = new String[] {
+			                calendarName                                        
+			        }; 
+
+			        Uri event = Uri.parse("content://com.android.calendar/calendars");        
+
+			        Cursor l_managedCursor = managedQuery(event, proj, calSelection, calSelectionArgs, null );
+			        
+			        if (l_managedCursor.moveToFirst()) {                        
+			                     
+			            int l_idCol = l_managedCursor.getColumnIndex(proj[0]);
+			            do {                
+			            	m_selectedCalendarId = l_managedCursor.getString(l_idCol);                
+			            } while (l_managedCursor.moveToNext());
+			        }
+			        
+			        l_managedCursor.close();
+					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    Date startDate = null;
+                    Date endDate = null;
+
+                    try {
+                        //startDate = (Date) formatter.parse(ques.getSTime().substring(0, 10));
+                        //endDate = (Date) formatter.parse(ques.getETime().substring(0, 10));
+                        startDate = (Date) formatter.parse(s.getStartTime());
+                        endDate = (Date) formatter.parse(s.getEndTime());
+
+
+                    } catch (ParseException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }  
+                    Log.i("Date", s.getStartTime().substring(0, 10));
+
+                   
+
+                    long begin = startDate.getTime();
+                    long end = endDate.getTime();
+                    proj = 
+                            new String[]{
+                            "_id", 
+                            "title",
+                            "dtstart", 
+                    "dtend"};
+
+                    calSelection = 
+                            "((" + Events.CALENDAR_ID + "= ?) " +                                            
+                                    "AND (" +
+                                    "((" + Events.DTSTART + "= ?) " +
+                                    "AND (" + Events.DTEND + "= ?) " +
+                                    "AND (" + Events.TITLE + "= ?) " +
+                                    ") " +                                            
+                                    ")" +
+                                    ")";         
+                     calSelectionArgs = new String[] {
+                            m_selectedCalendarId, begin+"", end+"", s.getTitle()                                       
+                    }; 
+
+
+                     event = Uri.parse("content://com.android.calendar/events");
+
+                    l_managedCursor = managedQuery(event, proj, calSelection, calSelectionArgs, "dtstart DESC, dtend DESC");
+
+                    if (l_managedCursor.getCount()>0) {                                                    
+                        Toast toast = Toast.makeText(getContext(), "Event already exists in calendar", Toast.LENGTH_SHORT);
+                        toast.show();                           
+                    }
+                    else{
+
+                        //***Using Content Values**************
+
+                        ContentValues l_event = new ContentValues();
+                        l_event.put("calendar_id", m_selectedCalendarId);
+                        l_event.put("title", s.getTitle());
+                        l_event.put("description", s.getTitle());
+                        l_event.put("eventLocation", s.getVenue());
+
+                        //l_event.put("dtstart", System.currentTimeMillis());
+                        //l_event.put("dtend", System.currentTimeMillis() + 1800*1000);
+                        l_event.put("dtstart", startDate.getTime());
+                        l_event.put("dtend", endDate.getTime());
+                        l_event.put("allDay", 0);
+                        //status: 0~ tentative; 1~ confirmed; 2~ canceled
+                        l_event.put("eventStatus", 1);
+                        //0~ default; 1~ confidential; 2~ private; 3~ public
+
+                        //l_event.put("visibility", 1);
+                        //0~ opaque, no timing conflict is allowed; 1~ transparency, allow overlap of scheduling
+                        //l_event.put("transparency", 0);
+                        //0~ false; 1~ true
+                        l_event.put("hasAlarm", 1);
+
+                        l_event.put("eventTimezone", TimeZone.getDefault().getID());
+                        Uri l_eventUri;
+                        if (Build.VERSION.SDK_INT >= 8) {
+                            l_eventUri = Uri.parse("content://com.android.calendar/events");
+                        } else {
+                            l_eventUri = Uri.parse("content://calendar/events");
+                        }
+                        Uri l_uri = getContentResolver().insert(l_eventUri, l_event);
+                        Log.v("++++++test", l_uri.toString());
+
+                        Toast toast = Toast.makeText(getContext(), "Event added to calendar", Toast.LENGTH_SHORT);
+                        toast.show();                           
+                    }
+                    l_managedCursor.close();
+						//HomeActivity.getUser().getSchedule().add(s);
+					 /*else{
+						HomeActivity.getUser().getSchedule().remove(s);
+					}	*/	
+					
+				}
+			});
+			
+			//checkbox.setChecked(HomeActivity.getUser().getSchedule().contains(result));
 		}
 	}	
 

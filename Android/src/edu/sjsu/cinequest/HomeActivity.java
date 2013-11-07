@@ -1,14 +1,18 @@
 package edu.sjsu.cinequest;
 
 import java.util.ArrayList;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -49,6 +53,8 @@ public class HomeActivity extends Activity {
 	private static ImageManager imageManager;
     private static User user;
     
+    private static String calendarName="Cinequest Calendar";
+    
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +71,46 @@ public class HomeActivity extends Activity {
         } catch (NameNotFoundException ex) {
         	// We tried...
         }
+        
+
+        //**************
+        String[] proj = new String[]{"_id", "calendar_displayName"};
+        
+        String calSelection = 
+                "(calendar_displayName= ?) ";
+        String[] calSelectionArgs = new String[] {
+                calendarName                                        
+        }; 
+
+        Uri event = Uri.parse("content://com.android.calendar/calendars");        
+
+        Cursor l_managedCursor = managedQuery(event, proj, calSelection, calSelectionArgs, null );
+
+        if (l_managedCursor.getCount()<=0) {                                                    
+                
+        	ContentValues l_event = new ContentValues();
+            l_event.put("account_name", "Cinequest");
+            l_event.put("account_type", "LOCAL");                  
+            l_event.put("name", calendarName);
+            //l_event.put("displayName", "Cinequest Calendar");
+            //l_event.put("color", 0xffff0000);
+            //l_event.put("access_level",  700);
+            //l_event.put("timezone", TimeZone.getDefault().getID());
+            l_event.put("calendar_displayName", calendarName);
+            l_event.put("calendar_color", 0xffff0000);
+            l_event.put("calendar_access_level",  700);
+            l_event.put("calendar_timezone", TimeZone.getDefault().getID());
+            l_event.put("ownerAccount", "owner");
+            l_event.put("visible", 1);
+            Uri.Builder builder = event.buildUpon();
+            builder.appendQueryParameter("account_name", "Cinequest");
+            builder.appendQueryParameter("account_type", "LOCAL");                
+            builder.appendQueryParameter( "caller_is_syncadapter", "true");
+            Uri uri = getContentResolver().insert(builder.build(), l_event); 
+            l_managedCursor.close();
+        }
+        //**************
+        
         
         Platform.setInstance(new AndroidPlatform(getApplicationContext()));
         queryManager = new QueryManager();

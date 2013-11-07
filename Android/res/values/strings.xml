@@ -1,37 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-   <string name="app_name">Cinequest</string>
-   <string name="versionCode">1201161053</string>
-   <string name="versionName">2012-01-16 10:53</string>
-   <string name="login_prompt">This feature needs you to be logged in.\nWould you like to sign in now?</string>
-   <string name="login_instruction">Login using your cinequest.org interactive scheduler account email and password.</string>
-   <string name="register_instruction">Don\'t have a cinequest.org interactive scheduler account yet?</string>
-   <string name="scheduleraccount_info">The account is free and will allow your to save / update / download schedules you have created online or on the phone.</string>
-   <string name="email_hint">Email Address</string>
-   <string name="password_hint">Password</string>
-   <string name="loginscreen_sync_button_label">Sync</string>
-   <string name="loginscreen_cancel_button_label">Cancel</string>
-   <string name="signup_button_label">Sign up</string>
-   <string name="schedule_conflict_dialogmsg">Conflicting schedule on server. Which one to keep?</string>
-   <string name="myschedule_saved_msg">Schedule Successfully Saved!</string>
-   <string name="myschedule_msg_for_emptyschd">Your schedule is currently empty. Add films and events to the schedule by tapping the checkboxes. To save your schedule, return to this tab and select the Sync option from the menu.</string>
-   <string name="myschedule_loaded_msg">Schedule Successfully Retrieved!</string>
-   <string name="myschedule_synced_msg">Schedule Successfully Synced!</string>
-   <string name="myschedule_loggedin_synced_msg">Logged in. Schedule Successfully Synced!</string>
-   <string name="myschedule_loggedin_saved_msg">Logged in. Schedule Successfully Saved!</string>
-   <string name="myschedule_loggedin_loaded_msg">Logged in. Schedule Successfully Retrieved!!</string>
-   <!-- TODO -->
-   <string name="no_network_prompt">No network connection available. Please connect to Internet first!</string>
-   <string name="no_network_msg">Network connection is unavailable!</string>
-   <string name="about_screen_credits">
-      Professor Cay Horstmann\n
+
+    <string name="app_name">Cinequest</string>
+    <string name="versionCode">1201161053</string>
+    <string name="versionName">2012-01-16 10:53</string>
+    <string name="login_prompt">This feature needs you to be logged in.\nWould you like to sign in now?</string>
+    <string name="login_instruction">Login using your cinequest.org interactive scheduler account email and password.</string>
+    <string name="register_instruction">Don\'t have a cinequest.org interactive scheduler account yet?</string>
+    <string name="scheduleraccount_info">The account is free and will allow your to save / update / download schedules you have created online or on the phone.</string>
+    <string name="email_hint">Email Address</string>
+    <string name="password_hint">Password</string>
+    <string name="loginscreen_sync_button_label">Sync</string>
+    <string name="loginscreen_cancel_button_label">Cancel</string>
+    <string name="signup_button_label">Sign up</string>
+    <string name="schedule_conflict_dialogmsg">Conflicting schedule on server. Which one to keep?</string>
+    <string name="myschedule_saved_msg">Schedule Successfully Saved!</string>
+    <string name="myschedule_msg_for_emptyschd">Your schedule is currently empty. Add films and events to the schedule by tapping the checkboxes. To save your schedule, return to this tab and select the Sync option from the menu.</string>
+    <string name="myschedule_loaded_msg">Schedule Successfully Retrieved!</string>
+    <string name="myschedule_synced_msg">Schedule Successfully Synced!</string>
+    <string name="myschedule_loggedin_synced_msg">Logged in. Schedule Successfully Synced!</string>
+    <string name="myschedule_loggedin_saved_msg">Logged in. Schedule Successfully Saved!</string>
+    <string name="myschedule_loggedin_loaded_msg">Logged in. Schedule Successfully Retrieved!!</string>
+    <!-- TODO -->
+    <string name="no_network_prompt">No network connection available. Please connect to Internet first!</string>
+    <string name="no_network_msg">Network connection is unavailable!</string>
+    <string name="about_screen_credits">      Professor Cay Horstmann\n
       Professor Chris Pollett\n
       Chao-Hsin Shih\n
       Prabhjeet Ghuman\n
       Jeffery Rhodes\n
       Lou Bash\n
-      Matt Opsal\n
-   </string>	
-   <string name="schedule_filmID"></string>
-   <string name="schedule_filmTitle"></string>
+      Matt Opsal\n</string>
+    <string name="schedule_filmID"></string>
+    <string name="schedule_filmTitle"></string>
+    <string name="title_activity_get_schedule">GetSchedule</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>
