@@ -445,8 +445,13 @@ public class QueryManager {
 					lastChanged = lastChanged.substring(0, i) + "%20"
 							+ lastChanged.substring(i + 1);
 				}
-				Festival result = FestivalParser.parseFestival(
-						makeQuery(18, lastChanged), callback);
+				/*Festival result = FestivalParser.parseFestival(
+						makeQuery(18, lastChanged), callback);*/
+				
+				// Using the new Xml feed.
+				// FIXME - Should the URL be hardcoded over here.
+				Festival result = FestivalParser.parseFestival("http://payments.cinequest.org/websales/feed.ashx?guid=70d8e056-fa45-4221-9cc7-b6dc88f62c98&showslist=true", callback);
+				
 				if (!result.isEmpty()) {
 					festival = result;
 				} else

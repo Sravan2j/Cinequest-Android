@@ -33,6 +33,8 @@ import java.util.regex.Pattern;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import android.util.Log;
+
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
@@ -63,7 +65,9 @@ public class FestivalParser extends BasicHandler {
      * @throws IOException
      */
     public static Festival parseFestival(String url, Callback callback) throws SAXException, IOException {
+    	Log.e("FestivalParser.java", "Within parseFestival(), url:" + url);
         List<Show> shows = parseShows(url, callback);
+        Log.e("FestivalParser.java", "Parsed Shows, Size:" + shows.size());
         return new FestivalConverter(shows).convert();
     }
 
