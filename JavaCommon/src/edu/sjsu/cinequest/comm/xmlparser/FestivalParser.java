@@ -150,7 +150,8 @@ public class FestivalParser extends BasicHandler {
         private List<Show> shows;
         private Festival festival = new Festival();
         private Map<String, ArrayList<Film>> shortFilms = new LinkedHashMap<String, ArrayList<Film>>();
-
+        
+        private Map<Integer, Film> shortsMap = new LinkedHashMap<Integer, Film>();
 
 
         public FestivalConverter(List<Show> shows) {
@@ -175,7 +176,16 @@ public class FestivalParser extends BasicHandler {
                 Show show = iter.next();
                 if (show.currentShowings.size() == 0) {
                     iter.remove();
-                    String title = getParentTitle(show.shortDescription);
+                    
+                    // Collect all the Short Films. This list will be used to add each ShortFilm to its matching ProgramItem.
+                    Film shortFilm = getFilm(show);
+                    
+                    if( !shortsMap.containsKey(shortFilm.getId())) {
+                    	shortsMap.put(shortFilm.getId(), shortFilm);
+                    }
+                    
+                    // Older logic to collect ShortFilms
+                   /* String title = getParentTitle(show.shortDescription);
                     if (title != null) {
                         ArrayList<Film> filmsWithTitle = shortFilms.get(title);
                         if (filmsWithTitle == null) {
@@ -183,7 +193,7 @@ public class FestivalParser extends BasicHandler {
                             shortFilms.put(title, filmsWithTitle);
                         }
                         filmsWithTitle.add(getFilm(show));
-                    }
+                    }*/
                 }
             }
 
@@ -197,12 +207,33 @@ public class FestivalParser extends BasicHandler {
                     festival.getFilms().add(film);
                 }
 
-                if (shortFilms.keySet().contains(item.getTitle())) {
+                // Now, find out if this ProgramItem has a list of ShortFilms associated with it.
+                List<String> associatedShortIds = show.customProperties.get("ShortID");
+                
+                if(associatedShortIds != null && associatedShortIds.size() > 0) {
+                	
+                	// So, this ProgramItem has a list of associated ShortFilms.
+                	
+                	for(String shortID : associatedShortIds) {
+                		
+                		// The required ShortFilm exists in the Map. Retrieve it and add to the ProgramItem.
+                		if(shortsMap.containsKey(Integer.parseInt(shortID))) {
+                			
+                			Film film = shortsMap.get(Integer.parseInt(shortID));
+                			
+                			item.getFilms().add(film);
+                            festival.getFilms().add(film);
+                		}		
+                	}       	
+                }
+                
+                // Older logic to add the ShortFilm to its matching ProgramItem.
+                /*if (shortFilms.keySet().contains(item.getTitle())) {
                     for (Film film : shortFilms.get(item.getTitle())) {
                         item.getFilms().add(film);
                         festival.getFilms().add(film);
                     }
-                }
+                }*/
 
                 for (Showing showing : show.currentShowings) {
                     Schedule schedule = getSchedule(showing, item);

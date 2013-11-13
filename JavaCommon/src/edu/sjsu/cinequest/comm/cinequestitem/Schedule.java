@@ -21,6 +21,8 @@ package edu.sjsu.cinequest.comm.cinequestitem;
 
 import java.io.Serializable;
 
+import android.util.Log;
+
 import net.rim.device.api.util.Persistable;
 
 /**
