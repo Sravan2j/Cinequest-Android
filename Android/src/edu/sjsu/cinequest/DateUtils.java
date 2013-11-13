@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import android.util.Log;
+
 public class DateUtils {
     public static final int NORMAL_MODE = 0;
     public static final int FESTIVAL_TEST_MODE = 1;
@@ -45,10 +47,10 @@ public class DateUtils {
     
     private static String[] festivalDates =
     {
-    "2013-02-26", "2013-02-27",
+   /* "2013-02-26", "2013-02-27",
     "2013-02-28", "2013-03-01", "2013-03-02", 
     "2013-03-03", "2013-03-04", "2013-03-05", "2013-03-06",
-    "2013-03-07", "2013-03-08", "2013-03-09", "2013-03-10"
+    "2013-03-07", "2013-03-08", "2013-03-09", "2013-03-10"*/
     };
     
     private static Map<String, String> cache = new ConcurrentHashMap<String, String>();
@@ -113,6 +115,7 @@ public class DateUtils {
      */
     public String format(String date, int format)
     {
+    	//Log.e("DateUtils.java","Date="+date);
     	int len = date.length();
     	if (format <= LAST_TIME_FORMAT) 
     		date = len == 10 ? "00:00" : date.substring(11, 16);
@@ -123,15 +126,17 @@ public class DateUtils {
     		if (result == null)
     		{
     			String d = format <= LAST_TIME_FORMAT ? "2000-01-01 " + date : date; 
-    			String fmt = len == 10 ? "yyyy-MM-dd" : "yyyy-MM-dd HH:mm";
+    			String fmt = len == 10 ? "yyyy-MM-dd" : "yyyy-MM-dd'T'HH:mm"; 
     			SimpleDateFormat sdf = new SimpleDateFormat(fmt);
     			result = formatters[format].format(sdf.parse(d));
     			cache.put(key, result);
     		}
+    		//Log.e("DateUtils.java","Return="+result);
         	return result;
         } 
         catch (ParseException ex)
         {
+        	//Log.e("DateUtils.java Exception","Return="+date);
         	return date;
         }
     }

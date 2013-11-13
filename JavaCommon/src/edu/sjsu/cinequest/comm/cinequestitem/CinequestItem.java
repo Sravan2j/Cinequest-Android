@@ -19,6 +19,8 @@
 
 package edu.sjsu.cinequest.comm.cinequestitem;
 
+import java.io.Serializable;
+
 import net.rim.device.api.util.Persistable;
 
 
@@ -30,7 +32,7 @@ import net.rim.device.api.util.Persistable;
  * @author Aaditya Bhatia
  */
 
-public abstract class CinequestItem implements Persistable
+public abstract class CinequestItem implements Serializable
 {
 	private int id;
 	private String title, imageURL, description;

@@ -81,7 +81,7 @@ public class BasicHandler extends DefaultHandler
     	if (!fixed)
     	{
 	        CharUtils.trim(lastStr);
-	        CharUtils.fixWin1252(lastStr);
+	        //CharUtils.fixWin1252(lastStr);
 	        CharUtils.replaceEntities(lastStr);
 	        fixed = true;
     	}
