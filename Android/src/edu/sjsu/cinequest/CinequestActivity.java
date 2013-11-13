@@ -18,6 +18,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.CalendarContract.Events;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -218,7 +219,12 @@ public class CinequestActivity extends Activity
 
 					l_managedCursor.close();
 					l_managedCursor=null;
-					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+					SimpleDateFormat formatter;
+					if (s.getStartTime().charAt(10)=='T')
+						formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+					else
+						formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
 					Date startDate = null;
 					Date endDate = null;
 
