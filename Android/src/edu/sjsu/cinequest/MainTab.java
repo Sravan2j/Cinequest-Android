@@ -40,6 +40,7 @@ public class MainTab extends TabActivity {
         tabHost.addTab(spec);*/
         
         intent = new Intent().setClass(this, ScheduleActivity.class);
+        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         spec = tabHost.newTabSpec("schedule").setIndicator("Schedule",getResources().getDrawable(R.drawable.schedule_icon)).setContent(intent);
         tabHost.addTab(spec);
 
