@@ -375,7 +375,7 @@ public class FilmDetail extends CinequestActivity {
 			    Bundle params = new Bundle();
 			    params.putString("name", "Cinequest");
 			    params.putString("caption", "create, innovate, empower.");
-			    params.putString("description", "Cinequest provides the finest discovery bastion of international film premieres, technology, and more.");
+			    params.putString("description", "Cinequest provides the finest discovery bastion of international film premieres, technology, and more.]");
 			    params.putString("link", "https://www.facebook.com/cinequest");
 			    params.putString("picture", "http://www.cinequest.org/sites/default/files/styles/highlights/public/cqff24hero_970x360.jpg");
 			    params.putString("message", "Is going to this movie");
