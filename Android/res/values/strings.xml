@@ -36,5 +36,6 @@
     <string name="title_activity_get_schedule">GetSchedule</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="app_id">620082734700844</string>
 
 </resources>
