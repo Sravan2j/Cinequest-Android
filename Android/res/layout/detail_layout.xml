@@ -45,5 +45,13 @@
 		android:id="@+id/Properties"
 		android:layout_weight="1"
 	/>
+
+	<Button
+	    android:id="@+id/fbshare"
+	    android:layout_width="187dp"
+	    android:layout_height="36dp"
+	    android:layout_gravity="center_horizontal"
+	    android:background="@drawable/share" />
+
 </LinearLayout>
   
