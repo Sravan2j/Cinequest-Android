@@ -51,7 +51,7 @@ public class CinequestActivity extends Activity
 		Intent intent = new Intent();
 		intent.setClass(this, FilmDetail.class);
 		intent.putExtra("target", (Serializable) result);
-		startActivity(intent);		
+		startActivity(intent);	
 	}
 
 	/**

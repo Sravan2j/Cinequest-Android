@@ -35,7 +35,7 @@ import net.rim.device.api.util.Persistable;
 public abstract class CinequestItem implements Serializable
 {
 	private int id;
-	private String title, imageURL, description;
+	private String title, imageURL, description, infoLink;
 
 	/**
 	 * @return id
@@ -92,6 +92,11 @@ public abstract class CinequestItem implements Serializable
 	{
 		return description;
 	}
+	
+	public String getInfoLink()
+	{
+		return infoLink;
+	}
 
 	/**
 	 * @param description the description to set
@@ -99,6 +104,11 @@ public abstract class CinequestItem implements Serializable
 	public void setDescription(String description)
 	{
 		this.description = description;
+	}
+	
+	public void setInfoLink(String infoLink)
+	{
+		this.infoLink = infoLink;
 	}
 	
 	public String toString()

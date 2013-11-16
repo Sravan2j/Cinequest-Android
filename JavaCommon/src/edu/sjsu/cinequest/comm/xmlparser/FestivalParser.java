@@ -275,6 +275,7 @@ public class FestivalParser extends BasicHandler {
             item.setId(Integer.parseInt(show.id));
             item.setTitle(show.name);
             item.setDescription(show.shortDescription);
+            item.setInfoLink(show.infoLink);
             return item;
         }
 
@@ -295,6 +296,7 @@ public class FestivalParser extends BasicHandler {
             film.setCountry(get(show.customProperties, "Production Country"));
             film.setLanguage(get(show.customProperties, "Language"));
             film.setGenre(get(show.customProperties, "Genre"));
+            film.setInfoLink(show.infoLink);
             return film;
         }
 

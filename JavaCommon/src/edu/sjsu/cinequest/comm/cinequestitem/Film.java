@@ -156,6 +156,13 @@ public class Film extends Filmlet
 	{
 		return filmInfo;
 	}
+	public String getInfoLink()
+	{
+		return infoLink;
+	}
+	public void setInfoLink(String infoLink) {
+		this.infoLink = infoLink;
+	}
 	/**
 	 * @param filmInfo the filmInfo to set
 	 */
@@ -163,6 +170,8 @@ public class Film extends Filmlet
 	{
 		this.filmInfo = filmInfo;
 	}
+	
+	
 	
 	public Vector getSchedules()
 	{
@@ -187,4 +196,5 @@ public class Film extends Filmlet
 	private String country;
 	private String language;
 	private String filmInfo;	
+	private String infoLink;
 }

@@ -47,6 +47,9 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 public class FilmDetail extends CinequestActivity {
 	public static enum ItemType {FILM, PROGRAM_ITEM, DVD}
 	private ListView scheduleList;
+	private String fbTitle;
+	private String fbImage;
+	private String fbUrl;
 	
 	public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
@@ -171,8 +174,7 @@ public class FilmDetail extends CinequestActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
-				
-				//((CheckBox)view.findViewById(R.id.myschedule_checkbox)).toggle();				
+				((CheckBox)view.findViewById(R.id.myschedule_checkbox)).toggle();				
 			}
 		});
 		scheduleList.setAdapter(adapter);
@@ -273,6 +275,9 @@ public class FilmDetail extends CinequestActivity {
 	
 	
     public void showFilm(Film in) {
+    	fbTitle = in.getTitle();
+    	fbImage = in.getImageURL();
+    	fbUrl = in.getInfoLink();
 		SpannableString title = new SpannableString(in.getTitle());
 		title.setSpan(new RelativeSizeSpan(1.2F), 0, title.length(), 0);
 		((TextView) findViewById(R.id.Title)).setText(title);
@@ -284,6 +289,7 @@ public class FilmDetail extends CinequestActivity {
 		tv.setText(createSpannableString(parser));
 
 		showImage(in.getImageURL(), parser.getImageURLs());
+		
 		
 		SpannableStringBuilder ssb = new SpannableStringBuilder();
 		
@@ -305,7 +311,7 @@ public class FilmDetail extends CinequestActivity {
 	
     public void showProgramItem(ProgramItem item) 
     {
-		ArrayList<Film> films = item.getFilms();
+    	ArrayList<Film> films = item.getFilms();
 		
 		if (films.size() == 1)
 		{
@@ -314,6 +320,8 @@ public class FilmDetail extends CinequestActivity {
 		else  						
 		{
 			// Show just the ProgramItem data
+			fbTitle = item.getTitle();
+			fbUrl = item.getInfoLink();
 			SpannableString title = new SpannableString(item.getTitle());
 			title.setSpan(new RelativeSizeSpan(1.2F), 0, title.length(), 0);
 			((TextView) findViewById(R.id.Title)).setText(title);
@@ -372,13 +380,17 @@ public class FilmDetail extends CinequestActivity {
     //new function to post a status on facebook //tanuvir 12Nov13
     void postToWall(){
     		try{
+    			if(fbImage == null || fbImage == "")
+    				fbImage = "http://www.cinequest.org/sites/default/files/styles/highlights/public/cqff24hero_970x360.jpg";
+    			if(fbUrl == null || fbUrl == "")
+    				fbUrl = "http://www.cinequest.org/film-festival";
     			Log.d("MyFunc", "Before posting");
 			    Bundle params = new Bundle();
-			    params.putString("name", "Cinequest");
-			    params.putString("caption", "create, innovate, empower.");
-			    params.putString("description", "Cinequest provides the finest discovery bastion of international film premieres, technology, and more.]");
-			    params.putString("link", "https://www.facebook.com/cinequest");
-			    params.putString("picture", "http://www.cinequest.org/sites/default/files/styles/highlights/public/cqff24hero_970x360.jpg");
+			    params.putString("name","Is going to " + '"' + fbTitle + '"' );
+			    params.putString("caption", "at the Cinequest film festival");
+			    params.putString("description", "Cinequest provides the finest discovery bastion of international film premieres, technology, and more.");
+			    params.putString("link", fbUrl);
+			    params.putString("picture", fbImage);
 			    params.putString("message", "Is going to this movie");
 			    
 			    Log.d("Myfunc", "Params Created");
@@ -396,26 +408,20 @@ public class FilmDetail extends CinequestActivity {
 			                    // and the post Id.
 			                    final String postId = values.getString("post_id");
 			                    if (postId != null) {
-			                   //     Toast.makeText(this,"Posted story, id: "+postId,Toast.LENGTH_SHORT).show();
+			                        Toast.makeText(FilmDetail.this,"Successfully posted to your wall." ,Toast.LENGTH_SHORT).show();
 			                    	Log.d("Myfunc", "Post Id= " + postId);
 			                    } else {
 			                        // User clicked the Cancel button
-			                     //   Toast.makeText(this, 
-			                     //       "Publish cancelled", 
-			                      //      Toast.LENGTH_SHORT).show();
+			                        Toast.makeText(FilmDetail.this,"Share cancelled",Toast.LENGTH_SHORT).show();
 			                    	Log.d("Myfunc", "Post Cancelled");
 			                    }
 			                } else if (error instanceof FacebookOperationCanceledException) {
 			                    // User clicked the "x" button
-			                    //Toast.makeText(this, 
-			                     //   "Publish cancelled", 
-			                      //  Toast.LENGTH_SHORT).show();
+			                    Toast.makeText(FilmDetail.this, "Share cancelled",Toast.LENGTH_SHORT).show();
 			                	Log.d("Myfunc", "User Closed the Dialog");
 			                } else {
 			                    // Generic, ex: network error
-			                   // Toast.makeText(this, 
-			                    ///    "Error posting story", 
-			                      //  Toast.LENGTH_SHORT).show();
+			                   Toast.makeText(FilmDetail.this,"Share failed.",Toast.LENGTH_SHORT).show();
 			                }
 			            }
 
