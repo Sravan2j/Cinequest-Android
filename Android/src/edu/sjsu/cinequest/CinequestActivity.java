@@ -150,7 +150,7 @@ public class CinequestActivity extends Activity
 			TextView venue = (TextView) v.findViewById(R.id.venuetext);
 			//CheckBox checkbox = (CheckBox) v.findViewById(R.id.myschedule_checkbox);
 			Button checkbox = (Button) v.findViewById(R.id.myschedule_checkbox);	                
-			Schedule result = getItem(position);            
+			final Schedule result = getItem(position);            
 			title.setText(result.getTitle());	                 
 			if (result.isSpecialItem())
 				title.setTypeface(null, Typeface.ITALIC);
@@ -161,6 +161,23 @@ public class CinequestActivity extends Activity
 			formatContents(v, title, time, venue, du, result);		        
 			checkbox.setTag(result);	        
 			configureCheckBox(v, checkbox, result);
+			//Log.i("missing", result.getDirectionsURL());
+			Button directions = (Button) v.findViewById(R.id.directionsURL);
+			directions.setTag(result);	        
+			directions.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					
+					Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
+						    Uri.parse(result.getDirectionsURL()));
+					/*Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+						    Uri.parse("google.navigation:q=Camera+12+Cinemas,201+S+2nd+St,+San+Jose,+CA+95113"));*/	
+					startActivity(intent);
+				}
+				
+			});
 			return v;	        
 		}
 

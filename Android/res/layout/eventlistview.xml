@@ -38,12 +38,12 @@
 
     <Button
         android:id="@+id/remove"
-        android:layout_width="25dip"
-        android:layout_height="35dip"
+        android:layout_width="35dip"
+        android:layout_height="45dip"
         android:layout_alignBaseline="@+id/endTime"
         android:layout_alignBottom="@+id/endTime"
         android:layout_alignParentRight="true"
-        android:background="@drawable/trash1" />
+        android:background="@drawable/trash" />
     
 </RelativeLayout>
     

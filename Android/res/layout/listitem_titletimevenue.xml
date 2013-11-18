@@ -57,7 +57,15 @@
 
                
     </RelativeLayout>
-    
+    <Button
+    	android:layout_height="50dp"
+    	android:layout_width="50dp"
+    	android:paddingRight="15dip"
+    	android:visibility="visible"
+    	android:id="@+id/directionsURL"
+    	android:focusable="false"
+    	android:background="@drawable/location_directions"
+    />
          
 </LinearLayout>
 
