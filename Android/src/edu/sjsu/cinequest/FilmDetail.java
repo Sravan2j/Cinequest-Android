@@ -169,14 +169,14 @@ public class FilmDetail extends CinequestActivity {
 			});
 		
 		//toggle the checkbox upon list-item click
-		scheduleList.setOnItemClickListener(new OnItemClickListener() {
+/*		scheduleList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				((CheckBox)view.findViewById(R.id.myschedule_checkbox)).toggle();				
 			}
-		});
+		});*/
 		scheduleList.setAdapter(adapter);
 	}
 

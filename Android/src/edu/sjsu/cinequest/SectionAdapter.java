@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
@@ -61,7 +62,8 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T> {
                 	holder.title = (TextView) v.findViewById(R.id.titletext);
 	                holder.time = (TextView) v.findViewById(R.id.timetext);
 	                holder.venue = (TextView) v.findViewById(R.id.venuetext);
-	                holder.checkbox = (CheckBox) v.findViewById(R.id.myschedule_checkbox);	                
+	                //holder.checkbox = (CheckBox) v.findViewById(R.id.myschedule_checkbox);
+	                holder.checkbox = (Button) v.findViewById(R.id.myschedule_checkbox);
                 
                 } else if(sectionType == SectionItems.TYPE_FILMLET){
                 	holder.title = (TextView) v.findViewById(R.id.listitem_titletext);
@@ -133,7 +135,8 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T> {
     	TextView title;
     	TextView time;
     	TextView venue;
-    	CheckBox checkbox;
+    	//CheckBox checkbox;
+    	Button checkbox;
     }
     
     /**
@@ -141,7 +144,8 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T> {
      * This contains the logic of checking or unchecking the state of checkbox
      * when the list is getting redrawn
      */
-    protected abstract void formatCheckBox(CheckBox checkbox, T result);
+    //protected abstract void formatCheckBox(CheckBox checkbox, T result);
+    protected abstract void formatCheckBox(Button checkbox, T result);
     
     
     /**
