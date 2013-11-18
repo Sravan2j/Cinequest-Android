@@ -8,4 +8,7 @@ public class Venue {
     public boolean equals(Object other) {
         return id.equals(((Venue) other).id);
     }
+    
+    public String shortName;
+    public String location;
 }

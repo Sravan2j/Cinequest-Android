@@ -20,13 +20,18 @@
 package edu.sjsu.cinequest.comm.xmlparser;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import android.util.Log;
+
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
+import edu.sjsu.cinequest.comm.cinequestitem.Venue;
 import edu.sjsu.cinequest.comm.cinequestitem.VenueLocation;
 
 /**
@@ -36,8 +41,10 @@ import edu.sjsu.cinequest.comm.cinequestitem.VenueLocation;
  */
 public class VenuesParser extends BasicHandler
 {
-	private VenueLocation venueLocation = new VenueLocation();
+	//private VenueLocation venueLocation = new VenueLocation();
+	private Venue venue;
 	private Vector result = new Vector();
+	private Map<String, Venue> venues = new HashMap<String, Venue>();
 
 	/**
      * Parses a list of venue locations
@@ -47,46 +54,53 @@ public class VenuesParser extends BasicHandler
      * @throws IOException 
      * @throws SAXException  
 	 */
-	public static Vector parse(String url, Callback callback) throws SAXException, IOException
+	public static Map<String, Venue> parse(String url, Callback callback) throws SAXException, IOException
 	{	
+		Log.e("VenueParser.java", url);
+		
 	    VenuesParser handler = new VenuesParser();
 		Platform.getInstance().parse(url, handler, callback);
-		return handler.result;
+		return handler.venues;
 	}
 	
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
 	{
         super.startElement(uri, localName, qName, attributes);
-		if (lastTagName().equals("venue_location"))
-		{
-		    venueLocation = new VenueLocation();
-		    result.addElement(venueLocation);
-			venueLocation.setVenueAbbreviation(attributes.getValue("venue"));
+        
+		if (lastTagName().equals("Venue")) {
+		    venue = new Venue();
 		}
 	}
 	
 	public void endElement(String uri, String localName, String qName) throws SAXException
 	{		
 		super.endElement(uri, localName, qName);
-		if (lastTagName().equals("venue"))
-		{
-			venueLocation.setVenueAbbreviation(lastString());
+		
+		if (lastTagName().equals("Venue")) {
+			
+			if( venue != null ) {
+				venues.put(venue.id, venue);
+			}
+			
+		} else if (lastTagName().equals("ID")) {
+			
+			venue.id = lastString();
 		}
-		else if (lastTagName().equals("description"))
+		else if (lastTagName().equals("Name"))
 		{
-			venueLocation.setDescription(lastString());
+			venue.name = lastString();
 		}
-		else if (lastTagName().equals("location"))
+		else if (lastTagName().equals("ShortName"))
 		{
-			venueLocation.setLocation(lastString());
+			venue.shortName = lastString();
 		}
-		else if (lastTagName().equals("imageURL"))
-		{
-			venueLocation.setImageURL(lastString());
-		}
-        else if (lastTagName().equals("directionsURL"))
+        else if (lastTagName().equals("Location"))
         {
-            venueLocation.setDirectionsURL(lastString());
+        	venue.location = lastString();
+        }
+        else if (lastTagName().equals("Address"))
+        {
+        	venue.address = lastString();
         }
 	}
 }

@@ -66,13 +66,18 @@ public class FestivalParser extends BasicHandler {
      */
     public static Festival parseFestival(String url, Callback callback) throws SAXException, IOException {
     	Log.e("FestivalParser.java", "Within parseFestival(), url:" + url);
+    	
         List<Show> shows = parseShows(url, callback);
+        
+        // Parse the list of Venues using the Venue XML feed.
+        Map<String, Venue> venues = VenuesParser.parse("http://www.cinequest.org/venuelist.php", callback);
+        
         Log.e("FestivalParser.java", "Parsed Shows, Size:" + shows.size());
-        return new FestivalConverter(shows).convert();
+        return new FestivalConverter(shows, venues).convert();
     }
 
     public static List<Show> parseShows(String url, Callback callback) throws SAXException, IOException {
-        FestivalParser handler = new FestivalParser();
+        FestivalParser handler = new FestivalParser();        
         Platform.getInstance().parse(url, handler, callback);
         return handler.getShows();
     }
@@ -148,14 +153,16 @@ public class FestivalParser extends BasicHandler {
 
     public static class FestivalConverter {
         private List<Show> shows;
+        private Map<String, Venue> venues;
         private Festival festival = new Festival();
-        private Map<String, ArrayList<Film>> shortFilms = new LinkedHashMap<String, ArrayList<Film>>();
+        //private Map<String, ArrayList<Film>> shortFilms = new LinkedHashMap<String, ArrayList<Film>>();
         
         private Map<Integer, Film> shortsMap = new LinkedHashMap<Integer, Film>();
 
 
-        public FestivalConverter(List<Show> shows) {
+        public FestivalConverter(List<Show> shows, Map<String, Venue> venues) {
             this.shows = shows;
+            this.venues = venues;
         }
 
         private static Pattern parentTitlePattern = Pattern.compile("(Part of|Plays (with|before) the feature film) ([^.]+)\\..*");
@@ -247,15 +254,32 @@ public class FestivalParser extends BasicHandler {
         }
 
         private static String venueAbbr(String name) {
+        	Log.e("FestivalPArser.java", "VenueAbbr=" + name);
             return name.replaceAll("[^A-Z0-9]", "");
         }
 
         private VenueLocation getVenueLocation(Venue venue) {
-            VenueLocation loc = new VenueLocation();
+        	
+        	VenueLocation loc = new VenueLocation();
+        	
+        	// Venues List contains the required Venue.  Set the VenueLocation's VenueAbbreviation and DirectionsURL.
+        	if( venues.containsKey(venue.id)) {
+        		venue = venues.get(venue.id);
+        		
+        		loc.setVenueAbbreviation(venue.shortName);
+        		loc.setDirectionsURL(venue.location);
+        		
+        	} else {
+        		
+        		// Else set the Venue abbreviation using older logic.
+        		loc.setVenueAbbreviation(venueAbbr(venue.name));
+        	}
+            
             loc.setId(Integer.parseInt(venue.id));
-            loc.setVenueAbbreviation(venueAbbr(venue.name));
+            
             loc.setTitle(venue.name);
             loc.setLocation(venue.address);
+            
             return loc;
         }
 
@@ -266,7 +290,20 @@ public class FestivalParser extends BasicHandler {
             schedule.setTitle(item.getTitle());
             schedule.setStartTime(showing.startDate);
             schedule.setEndTime(showing.endDate);
-            schedule.setVenue(venueAbbr(showing.venue.name)); // TODO: Why not the Venue object?
+            
+            //schedule.setVenue(venueAbbr(showing.venue.name)); // TODO: Why not the Venue object?
+            
+            // If 'venues' contains showing.venue,
+            // set the Schedule's Venue as the showing.venue's shortName
+            // set the Scheule's directionsURL, using Venue's Location
+            if(venues.containsKey(showing.venue.id)) {
+            	schedule.setVenue(venues.get(showing.venue.id).shortName);
+            	schedule.setDirectionsURL(venues.get(showing.venue.id).location);
+            } else {
+            	// Else use the older logic to compute the venue abbreviation.
+            	schedule.setVenue(venueAbbr(showing.venue.name));
+            }
+            
             return schedule;
         }
 

@@ -147,4 +147,13 @@ public class Schedule implements Serializable {
 	private String venue;
 	private String startTime;
 	private String endTime;
+	private String directionsURL;
+	
+	public String getDirectionsURL() {
+		return directionsURL;
+	}
+
+	public void setDirectionsURL(String directionsURL) {
+		this.directionsURL = directionsURL;
+	}
 }
