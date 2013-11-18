@@ -94,7 +94,7 @@ public class VenuesParser extends BasicHandler
 		{
 			venue.shortName = lastString();
 		}
-        else if (lastTagName().equals("Location"))
+        else if (lastTagName().equals("location"))
         {
         	venue.location = lastString();
         }

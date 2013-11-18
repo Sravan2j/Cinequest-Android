@@ -294,11 +294,13 @@ public class FestivalParser extends BasicHandler {
             //schedule.setVenue(venueAbbr(showing.venue.name)); // TODO: Why not the Venue object?
             
             // If 'venues' contains showing.venue,
-            // set the Schedule's Venue as the showing.venue's shortName
-            // set the Scheule's directionsURL, using Venue's Location
+            // set the Schedule's Venue as the 'this.venues' shortName
+            // set the Schedule's directionsURL, using this.venue's Location
             if(venues.containsKey(showing.venue.id)) {
             	schedule.setVenue(venues.get(showing.venue.id).shortName);
             	schedule.setDirectionsURL(venues.get(showing.venue.id).location);
+            	Log.e("FestivalPArser.java", "Venue ID:"  + showing.venue.id);
+            	Log.e("FestivalParser.java", "Location:" + venues.get(showing.venue.id).location);
             } else {
             	// Else use the older logic to compute the venue abbreviation.
             	schedule.setVenue(venueAbbr(showing.venue.name));
