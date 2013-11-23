@@ -22,8 +22,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import net.rim.device.api.util.Persistable;
-
 /**
  * Festival class represents the complete information of the Festival
  *

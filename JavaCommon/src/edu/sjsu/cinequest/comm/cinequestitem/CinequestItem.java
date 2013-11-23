@@ -21,8 +21,6 @@ package edu.sjsu.cinequest.comm.cinequestitem;
 
 import java.io.Serializable;
 
-import net.rim.device.api.util.Persistable;
-
 
 /*
  * Represents a Cinequest entity.

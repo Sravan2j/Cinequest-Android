@@ -23,8 +23,6 @@ import java.io.Serializable;
 
 import android.util.Log;
 
-import net.rim.device.api.util.Persistable;
-
 /**
  * Schedule is a class that aggregates one (or more) ProgramItems, with
  * associated meta-info.

@@ -1,6 +1,7 @@
 package edu.sjsu.cinequest.comm.cinequestitem;
 
-import net.rim.device.api.util.Persistable;
+import java.io.Serializable;
+
 import edu.sjsu.cinequest.comm.Action;
 import edu.sjsu.cinequest.comm.Actions;
 import edu.sjsu.cinequest.comm.Callback;
@@ -216,7 +217,7 @@ public class User {
 		public final String password;
 	}
 	
-	static class UserData implements Persistable {
+	static class UserData implements Serializable {
 		String email;
 		Object encryptedPassword;
 		Schedule[] scheduleItems;

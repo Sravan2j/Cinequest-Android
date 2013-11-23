@@ -19,16 +19,15 @@
 
 package edu.sjsu.cinequest.comm;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Hashtable;
-
-import net.rim.device.api.util.Persistable;
 
 /**
  * A simple cache that keeps the last n recently used items
  * @author Cay Horstmann
  */
-public class Cache implements Persistable
+public class Cache implements Serializable
 {       
     /**
      * Constructs an empty cache. The cached objects must be persistable on the RIM platform, serializable on Java SE
@@ -134,7 +133,7 @@ public class Cache implements Persistable
         newest = entry;        
     }
     
-    private class CacheEntry implements Persistable
+    private class CacheEntry implements Serializable
     {
         Object value;
         CacheEntry next;
