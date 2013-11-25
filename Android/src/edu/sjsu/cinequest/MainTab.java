@@ -17,9 +17,14 @@ public class MainTab extends TabActivity {
         // Get host object from super class
         TabHost tabHost = getTabHost();
         TabHost.TabSpec spec;
+        Intent intent;
+        
+        intent = new Intent().setClass(this, HomeActivity.class);
+        spec = tabHost.newTabSpec("news").setIndicator("News",getResources().getDrawable(R.drawable.news)).setContent(intent);
+        tabHost.addTab(spec);
         
         // Create the intent associated with the activity
-        Intent intent = new Intent().setClass(this, FilmsActivity.class);
+        intent = new Intent().setClass(this, FilmsActivity.class);
         // Create a new TabSpec with a name, an icon and intent
         spec = tabHost.newTabSpec("films").setIndicator("Films",getResources().getDrawable(R.drawable.film_icon)).setContent(intent);
         // Add it to the tab
@@ -45,7 +50,9 @@ public class MainTab extends TabActivity {
         tabHost.addTab(spec);
 
         // Display the first tab
-        int tab = getIntent().getIntExtra("open_tab", 0);
-        tabHost.setCurrentTab(tab);
+        /*int tab = getIntent().getIntExtra("open_tab", 0);
+        tabHost.setCurrentTab(tab);*/
+        
+        tabHost.setCurrentTab(0);
     }
 }

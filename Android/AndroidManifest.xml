@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="edu.sjsu.cinequest">
-   
+   <uses-permission android:name="android.permission.READ_CALENDAR" />
+   <uses-permission android:name="android.permission.WRITE_CALENDAR" />               
    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
    <uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
    <uses-sdk android:minSdkVersion="7" /> <!-- Android 2.1 -->
-   <application android:icon="@drawable/icon" android:label="@string/app_name">
-      <activity android:name=".HomeActivity"
+   
+   <application android:icon="@drawable/icon" android:label="@string/app_name" >
+      <activity android:name=".MainTab"
                 android:label="@string/app_name">
          <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
          </intent-filter>
       </activity>
-      <activity android:name=".MainTab" 
+      <activity android:name=".HomeActivity" 
                 android:configChanges="orientation"/>		
       <activity android:name=".DVDActivity" 
                 android:configChanges="orientation" />
@@ -39,63 +41,5 @@
       <activity android:label="@string/app_name" android:name="com.facebook.LoginActivity"></activity>
    </application>
 
-    <uses-permission android:name="android.permission.READ_CALENDAR" />
-    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-    <uses-permission android:name="android.permission.INTERNET" >
-    </uses-permission>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CALL_PHONE" >
-    </uses-permission>
-
-    <uses-sdk android:minSdkVersion="7" /> <!-- Android 2.1 -->
-    <application
-        android:icon="@drawable/icon"
-        android:label="@string/app_name" 
-        android:theme="@style/AppTheme" >
-        <activity
-            android:name="edu.sjsu.cinequest.HomeActivity"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="edu.sjsu.cinequest.MainTab"
-            android:configChanges="orientation" />
-        <activity
-            android:name="edu.sjsu.cinequest.DVDActivity"
-            android:configChanges="orientation" />
-        <activity
-            android:name="edu.sjsu.cinequest.EventsActivity"
-            android:configChanges="orientation" />
-        <activity
-            android:name="edu.sjsu.cinequest.FilmsActivity"
-            android:configChanges="orientation" />
-        <activity
-            android:name="edu.sjsu.cinequest.FilmsActivity1"
-            android:configChanges="orientation" />
-        <activity
-            android:name="edu.sjsu.cinequest.FilmDetail"
-            android:configChanges="orientation" />
-        <activity
-            android:name="edu.sjsu.cinequest.ForumsActivity"
-            android:configChanges="orientation" />
-        <activity
-            android:name="edu.sjsu.cinequest.ScheduleActivity"
-            android:configChanges="orientation" />
-        <activity
-            android:name="edu.sjsu.cinequest.LoginActivity"
-            android:configChanges="orientation" />
-        <activity
-            android:name="edu.sjsu.cinequest.RegistrationActivity"
-            android:configChanges="orientation" >
-        </activity>
-        <activity
-            android:name="edu.sjsu.cinequest.GetSchedule"
-            android:label="@string/title_activity_get_schedule" >
-        </activity>
-    </application>
-
+    
 </manifest>
