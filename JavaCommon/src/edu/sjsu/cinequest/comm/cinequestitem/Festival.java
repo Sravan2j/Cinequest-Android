@@ -37,6 +37,7 @@ public class Festival implements Serializable {
 	private Vector venueLocations;
 	private String lastChanged;
 	private Vector events;
+	private Vector forums;
 	
 	public Festival()
 	{

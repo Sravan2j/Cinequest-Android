@@ -21,6 +21,8 @@ package edu.sjsu.cinequest.comm.xmlparser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -153,56 +155,135 @@ public class FestivalParser extends BasicHandler {
 
     public static class FestivalConverter {
         private List<Show> shows;
+        private List<Show> actualShows;
         private Map<String, Venue> venues;
         private Festival festival = new Festival();
-        //private Map<String, ArrayList<Film>> shortFilms = new LinkedHashMap<String, ArrayList<Film>>();
         
         private Map<Integer, Film> shortsMap = new LinkedHashMap<Integer, Film>();
-
+        
+        // This contains the actual list of Shows in a map.
+        Map<String, Show> showsMap = new HashMap<String, Show>();
 
         public FestivalConverter(List<Show> shows, Map<String, Venue> venues) {
             this.shows = shows;
             this.venues = venues;
+            
+            Collections.copy(actualShows, this.shows);
         }
 
         private static Pattern parentTitlePattern = Pattern.compile("(Part of|Plays (with|before) the feature film) ([^.]+)\\..*");
 
-        private static String getParentTitle(String description) {
-            Matcher matcher = parentTitlePattern.matcher(description);
-            return matcher.matches() ? matcher.group(3) : null;
-        }
+//        private static String getParentTitle(String description) {
+//            Matcher matcher = parentTitlePattern.matcher(description);
+//            return matcher.matches() ? matcher.group(3) : null;
+//        }
 
         public Festival convert() {
-            Set<String> uniqueVenues = new HashSet<String>();
+            Set<String> uniqueVenues = new HashSet<String>();            
+            
+            // Populate the Shows Map. Would be useful later.
+            for(Show show : shows) {
+            	
+            	showsMap.put(show.id, show);       	
+            }
 
             // Remove the partial shows from shows
             // Add them to partialShows, grouped by their title
 
             Iterator<Show> iter = shows.iterator();
-            while (iter.hasNext()) {
-                Show show = iter.next();
-                if (show.currentShowings.size() == 0) {
-                    iter.remove();
-                    
-                    // Collect all the Short Films. This list will be used to add each ShortFilm to its matching ProgramItem.
-                    Film shortFilm = getFilm(show);
-                    
-                    if( !shortsMap.containsKey(shortFilm.getId())) {
-                    	shortsMap.put(shortFilm.getId(), shortFilm);
-                    }
-                    
-                    // Older logic to collect ShortFilms
-                   /* String title = getParentTitle(show.shortDescription);
-                    if (title != null) {
-                        ArrayList<Film> filmsWithTitle = shortFilms.get(title);
-                        if (filmsWithTitle == null) {
-                            filmsWithTitle = new ArrayList<Film>();
-                            shortFilms.put(title, filmsWithTitle);
-                        }
-                        filmsWithTitle.add(getFilm(show));
-                    }*/
-                }
+            
+            while(iter.hasNext()) {
+            	
+            	Show show = iter.next();
+            	
+            	// FIXME - Identify those Shows that have EventType = Film. Those without an EventType have to be considered as Film, 
+                // also log them as errors.
+            	if( !show.customProperties.containsKey("EventType") || 
+            			(show.customProperties.containsKey("EventType") && show.customProperties.get("EventType").contains("Film"))) {            		
+            		
+            		if(!show.customProperties.containsKey("EventType")) {
+            			// FIXME - Log an ERROR
+            			// Do consider this as a Film.
+            		}
+            		     		
+            		// This is a Film. Does this Film have Short Films ? 
+            		// If yes, validate that each ShortFilm does not have any current Showing.        		
+            		if(show.customProperties.containsKey("ShortID")) {
+            			List<String> shortFilmsIDs = show.customProperties.get("ShortID");
+            			
+            			for(String shortFilmId : shortFilmsIDs) {
+            				
+            				// Fetch the Show using the ShortFilmID
+            				if(showsMap.containsKey(shortFilmId)) {
+            					
+            					Show shortFilmToBeChecked = showsMap.get(shortFilmId);
+            					
+            					if(shortFilmToBeChecked.currentShowings.isEmpty()) {
+            						// This is a valid ShortFilm
+            						// Add to shortsMap
+            						Film shortFilm = getFilm(shortFilmToBeChecked);
+            						
+            						if(!shortsMap.containsKey(shortFilm.getId())){
+            							shortsMap.put(shortFilm.getId(), shortFilm);
+            						}
+            					} else {
+            						// A ShortFilm should not have any CurrentShowing
+            						// FIXME - Log this an error
+            					}
+            					
+            				} else {
+            					// FIXME - The ShortID does not exist. Should this be Logged as an ERROR ?
+            				}
+            			}         			
+            		}
+            		
+            	} else {
+            		// Not a Film
+            		iter.remove();
+            	}
             }
+            
+            iter = shows.iterator();
+            
+            // Remove all ShortFilms from the list of Shows.
+            while( iter.hasNext() ) {
+            	
+            	Show show = iter.next();
+            	
+            	if(shortsMap.containsKey(show.id)) {
+            		iter.remove();
+            	}
+            	
+            }
+            
+            // FIXME - find out all Shows that have a ShortsProgram associated with it. Iterate over these Shows and collect all the Shorts.
+            // Iterate over these Shorts and identify those which have atleast 1 Showing. (Log them as errors)
+            // Remove the correct Shorts from the list of Shows considered.
+            
+//            while (iter.hasNext()) {
+//                Show show = iter.next();
+//                if (show.currentShowings.size() == 0) {
+//                    iter.remove();
+//                    
+//                    // Collect all the Short Films. This list will be used to add each ShortFilm to its matching ProgramItem.
+//                    Film shortFilm = getFilm(show);
+//                    
+//                    if( !shortsMap.containsKey(shortFilm.getId())) {
+//                    	shortsMap.put(shortFilm.getId(), shortFilm);
+//                    }
+//                    
+//                    // Older logic to collect ShortFilms
+//                   /* String title = getParentTitle(show.shortDescription);
+//                    if (title != null) {
+//                        ArrayList<Film> filmsWithTitle = shortFilms.get(title);
+//                        if (filmsWithTitle == null) {
+//                            filmsWithTitle = new ArrayList<Film>();
+//                            shortFilms.put(title, filmsWithTitle);
+//                        }
+//                        filmsWithTitle.add(getFilm(show));
+//                    }*/
+//                }
+//            }
 
             for (Show show : shows) {
                 ProgramItem item = getProgramItem(show);
@@ -299,8 +380,6 @@ public class FestivalParser extends BasicHandler {
             if(venues.containsKey(showing.venue.id)) {
             	schedule.setVenue(venues.get(showing.venue.id).shortName);
             	schedule.setDirectionsURL(venues.get(showing.venue.id).location);
-            	Log.e("FestivalPArser.java", "Venue ID:"  + showing.venue.id);
-            	Log.e("FestivalParser.java", "Location:" + venues.get(showing.venue.id).location);
             } else {
             	// Else use the older logic to compute the venue abbreviation.
             	schedule.setVenue(venueAbbr(showing.venue.name));
