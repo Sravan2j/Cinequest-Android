@@ -24,6 +24,7 @@
     	android:layout_alignParentLeft="true"
     	android:layout_marginLeft="3dip"
     	android:layout_marginTop="5dip"
+    	    android:visibility="gone"
 	/>
 	
     <Button
@@ -33,7 +34,8 @@
     	android:layout_height="38dip"
     	android:layout_alignParentRight="true"
     	android:layout_marginRight="3dip"
-    	android:layout_marginTop="5dip"    	    	
+    	android:layout_marginTop="5dip"
+    	android:visibility="gone"    	    	
 	/>
     </RelativeLayout>
    

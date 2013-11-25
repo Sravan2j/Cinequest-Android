@@ -134,7 +134,7 @@ public class HomeActivity extends Activity {
 			}
 		});
 
-		Button festivalButton = (Button) findViewById(R.id.goto_festival_button);
+/*		Button festivalButton = (Button) findViewById(R.id.goto_festival_button);
 		festivalButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
@@ -149,12 +149,12 @@ public class HomeActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-/*				Intent i = new Intent(HomeActivity.this, MainTab.class);
+				Intent i = new Intent(HomeActivity.this, MainTab.class);
 				i.putExtra("open_tab", MainTab.DVDS_TAB);
-				startActivityForResult(i, 0);*/
+				startActivityForResult(i, 0);
 			}
 		});              
-	}
+*/	}
 
 	/**
 	 * Called when activity resumes
