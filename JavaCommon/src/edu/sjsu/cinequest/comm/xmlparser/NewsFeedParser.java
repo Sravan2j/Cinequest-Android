@@ -71,6 +71,8 @@ public class NewsFeedParser extends BasicHandler {
         		news.setEventImage(lastString());
         	} else if(lastTagName().equals("InfoLink")) {
         		news.setInfoLink(lastString());
+        	} else if(lastTagName().equals("ThumbImage")) {
+        		news.setThumbImage(lastString());
         	} else if(lastTagName().equals("News")) {
         		// End of a News Item. Add to News Feed object.
         		newsFeed.getNewsList().add(news);

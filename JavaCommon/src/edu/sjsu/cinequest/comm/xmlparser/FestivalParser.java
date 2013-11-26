@@ -29,7 +29,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -77,6 +76,49 @@ public class FestivalParser extends BasicHandler {
         Log.e("FestivalParser.java", "Parsed Shows, Size:" + shows.size());
         return new FestivalConverter(shows, venues).convert();
     }
+    
+    public static void logErrors(String url, Callback callback) throws SAXException, IOException {
+    	Log.e("FestivalParser.java", "Within logErrors(), url:" + url);
+    	
+        List<Show> shows = parseShows(url, callback);
+        
+        // Parse the list of Venues using the Venue XML feed.
+        Map<String, Venue> venues = VenuesParser.parse("http://www.cinequest.org/venuelist.php", callback);
+        
+        Log.e("FestivalParser.java", "Parsed Shows, Size:" + shows.size());
+        FestivalConverter festivalConverter  = new FestivalConverter(shows, venues);
+        
+        festivalConverter.convert();
+        
+        festivalConverter.getShowsWithNoEventType();
+        festivalConverter.getShortsNotFound();
+        
+        festivalConverter.getInvalidShorts();
+     
+        Set<String> showsWithNoEventType = festivalConverter.getShowsWithNoEventType().keySet();
+        
+        for(String showWithNoEventType: showsWithNoEventType) {
+        	
+        	Log.e("FestivalParser.java", "Show with missing EventType: " + showWithNoEventType);
+        }
+   
+        ArrayList<String> shortsNotFound = festivalConverter.getShortsNotFound();
+        
+        for(String shortNotFound: shortsNotFound) {
+
+        	Log.e("FestivalParser.java", "ShortId not found: " + shortNotFound);
+        	
+        }
+  
+        Set<String> invalidShorts = festivalConverter.getInvalidShorts().keySet();
+        
+        for(String invalidShort: invalidShorts) {
+        	
+        	Log.e("FestivalParser.java", "Invalid Short (Showing not empty): " + invalidShort);      	
+        }
+        
+    }
+    
 
     public static List<Show> parseShows(String url, Callback callback) throws SAXException, IOException {
         FestivalParser handler = new FestivalParser();        
@@ -160,6 +202,23 @@ public class FestivalParser extends BasicHandler {
         private Festival festival = new Festival();
         
         private Map<Integer, Film> shortsMap = new LinkedHashMap<Integer, Film>();
+        
+        private Map<String, Show> showsWithNoEventType = new HashMap<String, Show>();
+		private Map<String, Show> invalidShorts = new HashMap<String, Show>();
+        private ArrayList<String> shortsNotFound = new ArrayList<String>();
+        
+        public Map<String, Show> getShowsWithNoEventType() {
+			return showsWithNoEventType;
+		}
+
+		public Map<String, Show> getInvalidShorts() {
+			return invalidShorts;
+		}
+
+		public ArrayList<String> getShortsNotFound() {
+			return shortsNotFound;
+		}
+        
 
         public FestivalConverter(List<Show> shows, Map<String, Venue> venues) {
             this.shows = shows;
@@ -185,9 +244,9 @@ public class FestivalParser extends BasicHandler {
             this.populateFestivalItems("Event", showsMap);
             this.populateFestivalItems("Forum", showsMap);
             
-            Log.e("FestivalParser.java", "Films_Size:" + festival.getC_films().size());
-            Log.e("FestivalParser.java", "Events_Size:" + festival.getC_events().size());
-            Log.e("FestivalParser.java", "Forum_Size:" + festival.getC_forums().size());
+//            Log.e("FestivalParser.java", "Films_Size:" + festival.getC_films().size());
+//            Log.e("FestivalParser.java", "Events_Size:" + festival.getC_events().size());
+//            Log.e("FestivalParser.java", "Forum_Size:" + festival.getC_forums().size());
 
             // Remove the partial shows from shows
             // Add them to partialShows, grouped by their title
@@ -337,7 +396,7 @@ public class FestivalParser extends BasicHandler {
         }
 
         private static String venueAbbr(String name) {
-        	Log.e("FestivalPArser.java", "VenueAbbr=" + name);
+        	//Log.e("FestivalPArser.java", "VenueAbbr=" + name);
             return name.replaceAll("[^A-Z0-9]", "");
         }
 
@@ -488,6 +547,7 @@ public class FestivalParser extends BasicHandler {
         			
         			if(!show.customProperties.containsKey("EventType")) {
         				// Log as ERROR
+        				showsWithNoEventType.put(show.id, show);
         			}
         			
         		} else if(type.equals("Event") && 
@@ -498,12 +558,12 @@ public class FestivalParser extends BasicHandler {
         		} else if(type.equals("Forum") &&
         				(show.customProperties.containsKey("EventType") && show.customProperties.get("EventType").contains("Forum"))) {
         			filteredShows.add(show);
-        		} else {
+        		} /*else {
         			// EventType not recognized.
         			if( show.customProperties.containsKey("EventType") ) {
         				Log.e("Unrecognized EventType. Given Type:" + type + ", ID:" + show.id, show.customProperties.get("EventType").toString() );
         			}
-        		}
+        		}*/
         	}
         	
         	//Log.e("FestivalParser.java", "Type:" + type + ", Size=" + filteredShows.size());
@@ -546,10 +606,16 @@ public class FestivalParser extends BasicHandler {
         					} else {
         						// A ShortFilm should not have any CurrentShowing
         						// FIXME - Log this an error
+        						
+        						invalidShorts.put(shortFilmToBeChecked.id, shortFilmToBeChecked);
         					}
 
         				} else {
         					// FIXME - The ShortID does not exist. Should this be Logged as an ERROR ?
+        					if(shortsNotFound.contains(shortFilmId)) {
+        						shortsNotFound.add(shortFilmId);
+        					}
+        					
         				}
         			}         			
         		}
