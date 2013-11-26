@@ -37,7 +37,43 @@ public class Festival implements Serializable {
 	private Vector venueLocations;
 	private String lastChanged;
 	private Vector events;
-	private Vector forums;
+	
+	private Vector commonItems;
+	public Vector getCommonItems() {
+		return commonItems;
+	}
+
+	public void setCommonItems(Vector commonItems) {
+		this.commonItems = commonItems;
+	}
+
+	private Vector c_films;
+	private Vector c_events;
+	private Vector c_forums;
+	
+	public Vector getC_films() {
+		return c_films;
+	}
+
+	public void setC_films(Vector c_films) {
+		this.c_films = c_films;
+	}
+
+	public Vector getC_events() {
+		return c_events;
+	}
+
+	public void setC_events(Vector c_events) {
+		this.c_events = c_events;
+	}
+
+	public Vector getC_forums() {
+		return c_forums;
+	}
+
+	public void setC_forums(Vector c_forums) {
+		this.c_forums = c_forums;
+	}
 	
 	public Festival()
 	{
@@ -47,6 +83,11 @@ public class Festival implements Serializable {
 		venueLocations = new Vector();
 		events = new Vector();
 		lastChanged = "";
+		
+		commonItems = new Vector();
+		c_films = new Vector();
+		c_events = new Vector();
+		c_forums = new Vector();
 	}
 	
 	public boolean isEmpty() { return schedules.size() == 0; }

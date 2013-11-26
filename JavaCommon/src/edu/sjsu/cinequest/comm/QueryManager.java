@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
+import edu.sjsu.cinequest.comm.cinequestitem.NewsFeed;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
 import edu.sjsu.cinequest.comm.xmlparser.DatesParser;

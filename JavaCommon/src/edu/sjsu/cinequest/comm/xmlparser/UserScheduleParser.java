@@ -25,6 +25,8 @@ import java.util.Hashtable;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import android.util.Log;
+
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CharUtils;
 import edu.sjsu.cinequest.comm.Platform;
@@ -55,6 +57,8 @@ public class UserScheduleParser extends BasicHandler
    public static UserSchedule parseSchedule(String url, Hashtable postData, Callback callback)
          throws SAXException, IOException
    {
+	   Log.e("UserSchedule.java", url);
+	   
       UserScheduleParser handler = new UserScheduleParser();
       handler.result = null; // To indicate auth error
       String doc = Platform.getInstance().parse(url, postData, handler, callback);

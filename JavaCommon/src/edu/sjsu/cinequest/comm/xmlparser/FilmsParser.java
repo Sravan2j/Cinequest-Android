@@ -25,6 +25,8 @@ import java.util.Vector;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import android.util.Log;
+
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
@@ -49,6 +51,7 @@ public class FilmsParser extends BasicHandler
     public static Vector parse(String url, Callback callback)
             throws SAXException, IOException
     {
+    	Log.e("FilmsParser.java", url);
         FilmsParser handler = new FilmsParser();
         Platform.getInstance().parse(url, handler, callback);
         return handler.result;

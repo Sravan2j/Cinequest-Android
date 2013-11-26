@@ -23,6 +23,8 @@ import java.io.IOException;
 
 import org.xml.sax.SAXException;
 
+import android.util.Log;
+
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
 
@@ -45,6 +47,7 @@ public class SeasonParser extends BasicHandler
 	 */
     public static String parse(String url, Callback callback) throws SAXException, IOException
 	{
+    	Log.e("SeasonParser.java", url);
         SeasonParser handler = new SeasonParser();
 	    Platform.getInstance().parse(url, handler, callback);
 	    return handler.mode;
