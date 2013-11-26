@@ -1,6 +1,7 @@
 package edu.sjsu.cinequest;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TimeZone;
 
 import android.app.Activity;
@@ -31,6 +32,7 @@ import edu.sjsu.cinequest.comm.ImageManager;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
+import edu.sjsu.cinequest.comm.cinequestitem.News;
 import edu.sjsu.cinequest.comm.cinequestitem.NewsFeed;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 
@@ -50,6 +52,7 @@ public class HomeActivity extends Activity {
 	private static QueryManager queryManager;
 	private static ImageManager imageManager;
 	private static User user;
+	LazyAdapter adapter;
 
 	private static String calendarName="Cinequest Calendar";
 
@@ -119,7 +122,8 @@ public class HomeActivity extends Activity {
 		title_image.setImageDrawable(getResources().getDrawable(R.drawable.creative));
 
 		list = (ListView)this.findViewById(R.id.home_newslist);
-		list.setAdapter(new SeparatedListAdapter(this));
+		/*list.setAdapter(new SeparatedListAdapter(this));
+
 		list.setOnItemClickListener( new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, 
@@ -131,8 +135,8 @@ public class HomeActivity extends Activity {
 				startActivity(intent);
 			}
 		});
-
-/*		Button festivalButton = (Button) findViewById(R.id.goto_festival_button);
+*/
+		/*		Button festivalButton = (Button) findViewById(R.id.goto_festival_button);
 		festivalButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
@@ -152,7 +156,7 @@ public class HomeActivity extends Activity {
 				startActivityForResult(i, 0);
 			}
 		});              
-*/	}
+		 */	}
 
 	/**
 	 * Called when activity resumes
@@ -163,9 +167,9 @@ public class HomeActivity extends Activity {
 		queryManager.getSpecialScreen("ihome", new Callback(){
 			@Override
 			public void invoke(Object result) {
-				
+
 				//populateNewsEventsList((Vector<Section>) result);
-				
+
 				populateNewsEventsList((NewsFeed) result);
 				// TODO: Why doesn't this work???
 				queryManager.prefetchFestival();
@@ -191,12 +195,22 @@ public class HomeActivity extends Activity {
 	//private void populateNewsEventsList(Vector<Section> newsSections)
 	private void populateNewsEventsList(NewsFeed newsSections)
 	{		
-		if (lastupdated!=newsSections.getLastUpdated() || lastupdated=="")
+		/*if (lastupdated!=newsSections.getLastUpdated() || lastupdated=="")
 		{
 			lastupdated=newsSections.getLastUpdated();
-			
+			ImageLoader imageLoader = new ImageLoader(this);
+			imageLoader.clearCache();			
+		}*/
+		title_image.setVisibility(View.GONE);
+		List<News> news=newsSections.getNewsList();
+		ArrayList<String> imgURL = new ArrayList<String>();
+		for (int i=0;i<news.size();i++)
+		{
+			imgURL.add(news.get(i).getEventImage());
+			Log.i("trace1",news.get(i).getEventImage());
 		}
-		Log.i("lastupdated",newsSections.getLastUpdated());
+		String[] imageURL=imgURL.toArray(new String[imgURL.size()]);
+		
 		//if there is no news to display, return
 		/*if (newsSections.size() == 0) {
 			//Clear the items of previous list being displayed (if any)
@@ -236,8 +250,29 @@ public class HomeActivity extends Activity {
 			}
 		}
 
-		list.setAdapter(separatedListAdapter);    	
-*/	}
+		list.setAdapter(separatedListAdapter);
+
+		 */	
+		/*SeparatedListAdapter adapter = new SeparatedListAdapter(this);
+		adapter.addSection("News",new LazyAdapter(this, imageURL, news));*/
+		adapter=new LazyAdapter(this, imageURL, news);
+		list.setAdapter(adapter);		
+		list.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				
+				/*Object result = getListview().getItemAtPosition( position );
+				Log.i("tabactivity",result.getClass().toString());
+				launchFilmDetail(result);				*/
+			/*	Intent intent = new Intent();
+				intent.setClass(HomeActivity.this, FilmDetail.class);
+				intent.putExtra("target", (Serializable) news);
+				startActivity(intent);*/
+			}
+		});		
+	}
 
 	/**
 	 * Get the QueryManager
