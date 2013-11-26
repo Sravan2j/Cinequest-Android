@@ -36,6 +36,7 @@ import edu.sjsu.cinequest.comm.xmlparser.FilmParser;
 import edu.sjsu.cinequest.comm.xmlparser.FilmsParser;
 import edu.sjsu.cinequest.comm.xmlparser.GenresParser;
 import edu.sjsu.cinequest.comm.xmlparser.LinkParser;
+import edu.sjsu.cinequest.comm.xmlparser.NewsFeedParser;
 import edu.sjsu.cinequest.comm.xmlparser.ProgramItemParser;
 import edu.sjsu.cinequest.comm.xmlparser.SeasonParser;
 import edu.sjsu.cinequest.comm.xmlparser.SectionsParser;
@@ -283,7 +284,8 @@ public class QueryManager {
 	public void getSpecialScreen(final String type, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return SectionsParser.parse(makeQuery(14, type), callback);
+				//return SectionsParser.parse(makeQuery(14, type), callback);
+				return NewsFeedParser.parseNewsFeed("http://www.cinequest.org/news.php", callback);
 			}
 		});
 	}

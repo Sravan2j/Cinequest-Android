@@ -2,7 +2,6 @@ package edu.sjsu.cinequest;
 
 import java.util.ArrayList;
 import java.util.TimeZone;
-import java.util.Vector;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -11,20 +10,18 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -34,7 +31,7 @@ import edu.sjsu.cinequest.comm.ImageManager;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
-import edu.sjsu.cinequest.comm.cinequestitem.Section;
+import edu.sjsu.cinequest.comm.cinequestitem.NewsFeed;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 
 // TODO: Add click for each item; show the section info
@@ -47,7 +44,8 @@ import edu.sjsu.cinequest.comm.cinequestitem.User;
  */
 public class HomeActivity extends Activity {	
 	private ListView list;
-	ImageView title_image; 
+	ImageView title_image;
+	String lastupdated="";
 
 	private static QueryManager queryManager;
 	private static ImageManager imageManager;
@@ -165,7 +163,10 @@ public class HomeActivity extends Activity {
 		queryManager.getSpecialScreen("ihome", new Callback(){
 			@Override
 			public void invoke(Object result) {
-				populateNewsEventsList((Vector<Section>) result);
+				
+				//populateNewsEventsList((Vector<Section>) result);
+				
+				populateNewsEventsList((NewsFeed) result);
 				// TODO: Why doesn't this work???
 				queryManager.prefetchFestival();
 			}
@@ -187,10 +188,17 @@ public class HomeActivity extends Activity {
 	 * Display the header image and schedule to the user with 
 	 * section-title being separator-header.
 	 */
-	private void populateNewsEventsList(Vector<Section> newsSections)
-	{
+	//private void populateNewsEventsList(Vector<Section> newsSections)
+	private void populateNewsEventsList(NewsFeed newsSections)
+	{		
+		if (lastupdated!=newsSections.getLastUpdated() || lastupdated=="")
+		{
+			lastupdated=newsSections.getLastUpdated();
+			
+		}
+		Log.i("lastupdated",newsSections.getLastUpdated());
 		//if there is no news to display, return
-		if (newsSections.size() == 0) {
+		/*if (newsSections.size() == 0) {
 			//Clear the items of previous list being displayed (if any)
 			list.setAdapter(new SeparatedListAdapter(this));
 			return;
@@ -229,7 +237,7 @@ public class HomeActivity extends Activity {
 		}
 
 		list.setAdapter(separatedListAdapter);    	
-	}
+*/	}
 
 	/**
 	 * Get the QueryManager
