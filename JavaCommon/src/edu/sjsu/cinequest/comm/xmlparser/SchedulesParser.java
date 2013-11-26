@@ -25,6 +25,8 @@ import java.util.Vector;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import android.util.Log;
+
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CharUtils;
 import edu.sjsu.cinequest.comm.Platform;
@@ -50,6 +52,7 @@ public class SchedulesParser extends BasicHandler
      */
     public static Vector parseSchedule(String url, Callback callback) throws SAXException, IOException
     {
+    	Log.e("SchedulesParser.java", url);
         SchedulesParser handler = new SchedulesParser();
         handler.result = new Vector();
         Platform.getInstance().parse(url, handler, callback);   

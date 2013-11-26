@@ -25,6 +25,8 @@ import java.util.Vector;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import android.util.Log;
+
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.ProgramItem;
@@ -49,6 +51,7 @@ public class ProgramItemsParser extends BasicHandler
      */
     public static Vector parse(String url, Callback callback) throws SAXException, IOException
     {
+    	Log.e("ProgramItemsParser.java", url);
         ProgramItemsParser handler = new ProgramItemsParser();
         handler.result = new Vector();
         Platform.getInstance().parse(url, handler, callback);

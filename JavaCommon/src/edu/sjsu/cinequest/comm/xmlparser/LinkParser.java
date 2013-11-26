@@ -24,6 +24,8 @@ import java.io.IOException;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import android.util.Log;
+
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
 
@@ -33,6 +35,7 @@ public class LinkParser extends BasicHandler
 
     public static String parse(String url, Callback callback) throws SAXException, IOException
 	{
+    	Log.e("LinkParser.java", url);
         LinkParser handler = new LinkParser();
 	    Platform.getInstance().parse(url, handler, callback);
 	    return handler.link;

@@ -33,9 +33,6 @@ public class EventsParser extends SchedulesParser
         EventsParser handler = new EventsParser(type, result);
         Platform.getInstance().parse(url, handler, callback);
         
-        Log.e("EventPArser.java", "Events Size=" + result.size());
-        
-        
         return result;
     }
 
