@@ -1,6 +1,5 @@
-1)	Execute the following commands
+1)	Execute the following command
 	
-	ant clean
 	android update project --target android-14 --path . --subprojects
 	
 	for each of the following directories
@@ -9,8 +8,10 @@
 	JavaCommon/
 	Android/
 
-2)	Navigate to Android/ using terminal.
-3)	Execute the command 'ant debug install'
-4)	Execute the command 'adb shell am start -n edu.sjsu.cinequest/.HomeActivity'
+2)	Navigate to Android/ using terminal and execute the following commands,
+	
+	ant clean
+	ant debug install
+ 	adb shell am start -n edu.sjsu.cinequest/.HomeActivity
 
  
