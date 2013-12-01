@@ -20,6 +20,6 @@
         android:layout_marginLeft="10dip"
         android:layout_weight="1"
         android:textSize="15dip" />
-	<Button android:id="@+id/infoicon" android:background="@drawable/infoicon" android:layout_gravity="right" android:layout_width="40dip" android:layout_height="40dip"/>
+	<Button android:id="@+id/infoicon" android:background="@drawable/infoicon" android:layout_gravity="right" android:layout_width="40dip" android:layout_height="40dip" android:visibility="gone"/>
 
 </LinearLayout>

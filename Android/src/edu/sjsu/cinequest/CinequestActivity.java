@@ -10,6 +10,7 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.CalendarContract.Events;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -152,15 +154,14 @@ public class CinequestActivity extends Activity
 			final Schedule result = getItem(position);            
 			title.setText(result.getTitle());	                 
 			if (result.isSpecialItem())
-				title.setTypeface(null, Typeface.ITALIC);
+				title.setTypeface(null, Typeface.ITALIC);			
 			String startTime = du.format(result.getStartTime(), DateUtils.TIME_SHORT);        	
 			String endTime = du.format(result.getEndTime(), DateUtils.TIME_SHORT);
 			time.setText("Time: " + startTime + " - " + endTime);
 			venue.setText("Venue: " + result.getVenue());
 			formatContents(v, title, time, venue, du, result);		        
-			checkbox.setTag(result);	        
+			checkbox.setTag(result);
 			configureCheckBox(v, checkbox, result);
-			//Log.i("missing", result.getDirectionsURL());
 			Button directions = (Button) v.findViewById(R.id.directionsURL);
 			directions.setTag(result);	        
 			directions.setOnClickListener(new OnClickListener() {
@@ -168,14 +169,14 @@ public class CinequestActivity extends Activity
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					
+
 					Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
-						    Uri.parse(result.getDirectionsURL()));
+							Uri.parse(result.getDirectionsURL()));
 					/*Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
 						    Uri.parse("google.navigation:q=Camera+12+Cinemas,201+S+2nd+St,+San+Jose,+CA+95113"));*/	
 					startActivity(intent);
 				}
-				
+
 			});
 			return v;	        
 		}
@@ -208,13 +209,86 @@ public class CinequestActivity extends Activity
 
 			checkbox.setChecked(HomeActivity.getUser().getSchedule().contains(result));
 		}*/
-		protected void configureCheckBox(View v, Button checkbox, final Schedule result) {
+		protected void configureCheckBox(View v, final Button checkbox, Schedule result) {
 			checkbox.setVisibility(View.VISIBLE);
+
+			Schedule s = result;							
+
+			String calendarName="Cinequest Calendar";
+			String m_selectedCalendarId = "Cinequest Calendar";
+
+			String[] proj = new String[]{"_id", "calendar_displayName"};			        
+			String calSelection = "(calendar_displayName= ?) ";
+			String[] calSelectionArgs = new String[] {calendarName}; 
+			Uri event = Uri.parse("content://com.android.calendar/calendars");        
+
+			Cursor l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, null );
+
+			if (l_managedCursor.moveToFirst()) {                        			                     
+				int l_idCol = l_managedCursor.getColumnIndex(proj[0]);
+				do {                
+					m_selectedCalendarId = l_managedCursor.getString(l_idCol);                
+				} while (l_managedCursor.moveToNext());
+			}
+
+			l_managedCursor.close();
+			l_managedCursor=null;
+			SimpleDateFormat formatter;			
+			if (s.getStartTime().charAt(10)=='T')
+				formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+			else
+				formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			Date startDate = null;
+			Date endDate = null;
+
+			try {
+				startDate = (Date) formatter.parse(s.getStartTime());
+				endDate = (Date) formatter.parse(s.getEndTime());
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}                                        
+			long begin = startDate.getTime();
+			long end = endDate.getTime();
+			proj = new String[]{
+					"_id", 
+					"title",
+					"dtstart", 
+			"dtend"};
+
+			calSelection = "((" + Events.CALENDAR_ID + "= ?) " +                                                                         
+					"AND (" +
+					"((" + Events.DTSTART + "= ?) " +
+					"AND (" + Events.DTEND + "= ?) " +
+					"AND (" + Events.TITLE + "= ?) " +
+					") " +                                            
+					")" +
+					")";         
+			calSelectionArgs = new String[] {
+					m_selectedCalendarId, begin+"", end+"", s.getTitle()                                       
+			}; 
+
+			event = Uri.parse("content://com.android.calendar/events");
+
+			l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, "dtstart DESC, dtend DESC");
+
+			if (l_managedCursor.getCount()>0) {                                                    
+				checkbox.setBackgroundResource(R.drawable.incalendar);
+				checkbox.setText("exists");
+			}
+			else
+			{
+				checkbox.setBackgroundResource(R.drawable.notincalendar);
+				checkbox.setText("notexist");
+			}
+
+
 			checkbox.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
+
 					Schedule s = (Schedule) v.getTag();										
 					String calendarName="Cinequest Calendar";
 					String m_selectedCalendarId = "Cinequest Calendar";
@@ -275,10 +349,36 @@ public class CinequestActivity extends Activity
 
 					l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, "dtstart DESC, dtend DESC");
 
-					if (l_managedCursor.getCount()>0) {                                                    
-						Toast toast = Toast.makeText(getContext(), "Event already exists in calendar", Toast.LENGTH_SHORT);
-						toast.show();                           
+					
+
+
+					if (checkbox.getText().toString()=="exists")
+					{
+						int e_id = 0;
+						if (l_managedCursor.moveToFirst()) {														
+							int l_colid = l_managedCursor.getColumnIndex(proj[0]);							
+							do {
+								e_id = l_managedCursor.getInt(l_colid);															
+							} 
+							while (l_managedCursor.moveToNext());
+						}
+						Uri eventUri;                    
+						if (Build.VERSION.SDK_INT >= 8) {
+							eventUri = Uri.parse("content://com.android.calendar/events");
+						} else {
+							eventUri = Uri.parse("content://calendar/events");
+						}                        
+						Uri deleteUri = ContentUris.withAppendedId(eventUri, e_id);
+						int rows = getContentResolver().delete(deleteUri, null, null);
+						if (rows==1){
+							checkbox.setBackgroundResource(R.drawable.notincalendar);
+							checkbox.setText("notexist");
+							Toast toast = Toast.makeText(getContext(), "Event removed from calendar", Toast.LENGTH_SHORT);
+							toast.show();                        
+							//v.invalidate();
+						}
 					}
+
 					else{
 						ContentValues l_event = new ContentValues();
 						l_event.put("calendar_id", m_selectedCalendarId);
@@ -308,16 +408,19 @@ public class CinequestActivity extends Activity
 						Uri l_uri = getContentResolver().insert(l_eventUri, l_event);
 
 						Toast toast = Toast.makeText(getContext(), "Event added to calendar", Toast.LENGTH_SHORT);
-						toast.show();                           
+						toast.show();
+						checkbox.setBackgroundResource(R.drawable.incalendar);
+						checkbox.setText("exists");
 					}
 					l_managedCursor.close();
 					l_managedCursor=null;
+					
 					//HomeActivity.getUser().getSchedule().add(s);
 					/*else{
 						HomeActivity.getUser().getSchedule().remove(s);
 					}	*/	
-
 				}
+
 			});
 
 			//checkbox.setChecked(HomeActivity.getUser().getSchedule().contains(result));

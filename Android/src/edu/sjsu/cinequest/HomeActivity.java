@@ -1,5 +1,6 @@
 package edu.sjsu.cinequest;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
@@ -135,7 +136,7 @@ public class HomeActivity extends Activity {
 				startActivity(intent);
 			}
 		});
-*/
+		 */
 		/*		Button festivalButton = (Button) findViewById(R.id.goto_festival_button);
 		festivalButton.setOnClickListener(new OnClickListener() {			
 			@Override
@@ -202,7 +203,7 @@ public class HomeActivity extends Activity {
 			imageLoader.clearCache();			
 		}*/
 		title_image.setVisibility(View.GONE);
-		List<News> news=newsSections.getNewsList();
+		final List<News> news=newsSections.getNewsList();
 		ArrayList<String> imgURL = new ArrayList<String>();
 		for (int i=0;i<news.size();i++)
 		{
@@ -210,7 +211,7 @@ public class HomeActivity extends Activity {
 			Log.i("trace1",news.get(i).getEventImage());
 		}
 		String[] imageURL=imgURL.toArray(new String[imgURL.size()]);
-		
+
 		//if there is no news to display, return
 		/*if (newsSections.size() == 0) {
 			//Clear the items of previous list being displayed (if any)
@@ -262,14 +263,25 @@ public class HomeActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
-				
+
 				/*Object result = getListview().getItemAtPosition( position );
 				Log.i("tabactivity",result.getClass().toString());
 				launchFilmDetail(result);				*/
-			/*	Intent intent = new Intent();
-				intent.setClass(HomeActivity.this, FilmDetail.class);
-				intent.putExtra("target", (Serializable) news);
-				startActivity(intent);*/
+				Intent intent;
+				if (news.get(position).getInfoLink().trim().toLowerCase().startsWith("http"))
+				{
+					
+					intent = new Intent(android.content.Intent.ACTION_VIEW, 
+							Uri.parse(news.get(position).getInfoLink()));			
+					startActivity(intent);
+				}
+				else
+				{
+					intent = new Intent();
+					intent.setClass(HomeActivity.this, FilmDetail.class);
+					intent.putExtra("target", (Serializable) news);
+					startActivity(intent);
+				}
 			}
 		});		
 	}
