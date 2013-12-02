@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -64,8 +65,8 @@ public class FilmDetail extends CinequestActivity {
         
        
 
-        Button festivalButton = (Button) findViewById(R.id.fbshare);
-        festivalButton.setOnClickListener(new OnClickListener() {			
+        Button fbButton = (Button) findViewById(R.id.fbshare);
+        fbButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
 				//Check if a facebook session is available from existing app if not open one. // tanuvir-12Nov13
@@ -74,6 +75,23 @@ public class FilmDetail extends CinequestActivity {
 				postToWall();	
 			}
 		});
+        
+        Button gmailButton = (Button) findViewById(R.id.gmail);
+        gmailButton.setOnClickListener(new OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				sendEmail();		
+			}
+		});
+     /*   
+        Button infoButton = (Button) findViewById(R.id.moreinfo);
+        infoButton.setOnClickListener(new OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				openWebPage();
+			}
+		});
+       */ 
 
         fetchServerData(getIntent().getExtras());	
 	}
@@ -179,7 +197,7 @@ public class FilmDetail extends CinequestActivity {
 		});*/
 		scheduleList.setAdapter(adapter);
 	}
-
+	
 	private void showFilms(ArrayList<? extends Filmlet> films)
 	{
 		FilmletListAdapter section = new FilmletListAdapter(this, (List<Filmlet>) films);
@@ -306,7 +324,7 @@ public class FilmDetail extends CinequestActivity {
         
         ((TextView) findViewById(R.id.Properties)).setText(ssb);
         
-		showSchedules(in.getSchedules());   
+		showSchedules(in.getSchedules());
     }
 	
     public void showProgramItem(ProgramItem item) 
@@ -446,6 +464,23 @@ public class FilmDetail extends CinequestActivity {
         Log.d("MyFunc", "onActivityResult");
         Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
     }
-    
+    public void sendEmail(){
+    	Intent i = new Intent(Intent.ACTION_SEND);
+    	i.setType("message/rfc822");
+    	i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"testreciever@example.com"});
+    	i.putExtra(Intent.EXTRA_SUBJECT, "subject of email");
+    	i.putExtra(Intent.EXTRA_TEXT   , "body of email goes here");
+    	try {
+    	    startActivity(Intent.createChooser(i, "Send mail..."));
+    	} catch (android.content.ActivityNotFoundException ex) {
+    	    Toast.makeText(this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+    	}
+    	
+    }
+    public void openWebPage(){
+    	Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse("www.google.com"));
+        startActivity(intent);
+    }
     
 }
