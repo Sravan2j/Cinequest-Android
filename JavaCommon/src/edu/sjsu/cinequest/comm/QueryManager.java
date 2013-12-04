@@ -239,7 +239,7 @@ public class QueryManager {
 	public void getAllFilms(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getFilms();
+				return getFestival(callback).getC_films();//.getFilms();
 				// return FilmsParser.parse(makeQuery(3, ""), callback);
 			}
 		});

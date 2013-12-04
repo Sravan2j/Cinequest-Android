@@ -3,6 +3,7 @@ package edu.sjsu.cinequest;
 import java.util.List;
 import java.util.Vector;
 
+import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 
 public class DVDActivity extends CinequestTabActivity {
@@ -19,6 +20,6 @@ public class DVDActivity extends CinequestTabActivity {
 
 	@Override
 	protected void refreshListContents(List<?> listItems) {
-   		setListViewAdapter(createFilmletList((List<Filmlet>) listItems));
+   		setListViewAdapter(createFilmletList((List<CommonItem>) listItems));
 	}
 }

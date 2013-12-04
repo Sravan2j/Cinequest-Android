@@ -32,6 +32,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import edu.sjsu.cinequest.comm.Platform;
+import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
@@ -91,20 +92,21 @@ public class CinequestActivity extends Activity
 		return adapter;
 	}
 
-	protected ListAdapter createFilmletList(List<? extends Filmlet> listItems) {
+	//protected ListAdapter createFilmletList(List<? extends Filmlet> listItems) {
+	protected ListAdapter createFilmletList(List<? extends CommonItem> listItems) {
 		if (listItems.size() == 0) {
 			return new SeparatedListAdapter(this);
 		} 
 
 		SeparatedListIndexedAdapter adapter = new SeparatedListIndexedAdapter(this);
-		TreeMap<String, ArrayList<Filmlet>> filmsTitleMap 
-		= new TreeMap<String, ArrayList<Filmlet>>();
+		TreeMap<String, ArrayList<CommonItem>> filmsTitleMap 
+		= new TreeMap<String, ArrayList<CommonItem>>();
 		String titleInitial = "";
-		for (Filmlet f : listItems) {
+		for (CommonItem f : listItems) {
 			titleInitial = getTitleInitial(f.getTitle(), titleInitial);
 
 			if (!filmsTitleMap.containsKey(titleInitial))
-				filmsTitleMap.put(titleInitial, new ArrayList<Filmlet>());
+				filmsTitleMap.put(titleInitial, new ArrayList<CommonItem>());
 			filmsTitleMap.get(titleInitial).add(f);
 		}
 
@@ -432,12 +434,12 @@ public class CinequestActivity extends Activity
 	 * (when sorted by name) (2) in the DVDs tab and (3) in the detail view of a
 	 * program item with multiple films.
 	 */
-	protected static class FilmletListAdapter extends ArrayAdapter<Filmlet> {
+	protected static class FilmletListAdapter extends ArrayAdapter<CommonItem> {
 		private static final int RESOURCE_ID = R.layout.listitem_title_only;
 
-		public FilmletListAdapter(Context context, List<? extends Filmlet> list) 
+		public FilmletListAdapter(Context context, List<? extends CommonItem> list) 
 		{
-			super(context, RESOURCE_ID, (List<Filmlet>) list);
+			super(context, RESOURCE_ID, (List<CommonItem>) list);
 		}
 
 		@Override
@@ -447,7 +449,7 @@ public class CinequestActivity extends Activity
 				v = inflater.inflate(RESOURCE_ID, null);
 			}
 
-			Filmlet result = getItem(position);            
+			CommonItem result = getItem(position);            
 			TextView title = (TextView) v.findViewById(R.id.listitem_titletext);
 			title.setText(result.getTitle());	                 
 			formatContents(v, title, result);		        
@@ -457,7 +459,7 @@ public class CinequestActivity extends Activity
 		/**
 		 * Override to change the formatting of the contents
 		 */
-		protected void formatContents(View v, TextView title, Filmlet result) {
+		protected void formatContents(View v, TextView title, CommonItem result) {
 		}
 	}	
 

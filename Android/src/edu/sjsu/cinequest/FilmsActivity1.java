@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
@@ -20,7 +21,8 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
  */
 public class FilmsActivity1 extends CinequestTabActivity {	
 	private String target;
-	private static Vector<Filmlet> mFilms_byTitle;
+	//private static Vector<Filmlet> mFilms_byTitle;
+	private static Vector<CommonItem> mFilms_byTitle;
 	private static Vector<Schedule> mSchedule_byDate;
 	
 	//unique id's for menu options
@@ -68,7 +70,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
          	 HomeActivity.getQueryManager().getAllFilms (new ProgressMonitorCallback(this) {           		 
          		public void invoke(Object result) {
       			super.invoke(result);
-  				 mFilms_byTitle = (Vector<Filmlet>) result;
+  				 mFilms_byTitle = (Vector<CommonItem>) result;
   				 refreshListContents(mFilms_byTitle);
 	  			}
 	      	});        	
@@ -82,7 +84,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
 	   		setListViewAdapter(createScheduleList((List<Schedule>) listItems));
 	   	}
 	   	else {
-	   		setListViewAdapter(createFilmletList((List<Filmlet>) listItems));
+	   		setListViewAdapter(createFilmletList((List<CommonItem>) listItems));
 	   	}
 	}
 

@@ -39,6 +39,7 @@ import android.widget.Toast;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.HParser;
 import edu.sjsu.cinequest.comm.Platform;
+import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
@@ -99,9 +100,9 @@ public class FilmDetail extends CinequestActivity {
 	private void fetchServerData(Bundle b){
         Object target = b.getSerializable("target");
         
-        if (target instanceof Film) {
+        if (target instanceof CommonItem) {
         	// This happens when showing a film inside a program item
-    		showFilm((Film) target);
+    		showFilm((CommonItem) target);
         } 
         else if (target instanceof Filmlet) {
         	Filmlet filmlet = (Filmlet) target;
@@ -110,7 +111,7 @@ public class FilmDetail extends CinequestActivity {
 				@Override
 				public void invoke(Object result) {
 					super.invoke(result);
-					showFilm((Film) result);
+					showFilm((CommonItem) result);
 				}
 			};
         	if (filmlet.isDownload() || filmlet.isDVD()) {
@@ -127,7 +128,7 @@ public class FilmDetail extends CinequestActivity {
     			@Override
     			public void invoke(Object result) {
 					super.invoke(result);
-    				showProgramItem((ProgramItem) result);
+    				showProgramItem((CommonItem) result);
     			}
     		}; 
         	if (schedule.isMobileItem())
@@ -145,7 +146,7 @@ public class FilmDetail extends CinequestActivity {
 	    			@Override
 	    			public void invoke(Object result) {
 						super.invoke(result);
-	    				showProgramItem((ProgramItem) result);
+	    				showProgramItem((CommonItem) result);
 	    			}
 	    		});
 			}        	
@@ -155,7 +156,7 @@ public class FilmDetail extends CinequestActivity {
 						new ProgressMonitorCallback(this) {    		
 					public void invoke(Object result) {
 						super.invoke(result);
-						showFilm((Film) result);
+						showFilm((CommonItem) result);
 					}});				
 			}
 			else if (linkType.equals("Film"))
@@ -164,7 +165,7 @@ public class FilmDetail extends CinequestActivity {
 						new ProgressMonitorCallback(this) {    		
 					public void invoke(Object result) {
 						super.invoke(result);
-						showFilm((Film) result);
+						showFilm((CommonItem) result);
 					}});				
 			}			
         }
@@ -198,9 +199,9 @@ public class FilmDetail extends CinequestActivity {
 		scheduleList.setAdapter(adapter);
 	}
 	
-	private void showFilms(ArrayList<? extends Filmlet> films)
+	private void showFilms(ArrayList<? extends CommonItem> films)
 	{
-		FilmletListAdapter section = new FilmletListAdapter(this, (List<Filmlet>) films);
+		FilmletListAdapter section = new FilmletListAdapter(this, (List<CommonItem>) films);
 		if (films.size() == 0) {
 			scheduleList.setAdapter(section);
 			return;
@@ -292,7 +293,7 @@ public class FilmDetail extends CinequestActivity {
 	
 	
 	
-    public void showFilm(Film in) {
+    public void showFilm(CommonItem in) {
     	fbTitle = in.getTitle();
     	fbImage = in.getImageURL();
     	fbUrl = in.getInfoLink();
@@ -327,9 +328,9 @@ public class FilmDetail extends CinequestActivity {
 		showSchedules(in.getSchedules());
     }
 	
-    public void showProgramItem(ProgramItem item) 
+    public void showProgramItem(CommonItem item) 
     {
-    	ArrayList<Film> films = item.getFilms();
+    	ArrayList<CommonItem> films = item.getCommonItems();//.getFilms();
 		
 		if (films.size() == 1)
 		{
