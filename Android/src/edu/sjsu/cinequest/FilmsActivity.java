@@ -12,21 +12,23 @@ import android.widget.ListView;
  */
 public class FilmsActivity extends CinequestActivity {
 	private ListView listview;
+	private String tab;
 	public static final String ALPHA = "A - Z";
 
 	// TODO: move menus down to CinequestActivity
-	
+
 	public void onCreate(Bundle savedInstanceState) {    	
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.cinequest_tab_activity_layout);
-        listview = (ListView) findViewById(R.id.cinequest_tabactivity_listview);
-        ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.listitem_title_only);
-        final String[] dates = DateUtils.getFestivalDates();
-        DateUtils du = new DateUtils();
-        adapter.add(ALPHA);
-        for (String date : dates) adapter.add(du.format(date, DateUtils.DATE_LONG));
-        listview.setAdapter(adapter);
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		tab = getIntent().getExtras().getString("tab");
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.cinequest_tab_activity_layout);        
+		listview = (ListView) findViewById(R.id.cinequest_tabactivity_listview);
+		ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.listitem_title_only);
+		final String[] dates = DateUtils.getFestivalDates();
+		DateUtils du = new DateUtils();
+		adapter.add(ALPHA);
+		for (String date : dates) adapter.add(du.format(date, DateUtils.DATE_LONG));
+		listview.setAdapter(adapter);
+		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
@@ -38,6 +40,7 @@ public class FilmsActivity extends CinequestActivity {
 				Intent intent = new Intent();
 				intent.setClass(FilmsActivity.this, FilmsActivity1.class);
 				intent.putExtra("target", result);
+				intent.putExtra("tab", tab);
 				startActivity(intent);		
 			}
 		});

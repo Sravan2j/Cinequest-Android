@@ -244,7 +244,22 @@ public class QueryManager {
 			}
 		});
 	}
-
+	public void getAllEvents(final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback).getC_events();//.getFilms();	
+			}
+		});
+	}
+	
+	public void getAllForums(final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback).getC_forums();//.getFilms();
+			}
+		});
+	}
+	
 	// TODO
 	public void getFilmsByGenre(final String genre, final Callback callback) {
 		getWebData(callback, new Callable() {
