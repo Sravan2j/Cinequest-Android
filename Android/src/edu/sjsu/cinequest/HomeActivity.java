@@ -280,7 +280,7 @@ public class HomeActivity extends Activity {
 					int itemId= Integer.parseInt(news.get(position).getInfoLink());
 					intent = new Intent();
 					intent.setClass(HomeActivity.this, FilmDetail.class);
-					intent.putExtra("target", (Serializable) news.get(position).getInfoLink());
+					intent.putExtra("target", (Serializable) itemId);
 					startActivity(intent);
 				}
 			}

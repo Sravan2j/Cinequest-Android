@@ -163,6 +163,7 @@ public class CinequestActivity extends Activity
 			venue.setText("Venue: " + result.getVenue());
 			formatContents(v, title, time, venue, du, result);		        
 			checkbox.setTag(result);
+			checkbox.setText("-");
 			configureCheckBox(v, checkbox, result);
 			Button directions = (Button) v.findViewById(R.id.directionsURL);
 			directions.setTag(result);	        
@@ -276,12 +277,12 @@ public class CinequestActivity extends Activity
 
 			if (l_managedCursor.getCount()>0) {                                                    
 				checkbox.setBackgroundResource(R.drawable.incalendar);
-				checkbox.setText("exists");
+				checkbox.setHint("exists");				
 			}
 			else
 			{
 				checkbox.setBackgroundResource(R.drawable.notincalendar);
-				checkbox.setText("notexist");
+				checkbox.setHint("notexist");
 			}
 
 
@@ -354,7 +355,7 @@ public class CinequestActivity extends Activity
 					
 
 
-					if (checkbox.getText().toString()=="exists")
+					if (checkbox.getHint().toString()=="exists")
 					{
 						int e_id = 0;
 						if (l_managedCursor.moveToFirst()) {														
@@ -374,7 +375,7 @@ public class CinequestActivity extends Activity
 						int rows = getContentResolver().delete(deleteUri, null, null);
 						if (rows==1){
 							checkbox.setBackgroundResource(R.drawable.notincalendar);
-							checkbox.setText("notexist");
+							checkbox.setHint("notexist");
 							Toast toast = Toast.makeText(getContext(), "Event removed from calendar", Toast.LENGTH_SHORT);
 							toast.show();                        
 							//v.invalidate();
@@ -412,7 +413,7 @@ public class CinequestActivity extends Activity
 						Toast toast = Toast.makeText(getContext(), "Event added to calendar", Toast.LENGTH_SHORT);
 						toast.show();
 						checkbox.setBackgroundResource(R.drawable.incalendar);
-						checkbox.setText("exists");
+						checkbox.setHint("exists");
 					}
 					l_managedCursor.close();
 					l_managedCursor=null;

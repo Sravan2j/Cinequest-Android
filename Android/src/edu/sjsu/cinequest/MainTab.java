@@ -25,17 +25,22 @@ public class MainTab extends TabActivity {
         
         // Create the intent associated with the activity
         intent = new Intent().setClass(this, FilmsActivity.class);
+        intent.putExtra("tab", "films");
         // Create a new TabSpec with a name, an icon and intent
         spec = tabHost.newTabSpec("films").setIndicator("Films",getResources().getDrawable(R.drawable.film_icon)).setContent(intent);
         // Add it to the tab
         tabHost.addTab(spec);
 
-        intent = new Intent().setClass(this, EventsActivity.class);
+        //intent = new Intent().setClass(this, EventsActivity.class);
+        intent = new Intent().setClass(this, FilmsActivity.class);
+        intent.putExtra("tab", "events");
         spec = tabHost.newTabSpec("events").setIndicator("Events",getResources().getDrawable(R.drawable.events_icon)).setContent(intent);
         tabHost.addTab(spec);
 
         
-        intent = new Intent().setClass(this, ForumsActivity.class);
+        //intent = new Intent().setClass(this, ForumsActivity.class);
+        intent = new Intent().setClass(this, FilmsActivity.class);
+        intent.putExtra("tab", "forums");
         spec = tabHost.newTabSpec("forums").setIndicator("Forums",getResources().getDrawable(R.drawable.forums_icon)).setContent(intent);
         tabHost.addTab(spec);
         
