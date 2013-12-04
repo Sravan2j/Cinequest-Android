@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Vector;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
@@ -665,7 +667,9 @@ public class FestivalParser extends BasicHandler {
         		
         		String startTime = schedule.getStartTime();
         		
-        		if(Pattern.matches(isoDatePattern, startTime)) {
+        		Matcher m = Pattern.compile(isoDatePattern).matcher(startTime);
+        		
+        		if(m.matches()) {
         			// Time is in ISO format
         			String date = startTime.split("T")[0];
         			
@@ -709,64 +713,13 @@ public class FestivalParser extends BasicHandler {
                     // Populate the individual lists
                     if(type.equals("Film")) {
                     	festival.getC_films().add(item);
-                    	
-                    	// Populate the film dates
-                    	SortedSet<String> filmDates = festival.getFilmDates();  
-                    	SortedSet<String> dates = getDatesFromCommonItem(item);
-                    	filmDates.addAll(dates);
-                    	
-                    	Log.e("FestivalParser.java", "FilmDates:" + (dates == null ? dates : dates.size()));
-                    	
-                    	// Now populate the Map which stores CommonItems by Dates
-                    	
-                    	/*Map<String, List<CommonItem>> filmsByDateMap = festival.getFilmsByDateMap();
-                    	
-                    	for(String date : dates) {
-                    		
-                    		List<CommonItem> filmsList;
-                    		boolean found = false;
-                    		
-                    		if(filmsByDateMap.containsKey(date)) {
-                    			filmsList = filmsByDateMap.get(date);
-                    			found = true;
-                    		} else {
-                    			filmsList = new ArrayList<CommonItem>();
-                    		}
-                    		
-                    		filmsList.add(item);
-                    		
-                    		if(!found) {
-                    			filmsByDateMap.put(date, filmsList);
-                    		}       		
-                    	}*/
-                    	
-                    	this.populateItemsByDate(type, dates, item);
   	
                     } else if(type.equals("Event")) {
                     	festival.getC_events().add(item);
                     	
-                    	// Populate the event dates
-                    	SortedSet<String> eventDates = festival.getEventDates();      
-                    	SortedSet<String> dates = getDatesFromCommonItem(item);
-                    	
-                    	Log.e("FestivalParser.java", "EventDates:" + (dates == null ? dates : dates.size()));
-                    	
-                    	eventDates.addAll(dates);
-                    	
-                    	this.populateItemsByDate(type, dates, item);
-                    	
                     } else if(type.equals("Forum")) {
                     	festival.getC_forums().add(item);
-                    	
-                    	// Populate the forum dates
-                    	SortedSet<String> forumDates = festival.getForumDates();
-                    	SortedSet<String> dates = getDatesFromCommonItem(item);
-                    	
-                    	Log.e("FestivalParser.java", "ForumDates:" + (dates == null ? dates : dates.size()));
-                    	
-                    	forumDates.addAll(dates);
-                    	
-                    	this.populateItemsByDate(type, dates, item);
+
                     }
                 }
 
@@ -804,6 +757,50 @@ public class FestivalParser extends BasicHandler {
                     for (CommonItem children : item.getCommonItems()) children.getSchedules().add(schedule);
                 }
             }  	
+            
+            
+            // Populate the Films/Events/ Forums by Date depending on the Type
+            
+            Vector v = null;
+            
+            if(type.equals("Film")) {
+            	v = festival.getC_films();
+            } else if(type.equals("Event")) {
+            	v = festival.getC_events();
+            } else if(type.equals("Forum")) {
+            	v = festival.getC_forums();
+            }
+            
+            for(Object obj : v) {
+            	
+            	CommonItem item = (CommonItem) obj;
+            	
+            	// Populate the film dates
+            	SortedSet<String> filmDates = null;
+            	
+            	if(type.equals("Film")) {
+            		filmDates = festival.getFilmDates(); 
+            	} else if(type.equals("Event")) {
+            		filmDates = festival.getEventDates(); 
+            	} else if(type.equals("Forum")) {
+            		filmDates = festival.getForumDates(); 
+            	}
+            	
+            	 
+            	SortedSet<String> dates = getDatesFromCommonItem(item);
+            	filmDates.addAll(dates);
+            	
+            	this.populateItemsByDate(type, dates, item);    	
+            }
+            
+            if(type.equals("Film")) {
+            	Log.e("FestivalParser", "FilmDates:" + festival.getFilmDates().size());
+        	} else if(type.equals("Event")) {
+        		Log.e("FestivalParser", "EventDates:" + festival.getEventDates().size()); 
+        	} else if(type.equals("Forum")) {
+        		Log.e("FestivalParser", "ForumDates:" + festival.getForumDates().size());
+        	}
+            
         }
         
         private void populateItemsByDate(String type, SortedSet<String> dates, CommonItem item) {

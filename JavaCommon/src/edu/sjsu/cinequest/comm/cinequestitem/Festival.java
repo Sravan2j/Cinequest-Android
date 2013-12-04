@@ -125,6 +125,8 @@ public class Festival implements Serializable {
 		forumDates = new TreeSet<String>();
 		
 		filmsByDateMap = new HashMap<String, List<CommonItem>>();
+		eventsByDateMap = new HashMap<String, List<CommonItem>>();
+		forumsByDateMap = new HashMap<String, List<CommonItem>>();
 	}
 	
 	public boolean isEmpty() { return schedules.size() == 0; }
