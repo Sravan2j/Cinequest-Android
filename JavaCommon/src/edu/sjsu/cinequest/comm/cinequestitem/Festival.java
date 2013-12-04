@@ -55,9 +55,19 @@ public class Festival implements Serializable {
 	private SortedSet<String> forumDates;
 	
 	private HashMap<String, List<CommonItem>> filmsByDateMap;
+	private HashMap<String, List<CommonItem>> eventsByDateMap;
+	private HashMap<String, List<CommonItem>> forumsByDateMap;
 	
 	public HashMap<String, List<CommonItem>> getFilmsByDateMap() {
 		return filmsByDateMap;
+	}
+	
+	public HashMap<String, List<CommonItem>> getEventsByDateMap() {
+		return eventsByDateMap;
+	}
+
+	public HashMap<String, List<CommonItem>> getForumsByDateMap() {
+		return forumsByDateMap;
 	}
 
 	private Map<Integer, CommonItem> commonItemsMap;
@@ -71,6 +81,7 @@ public class Festival implements Serializable {
 	}
 	
 	public SortedSet<String> getFilmDates() {
+		
 		return filmDates;
 	}
 

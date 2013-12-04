@@ -715,9 +715,11 @@ public class FestivalParser extends BasicHandler {
                     	SortedSet<String> dates = getDatesFromCommonItem(item);
                     	filmDates.addAll(dates);
                     	
+                    	Log.e("FestivalParser.java", "FilmDates:" + (dates == null ? dates : dates.size()));
+                    	
                     	// Now populate the Map which stores CommonItems by Dates
                     	
-                    	Map<String, List<CommonItem>> filmsByDateMap = festival.getFilmsByDateMap();
+                    	/*Map<String, List<CommonItem>> filmsByDateMap = festival.getFilmsByDateMap();
                     	
                     	for(String date : dates) {
                     		
@@ -736,21 +738,35 @@ public class FestivalParser extends BasicHandler {
                     		if(!found) {
                     			filmsByDateMap.put(date, filmsList);
                     		}       		
-                    	}
+                    	}*/
+                    	
+                    	this.populateItemsByDate(type, dates, item);
   	
                     } else if(type.equals("Event")) {
                     	festival.getC_events().add(item);
                     	
                     	// Populate the event dates
-                    	SortedSet<String> eventDates = festival.getEventDates();                   	
-                    	eventDates.addAll(getDatesFromCommonItem(item));
+                    	SortedSet<String> eventDates = festival.getEventDates();      
+                    	SortedSet<String> dates = getDatesFromCommonItem(item);
+                    	
+                    	Log.e("FestivalParser.java", "EventDates:" + (dates == null ? dates : dates.size()));
+                    	
+                    	eventDates.addAll(dates);
+                    	
+                    	this.populateItemsByDate(type, dates, item);
                     	
                     } else if(type.equals("Forum")) {
                     	festival.getC_forums().add(item);
                     	
                     	// Populate the forum dates
-                    	SortedSet<String> forumDates = festival.getForumDates();                   	
-                    	forumDates.addAll(getDatesFromCommonItem(item));
+                    	SortedSet<String> forumDates = festival.getForumDates();
+                    	SortedSet<String> dates = getDatesFromCommonItem(item);
+                    	
+                    	Log.e("FestivalParser.java", "ForumDates:" + (dates == null ? dates : dates.size()));
+                    	
+                    	forumDates.addAll(dates);
+                    	
+                    	this.populateItemsByDate(type, dates, item);
                     }
                 }
 
@@ -788,6 +804,41 @@ public class FestivalParser extends BasicHandler {
                     for (CommonItem children : item.getCommonItems()) children.getSchedules().add(schedule);
                 }
             }  	
+        }
+        
+        private void populateItemsByDate(String type, SortedSet<String> dates, CommonItem item) {
+        	
+        	// Now populate the Map which stores CommonItems by Dates
+        	
+        	Map<String, List<CommonItem>> filmsByDateMap = null;
+        	
+        	if(type.equals("Film")) {
+        		filmsByDateMap = festival.getFilmsByDateMap();
+        	} else if(type.equals("Event")) {
+        		filmsByDateMap = festival.getEventsByDateMap();
+        	} else if(type.equals("Forum")) {
+        		filmsByDateMap = festival.getForumsByDateMap();
+        	}
+        	
+        	for(String date : dates) {
+        		
+        		List<CommonItem> filmsList;
+        		boolean found = false;
+        		
+        		if(filmsByDateMap.containsKey(date)) {
+        			filmsList = filmsByDateMap.get(date);
+        			found = true;
+        		} else {
+        			filmsList = new ArrayList<CommonItem>();
+        		}
+        		
+        		filmsList.add(item);
+        		
+        		if(!found) {
+        			filmsByDateMap.put(date, filmsList);
+        		}       		
+        	}
+        	
         }
     }
 }
