@@ -25,6 +25,7 @@ import java.util.Vector;
 
 import org.xml.sax.SAXException;
 
+import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.NewsFeed;
@@ -258,6 +259,39 @@ public class QueryManager {
 				return getFestival(callback).getC_forums();//.getFilms();
 			}
 		});
+	}
+	
+	public void getFilmDates(final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback).getFilmDates();//.getFilms();
+			}
+		});
+	}
+	
+	public void getEventDates(final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback).getEventDates();//.getFilms();
+			}
+		});
+	}
+	
+	public void getForumDates(final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback).getForumDates();//.getFilms();
+			}
+		});
+	}
+	
+	public void getCommonItem(final Callback callback, final int id) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {				
+				return getFestival(callback).getCommonItemUsingId(id);//.getFilms();
+			}
+		});
+					
 	}
 	
 	// TODO
