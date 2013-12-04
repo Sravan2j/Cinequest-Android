@@ -3,7 +3,9 @@ package edu.sjsu.cinequest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TimeZone;
+import java.util.Vector;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -35,6 +37,7 @@ import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
 import edu.sjsu.cinequest.comm.cinequestitem.News;
 import edu.sjsu.cinequest.comm.cinequestitem.NewsFeed;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 
 // TODO: Add click for each item; show the section info
@@ -47,6 +50,7 @@ import edu.sjsu.cinequest.comm.cinequestitem.User;
  */
 public class HomeActivity extends Activity {	
 	private ListView list;
+	private String target;
 	ImageView title_image;
 	String lastupdated="";
 
@@ -267,7 +271,7 @@ public class HomeActivity extends Activity {
 				/*Object result = getListview().getItemAtPosition( position );
 				Log.i("tabactivity",result.getClass().toString());
 				launchFilmDetail(result);				*/
-				Intent intent;
+				final Intent intent;
 				if (news.get(position).getInfoLink().trim().toLowerCase().startsWith("http"))
 				{
 					
@@ -280,8 +284,17 @@ public class HomeActivity extends Activity {
 					int itemId= Integer.parseInt(news.get(position).getInfoLink());
 					intent = new Intent();
 					intent.setClass(HomeActivity.this, FilmDetail.class);
-					intent.putExtra("target", (Serializable) itemId);
-					startActivity(intent);
+					
+					HomeActivity.getQueryManager().getCommonItem(new ProgressMonitorCallback(HomeActivity.this) {
+						@Override
+						public void invoke(Object result) {
+							super.invoke(result);							
+							intent.putExtra("target", (Serializable) result);
+							startActivity(intent);
+							
+						}
+					}, itemId);
+					
 				}
 			}
 		});		
