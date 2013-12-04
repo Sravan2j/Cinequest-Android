@@ -192,16 +192,16 @@ public class Festival implements Serializable {
 		this.lastChanged = lastChanged == null ? "" : lastChanged;
 	}
 	
-	public List<CommonItem> getFilmsByDate(String date) {
-		return getCommonItemsForDate("Film", date);
+	public Vector getFilmsByDate(String date) {
+		return new Vector(getCommonItemsForDate("Film", date));
 	}
 	
-	public List<CommonItem> getEventsByDate(String date) {
-		return getCommonItemsForDate("Event", date);
+	public Vector getEventsByDate(String date) {
+		return new Vector(getCommonItemsForDate("Event", date));
 	}
 	
-	public List<CommonItem> getForumsByDate(String date) {
-		return getCommonItemsForDate("Forum", date);
+	public Vector getForumsByDate(String date) {
+		return new Vector(getCommonItemsForDate("Forum", date));
 	}
 	
 	public List<CommonItem> getCommonItemsForDate(String type, String date) {
@@ -214,10 +214,11 @@ public class Festival implements Serializable {
 			
 		} else if(type.equals("Event")) {
 			
+			itemsByDate = eventsByDateMap.get(date);
 			
 			
 		} else if(type.equals("Forum")) {
-			
+			itemsByDate = forumsByDateMap.get(date);
 					
 		}
 		
