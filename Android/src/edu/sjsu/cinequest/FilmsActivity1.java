@@ -129,7 +129,8 @@ public class FilmsActivity1 extends CinequestTabActivity {
 	protected void refreshListContents(List<?> listItems) {
 		if (listItems == null) return;
 		if(isByDate()) {
-			setListViewAdapter(createScheduleList((List<Schedule>) listItems));
+			//setListViewAdapter(createScheduleList((List<Schedule>) listItems));
+			setListViewAdapter(createFilmletList((List<CommonItem>) listItems));
 		}
 		else {
 			setListViewAdapter(createFilmletList((List<CommonItem>) listItems));
