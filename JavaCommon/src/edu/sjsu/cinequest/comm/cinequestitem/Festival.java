@@ -45,6 +45,21 @@ public class Festival implements Serializable {
 	
 	private Vector commonItems;
 	
+	private Vector c_films;
+	private Vector c_events;
+	private Vector c_forums;
+	
+
+	private SortedSet<String> filmDates;
+	private SortedSet<String> eventDates;
+	private SortedSet<String> forumDates;
+	
+	private HashMap<String, List<CommonItem>> filmsByDateMap;
+	
+	public HashMap<String, List<CommonItem>> getFilmsByDateMap() {
+		return filmsByDateMap;
+	}
+
 	private Map<Integer, CommonItem> commonItemsMap;
 	
 	public Map<Integer, CommonItem> getCommonItemsMap() {
@@ -54,10 +69,6 @@ public class Festival implements Serializable {
 	public Vector getCommonItems() {
 		return commonItems;
 	}
-
-	private Vector c_films;
-	private Vector c_events;
-	private Vector c_forums;
 	
 	public SortedSet<String> getFilmDates() {
 		return filmDates;
@@ -70,10 +81,6 @@ public class Festival implements Serializable {
 	public SortedSet<String> getForumDates() {
 		return forumDates;
 	}
-
-	private SortedSet<String> filmDates;
-	private SortedSet<String> eventDates;
-	private SortedSet<String> forumDates;
 	
 	public Vector getC_films() {
 		return c_films;
@@ -105,6 +112,8 @@ public class Festival implements Serializable {
 		filmDates = new TreeSet<String>();
 		eventDates = new TreeSet<String>();
 		forumDates = new TreeSet<String>();
+		
+		filmsByDateMap = new HashMap<String, List<CommonItem>>();
 	}
 	
 	public boolean isEmpty() { return schedules.size() == 0; }
@@ -168,7 +177,40 @@ public class Festival implements Serializable {
 	 */
 	public void setLastChanged(String lastChanged) {
 		this.lastChanged = lastChanged == null ? "" : lastChanged;
-	}	
+	}
+	
+	public List<CommonItem> getFilmsByDate(String date) {
+		return getCommonItemsForDate("Film", date);
+	}
+	
+	public List<CommonItem> getEventsByDate(String date) {
+		return getCommonItemsForDate("Event", date);
+	}
+	
+	public List<CommonItem> getForumsByDate(String date) {
+		return getCommonItemsForDate("Forum", date);
+	}
+	
+	public List<CommonItem> getCommonItemsForDate(String type, String date) {
+		
+		List<CommonItem> itemsByDate = null;
+		
+		if(type.equals("Film")) {
+			
+			itemsByDate = filmsByDateMap.get(date);
+			
+		} else if(type.equals("Event")) {
+			
+			
+			
+		} else if(type.equals("Forum")) {
+			
+					
+		}
+		
+		return itemsByDate;
+		
+	}
 	
 	public Vector getSchedulesForDay(String date) {
 		Vector result = new Vector();

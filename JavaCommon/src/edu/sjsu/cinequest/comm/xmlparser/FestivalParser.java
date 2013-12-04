@@ -705,22 +705,50 @@ public class FestivalParser extends BasicHandler {
                     
                     item.getCommonItems().add(item);   // FIXME - WHY ?????? why add to itself ??
                     
-                    // Populate the individual lists as well as the dates.
+                    // FIXME - TODO 
+                    // Populate the individual lists
                     if(type.equals("Film")) {
                     	festival.getC_films().add(item);
                     	
-                    	SortedSet<String> filmDates = festival.getFilmDates();                   	
-                    	filmDates.addAll(getDatesFromCommonItem(item));
+                    	// Populate the film dates
+                    	SortedSet<String> filmDates = festival.getFilmDates();  
+                    	SortedSet<String> dates = getDatesFromCommonItem(item);
+                    	filmDates.addAll(dates);
+                    	
+                    	// Now populate the Map which stores CommonItems by Dates
+                    	
+                    	Map<String, List<CommonItem>> filmsByDateMap = festival.getFilmsByDateMap();
+                    	
+                    	for(String date : dates) {
+                    		
+                    		List<CommonItem> filmsList;
+                    		boolean found = false;
+                    		
+                    		if(filmsByDateMap.containsKey(date)) {
+                    			filmsList = filmsByDateMap.get(date);
+                    			found = true;
+                    		} else {
+                    			filmsList = new ArrayList<CommonItem>();
+                    		}
+                    		
+                    		filmsList.add(item);
+                    		
+                    		if(!found) {
+                    			filmsByDateMap.put(date, filmsList);
+                    		}       		
+                    	}
   	
                     } else if(type.equals("Event")) {
                     	festival.getC_events().add(item);
                     	
+                    	// Populate the event dates
                     	SortedSet<String> eventDates = festival.getEventDates();                   	
                     	eventDates.addAll(getDatesFromCommonItem(item));
                     	
                     } else if(type.equals("Forum")) {
                     	festival.getC_forums().add(item);
                     	
+                    	// Populate the forum dates
                     	SortedSet<String> forumDates = festival.getForumDates();                   	
                     	forumDates.addAll(getDatesFromCommonItem(item));
                     }
