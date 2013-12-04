@@ -214,10 +214,11 @@ public class Festival implements Serializable {
 			
 		} else if(type.equals("Event")) {
 			
+			itemsByDate = eventsByDateMap.get(date);
 			
 			
 		} else if(type.equals("Forum")) {
-			
+			itemsByDate = forumsByDateMap.get(date);
 					
 		}
 		
