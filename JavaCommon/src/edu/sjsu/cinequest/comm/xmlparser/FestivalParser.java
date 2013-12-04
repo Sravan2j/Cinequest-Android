@@ -29,6 +29,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -56,6 +59,7 @@ public class FestivalParser extends BasicHandler {
     private Show show;
     private Showing showing;
     private String propName;
+
 
     /**
      * Parses the complete Festival information
@@ -649,6 +653,31 @@ public class FestivalParser extends BasicHandler {
             return result.substring(1, result.length() - 1);
         }
         
+        private SortedSet<String> getDatesFromCommonItem(CommonItem item) {
+        	
+        	String isoDatePattern = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$";
+        	
+        	SortedSet<String> dates = new TreeSet<String>();
+        	
+        	List<Schedule> itemSchedules = item.getSchedules();
+        	
+        	for(Schedule schedule : itemSchedules) {
+        		
+        		String startTime = schedule.getStartTime();
+        		
+        		if(Pattern.matches(isoDatePattern, startTime)) {
+        			// Time is in ISO format
+        			String date = startTime.split("T")[0];
+        			
+        			if( !dates.contains(date) ) {
+        				dates.add(date);
+        			}		
+        		}      		
+        	}
+        	
+        	return dates;
+        }
+        
         private void populateFestivalItems(String type, Map<String, Show> showsMap) {
         	
             Set<String> uniqueVenues = new HashSet<String>();            
@@ -662,18 +691,38 @@ public class FestivalParser extends BasicHandler {
             for (Show show : filteredShows) {
             	
                 CommonItem item = getCommonItem(type, show);
-                festival.getCommonItems().add(item);
+                
+                // Before adding the 'item' to commonItems within the Festival object, a redundancy check need to be performed.
+                
+                if( !festival.getCommonItemsMap().containsKey(item.getId()) ) {
+                	
+                	festival.getCommonItemsMap().put(item.getId(), item);               	
+                	         	
+                }
+              
                 List<String> typeOfFilm = show.customProperties.get("Type of Film");
                 if (typeOfFilm == null || !typeOfFilm.contains("Shorts Program")) {
                     
                     item.getCommonItems().add(item);   // FIXME - WHY ?????? why add to itself ??
                     
+                    // Populate the individual lists as well as the dates.
                     if(type.equals("Film")) {
                     	festival.getC_films().add(item);
+                    	
+                    	SortedSet<String> filmDates = festival.getFilmDates();                   	
+                    	filmDates.addAll(getDatesFromCommonItem(item));
+  	
                     } else if(type.equals("Event")) {
                     	festival.getC_events().add(item);
+                    	
+                    	SortedSet<String> eventDates = festival.getEventDates();                   	
+                    	eventDates.addAll(getDatesFromCommonItem(item));
+                    	
                     } else if(type.equals("Forum")) {
                     	festival.getC_forums().add(item);
+                    	
+                    	SortedSet<String> forumDates = festival.getForumDates();                   	
+                    	forumDates.addAll(getDatesFromCommonItem(item));
                     }
                 }
 
@@ -692,13 +741,13 @@ public class FestivalParser extends BasicHandler {
                 			CommonItem shortsItem = shortsMap.get(Integer.parseInt(shortID));                			
                 			item.getCommonItems().add(shortsItem);
                 			
-                			if(type.equals("Film")) {
-                            	festival.getC_films().add(shortsItem);
-                            } else if(type.equals("Event")) {
-                            	festival.getC_events().add(shortsItem);
-                            } else if(type.equals("Forum")) {
-                            	festival.getC_forums().add(shortsItem);
-                            }
+//                			if(type.equals("Film")) {
+//                            	festival.getC_films().add(shortsItem);
+//                            } else if(type.equals("Event")) {
+//                            	festival.getC_events().add(shortsItem);
+//                            } else if(type.equals("Forum")) {
+//                            	festival.getC_forums().add(shortsItem);
+//                            }
                 		}		
                 	}       	
                 }
@@ -710,8 +759,7 @@ public class FestivalParser extends BasicHandler {
                         festival.getVenueLocations().add(getVenueLocation(showing.venue));
                     for (CommonItem children : item.getCommonItems()) children.getSchedules().add(schedule);
                 }
-            }
-        	
+            }  	
         }
     }
 }
