@@ -284,6 +284,29 @@ public class QueryManager {
 			}
 		});
 	}
+	public void getFilmsByDate(final String date, final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback).getFilmsByDate(date);//.getFilms();
+			}
+		});
+	}
+	
+	public void getEventsByDate(final String date, final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback).getEventsByDate(date);//.getFilms();
+			}
+		});
+	}
+	
+	public void getForumsByDate(final String date, final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback).getForumsByDate(date);//.getFilms();
+			}
+		});
+	}
 	
 	public void getCommonItem(final Callback callback, final int id) {
 		getWebData(callback, new Callable() {
