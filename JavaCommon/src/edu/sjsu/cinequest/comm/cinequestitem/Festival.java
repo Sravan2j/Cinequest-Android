@@ -20,6 +20,11 @@
 package edu.sjsu.cinequest.comm.cinequestitem;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 /**
@@ -39,40 +44,47 @@ public class Festival implements Serializable {
 	private Vector events;
 	
 	private Vector commonItems;
-	public Vector getCommonItems() {
-		return commonItems;
+	
+	private Map<Integer, CommonItem> commonItemsMap;
+	
+	public Map<Integer, CommonItem> getCommonItemsMap() {
+		return commonItemsMap;
 	}
 
-	public void setCommonItems(Vector commonItems) {
-		this.commonItems = commonItems;
+	public Vector getCommonItems() {
+		return commonItems;
 	}
 
 	private Vector c_films;
 	private Vector c_events;
 	private Vector c_forums;
 	
-	public Vector getC_films() {
-		return c_films;
+	public SortedSet<String> getFilmDates() {
+		return filmDates;
 	}
 
-	public void setC_films(Vector c_films) {
-		this.c_films = c_films;
+	public SortedSet<String> getEventDates() {
+		return eventDates;
+	}
+
+	public SortedSet<String> getForumDates() {
+		return forumDates;
+	}
+
+	private SortedSet<String> filmDates;
+	private SortedSet<String> eventDates;
+	private SortedSet<String> forumDates;
+	
+	public Vector getC_films() {
+		return c_films;
 	}
 
 	public Vector getC_events() {
 		return c_events;
 	}
 
-	public void setC_events(Vector c_events) {
-		this.c_events = c_events;
-	}
-
 	public Vector getC_forums() {
 		return c_forums;
-	}
-
-	public void setC_forums(Vector c_forums) {
-		this.c_forums = c_forums;
 	}
 	
 	public Festival()
@@ -85,9 +97,14 @@ public class Festival implements Serializable {
 		lastChanged = "";
 		
 		commonItems = new Vector();
+		commonItemsMap = new HashMap<Integer, CommonItem>();
 		c_films = new Vector();
 		c_events = new Vector();
 		c_forums = new Vector();
+		
+		filmDates = new TreeSet<String>();
+		eventDates = new TreeSet<String>();
+		forumDates = new TreeSet<String>();
 	}
 	
 	public boolean isEmpty() { return schedules.size() == 0; }
@@ -176,6 +193,11 @@ public class Festival implements Serializable {
 			if (item.getId() == id) return item;
 		}
 		return null;
+	}
+	
+	public CommonItem getCommonItemUsingId(int id) {
+		
+		return commonItemsMap.get(id);
 	}
 	
 	public Vector getEvents() {
