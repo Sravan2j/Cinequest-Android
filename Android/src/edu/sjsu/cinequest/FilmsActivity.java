@@ -1,7 +1,12 @@
 package edu.sjsu.cinequest;
 
+import java.util.SortedSet;
+import java.util.Vector;
+
+import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,6 +18,8 @@ import android.widget.ListView;
 public class FilmsActivity extends CinequestActivity {
 	private ListView listview;
 	private String tab;
+	//private String[] dates ;
+	private SortedSet<String> dates;
 	public static final String ALPHA = "A - Z";
 
 	// TODO: move menus down to CinequestActivity
@@ -22,11 +29,61 @@ public class FilmsActivity extends CinequestActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.cinequest_tab_activity_layout);        
 		listview = (ListView) findViewById(R.id.cinequest_tabactivity_listview);
-		ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.listitem_title_only);
-		final String[] dates = DateUtils.getFestivalDates();
-		DateUtils du = new DateUtils();
+		final ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.listitem_title_only);
+		//final String[] dates = DateUtils.getFestivalDates();
 		adapter.add(ALPHA);
-		for (String date : dates) adapter.add(du.format(date, DateUtils.DATE_LONG));
+		Log.e("TAB", tab);
+		
+		if (tab.equalsIgnoreCase("films"))
+		{
+			HomeActivity.getQueryManager().getFilmDates (new ProgressMonitorCallback(this) {           		 
+				public void invoke(Object result) {
+					super.invoke(result);
+					Log.i("datecheck1",((SortedSet<String>) result).first());
+					
+					Log.e("datecheck", result.toString());
+					dates = (SortedSet<String>) result;
+					//dates = (String[])((SortedSet<String>) result).toArray();
+					for (String date : dates) 
+					{
+						Log.i("Datecheck", date);
+						adapter.add(date);
+					}
+				}
+			});
+
+		}
+		else if (tab.equalsIgnoreCase("events"))
+		{
+			HomeActivity.getQueryManager().getEventDates(new ProgressMonitorCallback(this) {           		 
+				public void invoke(Object result) {
+					super.invoke(result);
+					//dates = (String[])((SortedSet<String>) result).toArray();
+					dates = (SortedSet<String>) result;
+				}
+			});
+
+		}
+		else if (tab.equalsIgnoreCase("forums"))
+		{
+			HomeActivity.getQueryManager().getForumDates (new ProgressMonitorCallback(this) {           		 
+				public void invoke(Object result) {
+					super.invoke(result);
+					//dates = (String[])((SortedSet<String>) result).toArray();
+					dates = (SortedSet<String>) result;
+					for (String date : dates) 
+					{
+						Log.i("Datecheck", date);
+						adapter.add(date);
+					}
+				}
+			});
+
+		}
+			
+		//DateUtils du = new DateUtils();
+		
+		
 		listview.setAdapter(adapter);
 		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -34,7 +91,7 @@ public class FilmsActivity extends CinequestActivity {
 					long id) {
 				String result;
 				if (position > 0)
-					result = dates[position - 1];
+					result = (String) (dates.toArray())[position - 1];
 				else
 					result = ALPHA;
 				Intent intent = new Intent();

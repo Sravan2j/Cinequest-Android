@@ -260,6 +260,29 @@ public class QueryManager {
 		});
 	}
 	
+	public void getFilmDates(final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback).getFilmDates();//.getFilms();
+			}
+		});
+	}
+	
+	public void getEventDates(final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback).getEventDates();//.getFilms();
+			}
+		});
+	}
+	
+	public void getForumDates(final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback).getForumDates();//.getFilms();
+			}
+		});
+	}
 	// TODO
 	public void getFilmsByGenre(final String genre, final Callback callback) {
 		getWebData(callback, new Callable() {
