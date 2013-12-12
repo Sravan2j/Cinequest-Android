@@ -41,7 +41,8 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 public class CinequestActivity extends Activity
 {
 	private static final int HOME_MENUOPTION_ID = Menu.FIRST + 11;
-	private static final int ABOUT_MENUOPTION_ID = Menu.FIRST + 12;
+	private static final int SCHEDULE_MENUOPTION_ID = Menu.FIRST + 12;
+	private static final int ABOUT_MENUOPTION_ID = Menu.FIRST + 13;	
 
 	/**
 	 * Launches the FilmDetail activity for the given object.
@@ -476,7 +477,14 @@ public class CinequestActivity extends Activity
         i.putExtra("tab", 0);*/
 		startActivity(i);
 	}
-
+	private void goSchedule(){
+		Intent i = new Intent();		
+		i.setClass(this, MainTab.class);		
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);        
+        i.putExtra("open_tab", 4);
+		startActivity(i);
+	}
+	
 	/**
 	 * Create a menu to be displayed when user hits Menu key on device
 	 */
@@ -484,6 +492,7 @@ public class CinequestActivity extends Activity
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		menu.add(0, HOME_MENUOPTION_ID, 0,"Home").setIcon(R.drawable.home);
+		menu.add(0, SCHEDULE_MENUOPTION_ID, 0,"Schedule").setIcon(R.drawable.schedule_icon);		
 		menu.add(0, ABOUT_MENUOPTION_ID, 0,"About").setIcon(R.drawable.about);
 
 		return true;
@@ -497,6 +506,9 @@ public class CinequestActivity extends Activity
 
 		case HOME_MENUOPTION_ID:
 			goHome();
+			return true;
+		case SCHEDULE_MENUOPTION_ID:
+			goSchedule();
 			return true;
 		case ABOUT_MENUOPTION_ID:
 			DialogPrompt.showAppAboutDialog(this);
