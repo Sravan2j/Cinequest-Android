@@ -55,9 +55,7 @@ public class MainTab extends TabActivity {
         tabHost.addTab(spec);
 
         // Display the first tab
-        /*int tab = getIntent().getIntExtra("open_tab", 0);
-        tabHost.setCurrentTab(tab);*/
-        
-        tabHost.setCurrentTab(0);
+        int tab = getIntent().getIntExtra("open_tab", 0);
+        tabHost.setCurrentTab(tab);                
     }
 }

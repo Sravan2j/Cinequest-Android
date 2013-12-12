@@ -19,7 +19,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.CalendarContract.Events;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,7 +32,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
-import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 /*
@@ -470,8 +468,13 @@ public class CinequestActivity extends Activity
 	private void goHome(){
 
 		Intent i = new Intent();
-		setResult(RESULT_OK, i);
-		finish();
+		//setResult(RESULT_OK, i);
+		//finish();		
+		i.setClass(this, MainTab.class);		
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        /*i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        i.putExtra("tab", 0);*/
+		startActivity(i);
 	}
 
 	/**

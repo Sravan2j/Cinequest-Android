@@ -3,6 +3,8 @@ package edu.sjsu.cinequest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +54,13 @@ class EventData {
 	}
 	public int getEId() {
 		return eid;
-	}    
+	}
+	public static class CompName implements Comparator<EventData> {
+        @Override
+        public int compare(EventData arg0, EventData arg1) {
+        	return arg0.getName().compareToIgnoreCase(arg1.getName());       
+        }
+    }
 }
 public class ScheduleActivity extends Activity {
 	ListView listView;
@@ -114,7 +122,7 @@ public class ScheduleActivity extends Activity {
 			} 
 			while (l_managedCursor.moveToNext());
 		}
-
+		Collections.sort(events, new EventData.CompName());
 		ArrayAdapter<EventData> adapter = new ArrayAdapter<EventData>(
 				this.getApplicationContext(), R.layout.eventlistview, events) {
 			@Override
