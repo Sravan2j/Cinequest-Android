@@ -16,15 +16,16 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="100dp"
-            android:paddingBottom="25dp"
+            android:paddingBottom="50dp"
             android:fontFamily="sans-serif-light"
             android:text="Loading.... Please Wait...!"
             android:textAppearance="?android:attr/textAppearanceMedium" />
         <ProgressBar
             android:id="@+id/progressBar1"
-            style="?android:attr/progressBarStyleSmall"
+            style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingBottom="50dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_alignTop="@id/login_status_message"

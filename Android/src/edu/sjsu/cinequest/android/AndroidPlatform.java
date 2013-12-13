@@ -44,8 +44,8 @@ public class AndroidPlatform extends Platform {
 	private static final long PERSISTENCE_KEY = 0x6a42ed61f192d055L;
 	private Cache xmlRawBytesCache;
 	private static final int MAX_CACHE_SIZE = 50;
-	private static final long MAX_CACHE_AGE = 1000L * 60 * 60 * 6; // 6 hours 
-
+	//private static final long MAX_CACHE_AGE = 1000L * 60 * 60 * 6; // 6 hours 
+	private static final long MAX_CACHE_AGE = 1000L * 60; // modified cache time period to 5 minutes.
 	private Handler handler;
 	private Context context;
 
@@ -102,8 +102,8 @@ public class AndroidPlatform extends Platform {
 		 * can't infer the character encoding from the xml encoding attribute,
 		 * so we have to hardwire 8859-1 here.
 		 */
-		/*if (getFromCache(url, sp, handler, MAX_CACHE_AGE))
-			return;*/
+		if (getFromCache(url, sp, handler, MAX_CACHE_AGE))
+			return;
 		starting(callback);		
 		WebConnection connection = null;
 		try {
