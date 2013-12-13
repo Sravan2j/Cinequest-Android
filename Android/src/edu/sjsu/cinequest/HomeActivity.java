@@ -3,20 +3,14 @@ package edu.sjsu.cinequest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TimeZone;
-import java.util.Vector;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,7 +23,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import edu.sjsu.cinequest.android.AndroidPlatform;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.ImageManager;
 import edu.sjsu.cinequest.comm.Platform;
@@ -37,7 +30,6 @@ import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
 import edu.sjsu.cinequest.comm.cinequestitem.News;
 import edu.sjsu.cinequest.comm.cinequestitem.NewsFeed;
-import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.User;
 
 // TODO: Add click for each item; show the section info
@@ -78,7 +70,7 @@ public class HomeActivity extends Activity {
 			// We tried...
 		}
 
-		String[] proj = new String[]{"_id", "calendar_displayName"};
+		/*String[] proj = new String[]{"_id", "calendar_displayName"};
 		String calSelection = "(calendar_displayName= ?) "; 				
 		String[] calSelectionArgs = new String[] {calendarName}; 
 		Uri event = Uri.parse("content://com.android.calendar/calendars");        
@@ -108,20 +100,26 @@ public class HomeActivity extends Activity {
 			l_managedCursor.close();
 			l_managedCursor=null;
 		}
-
-		Platform.setInstance(new AndroidPlatform(getApplicationContext()));
-		queryManager = new QueryManager();
+		 */
+		//Platform.setInstance(new AndroidPlatform(getApplicationContext()));
+		//queryManager = new QueryManager();
+		//queryManager = (QueryManager) getIntent().getSerializableExtra("queryManagerObj");
+		//queryManager = SplashScreenActivity.getQueryManager();
+		if (queryManager == null)
+		{
+			queryManager = new QueryManager();			
+		}
 		imageManager = new ImageManager();
-		user = new User();
+		//user = new User();
 
 
-		queryManager.getFestivalDates(new ProgressMonitorCallback(this) {
+		/*queryManager.getFestivalDates(new ProgressMonitorCallback(this) {
 			public void invoke(Object result)
 			{
 				super.invoke(result);
 				DateUtils.setFestivalDates((String[]) result);            
 			}
-		});        
+		}); */       
 
 		title_image = (ImageView) this.findViewById(R.id.homescreen_title_image);
 		title_image.setImageDrawable(getResources().getDrawable(R.drawable.creative));
@@ -177,7 +175,8 @@ public class HomeActivity extends Activity {
 
 				populateNewsEventsList((NewsFeed) result);
 				// TODO: Why doesn't this work???
-				queryManager.prefetchFestival();
+				if (!((NewsFeed) result).getLastUpdated().equalsIgnoreCase(queryManager.getlastUpdated()))
+					queryManager.prefetchFestival();
 			}
 			@Override public void starting() {}			
 			@Override public void failure(Throwable t) {
@@ -187,7 +186,7 @@ public class HomeActivity extends Activity {
 	}
 
 	protected void onStop(){
-		user.persistSchedule();
+		//user.persistSchedule();
 		imageManager.close();
 		Platform.getInstance().close();
 		super.onStop();
@@ -274,7 +273,7 @@ public class HomeActivity extends Activity {
 				final Intent intent;
 				if (news.get(position).getInfoLink().trim().toLowerCase().startsWith("http"))
 				{
-					
+
 					intent = new Intent(android.content.Intent.ACTION_VIEW, 
 							Uri.parse(news.get(position).getInfoLink()));			
 					startActivity(intent);
@@ -284,17 +283,17 @@ public class HomeActivity extends Activity {
 					int itemId= Integer.parseInt(news.get(position).getInfoLink());
 					intent = new Intent();
 					intent.setClass(HomeActivity.this, FilmDetail.class);
-					
+
 					HomeActivity.getQueryManager().getCommonItem(new ProgressMonitorCallback(HomeActivity.this) {
 						@Override
 						public void invoke(Object result) {
 							super.invoke(result);							
 							intent.putExtra("target", (Serializable) result);
 							startActivity(intent);
-							
+
 						}
 					}, itemId);
-					
+
 				}
 			}
 		});		
@@ -306,6 +305,10 @@ public class HomeActivity extends Activity {
 	 */
 	public static QueryManager getQueryManager() {
 		return queryManager;
+	}
+
+	public static void setQueryManager(QueryManager q) {
+		queryManager=q;
 	}
 
 	public static ImageManager getImageManager() {

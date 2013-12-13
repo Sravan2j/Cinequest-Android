@@ -102,8 +102,8 @@ public class AndroidPlatform extends Platform {
 		 * can't infer the character encoding from the xml encoding attribute,
 		 * so we have to hardwire 8859-1 here.
 		 */
-		if (getFromCache(url, sp, handler, MAX_CACHE_AGE))
-			return;
+		/*if (getFromCache(url, sp, handler, MAX_CACHE_AGE))
+			return;*/
 		starting(callback);		
 		WebConnection connection = null;
 		try {

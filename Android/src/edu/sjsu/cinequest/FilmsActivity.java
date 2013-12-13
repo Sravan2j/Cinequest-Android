@@ -1,12 +1,9 @@
 package edu.sjsu.cinequest;
 
 import java.util.SortedSet;
-import java.util.Vector;
 
-import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -129,13 +126,10 @@ public class FilmsActivity extends CinequestActivity {
 		super.onResume();
 		adapter.clear();
 		if (tab.equalsIgnoreCase("films"))
-		{
+		{			
 			HomeActivity.getQueryManager().getFilmDates (new ProgressMonitorCallback(this) {           		 
 				public void invoke(Object result) {
-					super.invoke(result);
-					Log.i("datecheck1",((SortedSet<String>) result).first());
-					
-					Log.e("datecheck", result.toString());
+					super.invoke(result);															
 					dates = (SortedSet<String>) result;
 					//dates = (String[])((SortedSet<String>) result).toArray();
 					adapter.add(ALPHA);
@@ -144,7 +138,7 @@ public class FilmsActivity extends CinequestActivity {
 						adapter.add(date);
 					}
 				}
-			});
+			});			
 			displayList();
 
 		}

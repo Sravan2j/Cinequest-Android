@@ -25,10 +25,9 @@ import java.util.Vector;
 
 import org.xml.sax.SAXException;
 
-import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
+import android.util.Log;
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
 import edu.sjsu.cinequest.comm.cinequestitem.Film;
-import edu.sjsu.cinequest.comm.cinequestitem.NewsFeed;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
 import edu.sjsu.cinequest.comm.xmlparser.DatesParser;
@@ -41,13 +40,13 @@ import edu.sjsu.cinequest.comm.xmlparser.LinkParser;
 import edu.sjsu.cinequest.comm.xmlparser.NewsFeedParser;
 import edu.sjsu.cinequest.comm.xmlparser.ProgramItemParser;
 import edu.sjsu.cinequest.comm.xmlparser.SeasonParser;
-import edu.sjsu.cinequest.comm.xmlparser.SectionsParser;
 import edu.sjsu.cinequest.comm.xmlparser.UserScheduleParser;
 
 /**
  * @author Kevin Ross (cs160_109)
  */
 public class QueryManager {
+	private String lastUpdated="";
 	private static final String queryBase = "mobile.cinequest.org/mobileCQ.php";
 	private static final String[] queries = { "?type=program_item&id=", // 0
 			"?type=mode", // 1
@@ -85,7 +84,7 @@ public class QueryManager {
 	private String makeQuery(int type, int arg) {
 		return makeQuery(type, "" + arg);
 	}
-
+	
 	private interface Callable {
 		Object run() throws Throwable;
 	}
@@ -165,7 +164,10 @@ public class QueryManager {
 			}
 		});
 	}
-
+	
+	public String getlastUpdated() {
+		return lastUpdated;
+	}
 	/**
 	 * Gets all special events of a given type
 	 * 
@@ -358,7 +360,7 @@ public class QueryManager {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				//return SectionsParser.parse(makeQuery(14, type), callback);
-				return NewsFeedParser.parseNewsFeed("http://www.cinequest.org/news.php", callback);
+				return NewsFeedParser.parseNewsFeed("http://www.cinequest.org/news.php", callback);								
 			}
 		});
 	}
@@ -494,7 +496,17 @@ public class QueryManager {
 	public String getMainImageURL() {
 		return resolveRelativeImageURL(mainImageURL);
 	}
-
+	
+	public void LoadFestival(final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback);
+				// return ProgramItemParser.parseProgramItem(makeQuery(0, "" +
+				// id), callback);
+			}
+		});
+	}
+	
 	/**
 	 * Gets the complete data of the Festival. Call only inside run method of
 	 * getWebData.
@@ -508,31 +520,36 @@ public class QueryManager {
 			Platform.getInstance().starting(callback);
 		}
 		synchronized (festivalLock) {
-			if (!festival.isEmpty())
+			
+			String updatedDate=NewsFeedParser.parseNewsFeed("http://www.cinequest.org/news.php", callback).getLastUpdated();			
+			Log.i("QueryManager:getFestival-Date Check:","UpdatedDate from News Feed:"+updatedDate+" lastUpdated:"+lastUpdated);
+			
+			if (updatedDate.equalsIgnoreCase(lastUpdated) && (!festival.isEmpty()))
 				return festival;
 			synchronized (progressLock) {
 				festivalQueryInProgress = true;
 			}
 			try {
-				String lastChanged = festival.getLastChanged();
+				/*String lastChanged = festival.getLastChanged();
 				int i = lastChanged.indexOf(' ');
 				if (i >= 0) {
 					lastChanged = lastChanged.substring(0, i) + "%20"
 							+ lastChanged.substring(i + 1);
-				}
+				}*/
 				/*Festival result = FestivalParser.parseFestival(
 						makeQuery(18, lastChanged), callback);*/
 				
 				// Using the new Xml feed.
 				// FIXME - Should the URL be hardcoded over here.
 				Festival result = FestivalParser.parseFestival("http://payments.cinequest.org/websales/feed.ashx?guid=70d8e056-fa45-4221-9cc7-b6dc88f62c98&showslist=true", callback);
-				
 				if (!result.isEmpty()) {
 					festival = result;
+					lastUpdated=updatedDate;					
 				} else
-					festival.setLastChanged(result.getLastChanged());
-				festival.setEvents(EventsParser.parseEvents(
-						makeQuery(14, "events"), null, callback));
+					Log.i("QueryManager:getFestival","Festival Object is Empty");
+					//festival.setLastChanged(result.getLastChanged());
+				/*festival.setEvents(EventsParser.parseEvents(
+						makeQuery(14, "events"), null, callback));*/
 			} finally {
 				synchronized (progressLock) {
 					festivalQueryInProgress = false;
