@@ -211,8 +211,8 @@ public class HomeActivity extends Activity {
 		ArrayList<String> imgURL = new ArrayList<String>();
 		for (int i=0;i<news.size();i++)
 		{
-			imgURL.add(news.get(i).getEventImage());
-			Log.i("trace1",news.get(i).getEventImage());
+			//imgURL.add(news.get(i).getEventImage());
+			imgURL.add(news.get(i).getThumbImage());			
 		}
 		String[] imageURL=imgURL.toArray(new String[imgURL.size()]);
 

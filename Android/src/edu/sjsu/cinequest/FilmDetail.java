@@ -62,8 +62,11 @@ public class FilmDetail extends CinequestActivity {
         View headerView = getLayoutInflater().inflate(
                 R.layout.detail_layout, null);
         ListView listView = (ListView) findViewById(R.id.ScheduleList);
-        listView.addHeaderView(headerView, null, false); 
+        listView.addHeaderView(headerView, null, false);
         
+        View footerView = getLayoutInflater().inflate(
+                R.layout.shareoptions, null);
+        listView.addFooterView(footerView, null, false);
        
 
         Button fbButton = (Button) findViewById(R.id.fbshare);
