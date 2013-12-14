@@ -185,7 +185,7 @@ public class QueryManager {
 		});
 	}
 
-	public void getSchedulesDay(final String date, final Callback callback) {
+	/*public void getSchedulesDay(final String date, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				// Vector result = SchedulesParser.parseSchedule(makeQuery(9,
@@ -195,7 +195,7 @@ public class QueryManager {
 				return result;
 			}
 		});
-	}
+	}*/
 
 	private static void add(Vector schedules, Vector events, String date) // TODO:
 																			// Move

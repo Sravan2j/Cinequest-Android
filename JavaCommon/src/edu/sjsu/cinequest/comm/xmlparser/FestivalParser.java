@@ -56,18 +56,35 @@ import edu.sjsu.cinequest.comm.cinequestitem.VenueLocation;
  * Parses the complete information of the Festival
  */
 public class FestivalParser extends BasicHandler {
+	
+	/**
+	 * The XML feed URL for Venues.
+	 */
+	private final static String URL_VENUES = "http://www.cinequest.org/venuelist.php";
+    
+	/**
+     * Contains the List of Shows parsed from the XML feed. 
+     */
     private List<Show> shows = new ArrayList<Show>();
+    
+    
+    /**
+     * Represents the current block being processed within the XML feed.
+     */
     private String currentBlock = "";
+    
+    // Temporary obejtcs required while parsing the XML feed.
     private Show show;
     private Showing showing;
     private String propName;
 
 
     /**
-     * Parses the complete Festival information
-     * @param url
-     * @param callback
-     * @return parsed festival
+     * Parses the complete Festival information from the XML feed.
+     * 
+     * @param url The URL which contains the XML feed.
+     * @param callback The callback object
+     * @return The parsed Festival object.
      * @throws SAXException
      * @throws IOException
      */
@@ -77,12 +94,21 @@ public class FestivalParser extends BasicHandler {
         List<Show> shows = parseShows(url, callback);
         
         // Parse the list of Venues using the Venue XML feed.
-        Map<String, Venue> venues = VenuesParser.parse("http://www.cinequest.org/venuelist.php", callback);
+        Map<String, Venue> venues = VenuesParser.parse(URL_VENUES, callback);
         
         Log.e("FestivalParser.java", "Parsed Shows, Size:" + shows.size());
         return new FestivalConverter(shows, venues).convert();
     }
     
+    /**
+     * This method will log error if any within the XML feed. 
+     * Errors include Shows with no EventType, ShortIDs that do not exist or Shorts having a atleast 1 Showing. 
+     * 
+     * @param url The URL which contains the XML feed.
+     * @param callback The callback object
+     * @throws SAXException
+     * @throws IOException
+     */
     public static void logErrors(String url, Callback callback) throws SAXException, IOException {
     	Log.e("FestivalParser.java", "Within logErrors(), url:" + url);
     	
@@ -126,12 +152,26 @@ public class FestivalParser extends BasicHandler {
     }
     
 
+    /**
+     * Parses the XML feed using the given URL and returns a list of Shows.
+     * 
+     * @param url The URL which contains the XML feed.
+     * @param callback The callback object
+     * @return The list of Shows
+     * @throws SAXException
+     * @throws IOException
+     */
     public static List<Show> parseShows(String url, Callback callback) throws SAXException, IOException {
         FestivalParser handler = new FestivalParser();        
         Platform.getInstance().parse(url, handler, callback);
         return handler.getShows();
     }
 
+    /**
+     * Getter for list of Shows
+     * 
+     * @return List of Shows
+     */
     public List<Show> getShows() {
         return shows;
     }
@@ -201,7 +241,13 @@ public class FestivalParser extends BasicHandler {
         }
     }
 
+    /**
+     * This class will convert the List of Shows into a Festival object.
+     *
+     */
     public static class FestivalConverter {
+    	
+    	// Some collections used to populate the required information within a Festival.
         private List<Show> shows;
         private List<Show> actualShows;
         private Map<String, Venue> venues;
@@ -225,7 +271,6 @@ public class FestivalParser extends BasicHandler {
 			return shortsNotFound;
 		}
         
-
         public FestivalConverter(List<Show> shows, Map<String, Venue> venues) {
             this.shows = shows;
             this.venues = venues;
@@ -249,10 +294,6 @@ public class FestivalParser extends BasicHandler {
             this.populateFestivalItems("Film", showsMap);
             this.populateFestivalItems("Event", showsMap);
             this.populateFestivalItems("Forum", showsMap);
-            
-//            Log.e("FestivalParser.java", "Films_Size:" + festival.getC_films().size());
-//            Log.e("FestivalParser.java", "Events_Size:" + festival.getC_events().size());
-//            Log.e("FestivalParser.java", "Forum_Size:" + festival.getC_forums().size());
 
             // Remove the partial shows from shows
             // Add them to partialShows, grouped by their title
@@ -535,6 +576,12 @@ public class FestivalParser extends BasicHandler {
         	
         }
         
+        /**
+         * Returns the List of Shows based on the input type.
+         * 
+         * @param type The type of Shows to be considered
+         * @return The filtered list of Shows.
+         */
         private List<Show> filterShows(String type) {
         	
         	List<Show> filteredShows = new ArrayList<Show>();
@@ -564,19 +611,21 @@ public class FestivalParser extends BasicHandler {
         		} else if(type.equals("Forum") &&
         				(show.customProperties.containsKey("EventType") && show.customProperties.get("EventType").contains("Forum"))) {
         			filteredShows.add(show);
-        		} /*else {
-        			// EventType not recognized.
-        			if( show.customProperties.containsKey("EventType") ) {
-        				Log.e("Unrecognized EventType. Given Type:" + type + ", ID:" + show.id, show.customProperties.get("EventType").toString() );
-        			}
-        		}*/
+        		}
         	}
-        	
-        	//Log.e("FestivalParser.java", "Type:" + type + ", Size=" + filteredShows.size());
         	
         	return filteredShows;
         }
         
+        /**
+         * Collects the Short Films from the given List of Shows and also validates the Short Films 
+         * (i.e. a Short Film should not contain a Showing)
+         * 
+         * @param type The type of entity (Film/Event/Forum)
+         * @param filteredShows The filtered list if Shows
+         * @param showsMap Map containing the Show Id and the associated Show Object.
+         * @return Map containing the Shorts
+         */
         private Map<Integer, CommonItem> collectShortsAndValidate( String type, List<Show> filteredShows, Map<String, Show> showsMap) {
 
         	Map<Integer, CommonItem> shortsMap = new HashMap<Integer, CommonItem>();
@@ -631,6 +680,12 @@ public class FestivalParser extends BasicHandler {
 
         }
         
+        /**
+         * This method removes allShort Films from the List of Shows.
+         * 
+         * @param filteredShows The List of Shoes
+         * @param shortsMap Contains the Shorts.
+         */
         private void removeShorts(List<Show> filteredShows, Map<Integer, CommonItem> shortsMap) {
         	
         	Iterator iter = filteredShows.iterator();
@@ -655,6 +710,13 @@ public class FestivalParser extends BasicHandler {
             return result.substring(1, result.length() - 1);
         }
         
+        /**
+         * Returns a list of timestamps associated with the schedules within the CommonItem.
+         * NOTE: This method processes the schedule.getStartTime().
+         * 
+         * @param item The given ComonItem
+         * @return The list of timestamps.
+         */
         private SortedSet<String> getDatesFromCommonItem(CommonItem item) {
         	
         	String isoDatePattern = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$";
@@ -682,6 +744,12 @@ public class FestivalParser extends BasicHandler {
         	return dates;
         }
         
+        /**
+         * This method populates the Films/Events/Forums using the given type and list of Shows.
+         * 
+         * @param type The entity type (Film/Event/Forum)
+         * @param showsMap Contains the Shows parsed from the XML feed.
+         */
         private void populateFestivalItems(String type, Map<String, Show> showsMap) {
         	
             Set<String> uniqueVenues = new HashSet<String>();            
@@ -803,6 +871,13 @@ public class FestivalParser extends BasicHandler {
             
         }
         
+        /**
+         * Populates the Film/Events/Forums by Date. Required by the layout.
+         * 
+         * @param type The entity type (Film/Event/Forum)
+         * @param dates The 
+         * @param item
+         */
         private void populateItemsByDate(String type, SortedSet<String> dates, CommonItem item) {
         	
         	// Now populate the Map which stores CommonItems by Dates
