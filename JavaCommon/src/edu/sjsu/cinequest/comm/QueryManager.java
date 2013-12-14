@@ -488,7 +488,7 @@ public class QueryManager {
 		return resolveRelativeImageURL(mainImageURL);
 	}
 	
-	public void LoadFestival(final Callback callback) {
+	public void loadFestival(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return getFestival(callback);
@@ -512,7 +512,7 @@ public class QueryManager {
 		}
 		synchronized (festivalLock) {
 			
-			String updatedDate=NewsFeedParser.parseNewsFeed("http://www.cinequest.org/news.php", callback).getLastUpdated();			
+			String updatedDate = NewsFeedParser.getLastpdated("http://www.cinequest.org/news.php", callback);			
 			Log.i("QueryManager:getFestival-Date Check:","UpdatedDate from News Feed:"+updatedDate+" lastUpdated:"+lastUpdated);
 			
 			if (updatedDate.equalsIgnoreCase(lastUpdated) && (!festival.isEmpty()))
@@ -521,14 +521,6 @@ public class QueryManager {
 				festivalQueryInProgress = true;
 			}
 			try {
-				/*String lastChanged = festival.getLastChanged();
-				int i = lastChanged.indexOf(' ');
-				if (i >= 0) {
-					lastChanged = lastChanged.substring(0, i) + "%20"
-							+ lastChanged.substring(i + 1);
-				}*/
-				/*Festival result = FestivalParser.parseFestival(
-						makeQuery(18, lastChanged), callback);*/
 				
 				// Using the new Xml feed.
 				// FIXME - Should the URL be hardcoded over here.
@@ -536,11 +528,10 @@ public class QueryManager {
 				if (!result.isEmpty()) {
 					festival = result;
 					lastUpdated=updatedDate;					
-				} else
+				} else {
 					Log.i("QueryManager:getFestival","Festival Object is Empty");
-					//festival.setLastChanged(result.getLastChanged());
-				/*festival.setEvents(EventsParser.parseEvents(
-						makeQuery(14, "events"), null, callback));*/
+				}
+
 			} finally {
 				synchronized (progressLock) {
 					festivalQueryInProgress = false;

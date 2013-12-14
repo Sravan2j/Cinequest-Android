@@ -12,7 +12,9 @@ import edu.sjsu.cinequest.comm.cinequestitem.NewsFeed;
 
 public class NewsFeedParser extends BasicHandler {
 	
-	private String currentBlock = null;
+	// Set to empty string.
+	private String currentBlock = "";
+	
 	private boolean getLastUpdated = false;	// If set to true, the entire feed is parsed. Else, only the lastUpdatedValue is fetched.
 	private News news;
 	private NewsFeed newsFeed;
