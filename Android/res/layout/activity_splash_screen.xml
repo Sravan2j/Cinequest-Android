@@ -16,8 +16,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="100dp"
-            android:paddingBottom="50dp"
-            android:fontFamily="sans-serif-light"
+            android:paddingBottom="50dp"            
             android:text="Loading.... Please Wait...!"
             android:textAppearance="?android:attr/textAppearanceMedium" />
         <ProgressBar
