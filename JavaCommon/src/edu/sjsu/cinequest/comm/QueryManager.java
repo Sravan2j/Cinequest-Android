@@ -42,6 +42,7 @@ public class QueryManager {
 	
 	public static final String showsFeedURL = "http://payments.cinequest.org/websales/feed.ashx?guid=70d8e056-fa45-4221-9cc7-b6dc88f62c98&showslist=true";
 	public static final String newsFeedURL = "http://www.cinequest.org/news.php";
+	public static final String venuesFeedURL = "http://www.cinequest.org/venuelist.php";
 	
 	private Festival festival = new Festival();
 	private Object festivalLock = new Object();

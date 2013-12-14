@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +41,7 @@ import android.util.Log;
 
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
+import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
@@ -54,11 +54,6 @@ import edu.sjsu.cinequest.comm.cinequestitem.VenueLocation;
  * Parses the complete information of the Festival
  */
 public class FestivalParser extends BasicHandler {
-	
-	/**
-	 * The XML feed URL for Venues.
-	 */
-	private final static String URL_VENUES = "http://www.cinequest.org/venuelist.php";
     
 	/**
      * Contains the List of Shows parsed from the XML feed. 
@@ -92,7 +87,7 @@ public class FestivalParser extends BasicHandler {
         List<Show> shows = parseShows(url, callback);
         
         // Parse the list of Venues using the Venue XML feed.
-        Map<String, Venue> venues = VenuesParser.parse(URL_VENUES, callback);
+        Map<String, Venue> venues = VenuesParser.parse(QueryManager.venuesFeedURL, callback);
         
         Log.e("FestivalParser.java", "Parsed Shows, Size:" + shows.size());
         return new FestivalConverter(shows, venues).convert();
@@ -113,7 +108,7 @@ public class FestivalParser extends BasicHandler {
         List<Show> shows = parseShows(url, callback);
         
         // Parse the list of Venues using the Venue XML feed.
-        Map<String, Venue> venues = VenuesParser.parse("http://www.cinequest.org/venuelist.php", callback);
+        Map<String, Venue> venues = VenuesParser.parse(QueryManager.venuesFeedURL, callback);
         
         Log.e("FestivalParser.java", "Parsed Shows, Size:" + shows.size());
         FestivalConverter festivalConverter  = new FestivalConverter(shows, venues);
@@ -149,7 +144,6 @@ public class FestivalParser extends BasicHandler {
         
     }
     
-
     /**
      * Parses the XML feed using the given URL and returns a list of Shows.
      * 
@@ -572,9 +566,8 @@ public class FestivalParser extends BasicHandler {
                 List<String> typeOfFilm = show.customProperties.get("Type of Film");
                 if (typeOfFilm == null || !typeOfFilm.contains("Shorts Program")) {
                     
-                    item.getCommonItems().add(item);   // FIXME - WHY ?????? why add to itself ??
+                   // item.getCommonItems().add(item);   // FIXME - WHY ?????? why add to itself ??
                     
-                    // FIXME - TODO 
                     // Populate the individual lists
                     if(type.equals("Film")) {
                     	festival.getFilms().add(item);
@@ -602,14 +595,6 @@ public class FestivalParser extends BasicHandler {
 
                 			CommonItem shortsItem = shortsMap.get(Integer.parseInt(shortID));                			
                 			item.getCommonItems().add(shortsItem);
-                			
-//                			if(type.equals("Film")) {
-//                            	festival.getC_films().add(shortsItem);
-//                            } else if(type.equals("Event")) {
-//                            	festival.getC_events().add(shortsItem);
-//                            } else if(type.equals("Forum")) {
-//                            	festival.getC_forums().add(shortsItem);
-//                            }
                 		}		
                 	}       	
                 }
