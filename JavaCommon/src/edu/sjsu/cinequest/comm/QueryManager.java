@@ -21,25 +21,14 @@ package edu.sjsu.cinequest.comm;
 
 import java.io.IOException;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import org.xml.sax.SAXException;
 
 import android.util.Log;
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
-import edu.sjsu.cinequest.comm.cinequestitem.Film;
-import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
-import edu.sjsu.cinequest.comm.xmlparser.DatesParser;
-import edu.sjsu.cinequest.comm.xmlparser.EventsParser;
 import edu.sjsu.cinequest.comm.xmlparser.FestivalParser;
-import edu.sjsu.cinequest.comm.xmlparser.FilmParser;
-import edu.sjsu.cinequest.comm.xmlparser.FilmsParser;
-import edu.sjsu.cinequest.comm.xmlparser.GenresParser;
-import edu.sjsu.cinequest.comm.xmlparser.LinkParser;
 import edu.sjsu.cinequest.comm.xmlparser.NewsFeedParser;
-import edu.sjsu.cinequest.comm.xmlparser.ProgramItemParser;
-import edu.sjsu.cinequest.comm.xmlparser.SeasonParser;
 import edu.sjsu.cinequest.comm.xmlparser.UserScheduleParser;
 
 /**
@@ -76,6 +65,8 @@ public class QueryManager {
 	private Object festivalLock = new Object();
 	private boolean festivalQueryInProgress = false;
 	private Object progressLock = new Object();
+	
+	private boolean firstTime = true;
 
 	private String makeQuery(int type, String arg) {
 		return "http://" + queryBase + queries[type] + arg;
@@ -130,15 +121,15 @@ public class QueryManager {
 		t.start();
 	}
 
-	public void getDVDs(final Callback callback) {
+	/*public void getDVDs(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return FilmsParser.parse(makeQuery(11, ""), callback);
 			}
 		});
-	}
+	}*/
 
-	public void getDVD(final int id, final Callback callback) {
+	/*public void getDVD(final int id, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				Film f = FilmParser.parseFilm(makeQuery(12, id), callback);
@@ -146,15 +137,15 @@ public class QueryManager {
 				return f;
 			}
 		});
-	}
+	}*/
 
-	public void getGenres(final Callback callback) {
+	/*public void getGenres(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return GenresParser.parse(makeQuery(8, ""), callback);
 			}
 		});
-	}
+	}*/
 
 	public void getFilm(final int id, final Callback callback) {
 		getWebData(callback, new Callable() {
@@ -176,14 +167,14 @@ public class QueryManager {
 	 * @param callback
 	 *            returns a vector of Schedule items
 	 */
-	public void getEventSchedules(final String type, final Callback callback) {
+	/*public void getEventSchedules(final String type, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return EventsParser.parseEvents(makeQuery(14, "events"), type,
 						callback);
 			}
 		});
-	}
+	}*/
 
 	/*public void getSchedulesDay(final String date, final Callback callback) {
 		getWebData(callback, new Callable() {
@@ -197,7 +188,7 @@ public class QueryManager {
 		});
 	}*/
 
-	private static void add(Vector schedules, Vector events, String date) // TODO:
+	/*private static void add(Vector schedules, Vector events, String date) // TODO:
 																			// Move
 																			// to
 																			// Festival
@@ -228,16 +219,16 @@ public class QueryManager {
 					schedules.insertElementAt(evt, 0);
 			}
 		}
-	}
+	}*/
 
-	public void getVenues(final Callback callback) {
+	/*public void getVenues(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return getFestival(callback).getVenueLocations();
 				// return VenuesParser.parse(makeQuery(7, ""), callback);
 			}
 		});
-	}
+	}*/
 
 	public void getAllFilms(final Callback callback) {
 		getWebData(callback, new Callable() {
@@ -320,24 +311,24 @@ public class QueryManager {
 	}
 	
 	// TODO
-	public void getFilmsByGenre(final String genre, final Callback callback) {
+	/*public void getFilmsByGenre(final String genre, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return FilmsParser.parse(makeQuery(13, genre), callback);
 			}
 		});
-	}
+	}*/
 
-	public void getAllPrograms(final Callback callback) {
+	/*public void getAllPrograms(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return getFestival(callback).getProgramItems();
 				// return ProgramItemsParser.parse(makeQuery(17, ""), callback);
 			}
 		});
-	}
+	}*/
 
-	public void getSchedules(final Callback callback) {
+	/*public void getSchedules(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return getFestival(callback).getSchedules();
@@ -345,7 +336,7 @@ public class QueryManager {
 				// callback);
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Gets a special screen as a vector of Section objects
@@ -360,7 +351,7 @@ public class QueryManager {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				//return SectionsParser.parse(makeQuery(14, type), callback);
-				return NewsFeedParser.parseNewsFeed("http://www.cinequest.org/news.php", callback);								
+				return NewsFeedParser/*.getLastpdated("http://www.cinequest.org/news.php", callback);//*/.parseNewsFeed("http://www.cinequest.org/news.php", callback);								
 			}
 		});
 	}
@@ -372,13 +363,13 @@ public class QueryManager {
 	 * @param callback
 	 *            returns the result
 	 */
-	public void getSeasonMode(final Callback callback) {
+	/*public void getSeasonMode(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return SeasonParser.parse(makeQuery(1, ""), callback);
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * A method to get the festival dates from Cinequest.
@@ -386,13 +377,13 @@ public class QueryManager {
 	 * @param callback
 	 *            returns the result
 	 */
-	public void getFestivalDates(final Callback callback) {
+	/*public void getFestivalDates(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return DatesParser.parse(makeQuery(10, ""), callback);
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Gets a program item
@@ -421,30 +412,30 @@ public class QueryManager {
 	 * @param callback
 	 *            returns the result TODO: Obsolete
 	 */
-	public void getMobileItem(final int id, final Callback callback) {
+	/*public void getMobileItem(final int id, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return ProgramItemParser.parseProgramItem(makeQuery(15, id),
 						callback);
 			}
 		});
-	}
+	}*/
 
-	public void getDvdLink(final Callback callback) {
+	/*public void getDvdLink(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return LinkParser.parse(makeQuery(6, ""), callback);
 			}
 		});
-	}
+	}*/
 
-	public void getTicketLink(final Callback callback) {
+	/*public void getTicketLink(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return LinkParser.parse(makeQuery(5, ""), callback);
 			}
 		});
-	}
+	}*/
 
 	public void getSchedule(final Callback callback, final String email,
 			final String password) {

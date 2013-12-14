@@ -107,7 +107,8 @@ public class FilmDetail extends CinequestActivity {
         	// This happens when showing a film inside a program item
     		showFilm((CommonItem) target);
         } 
-        else if (target instanceof Filmlet) {
+        /*else if (target instanceof Filmlet) {
+        	Log.e("FilmDetail.java", "target is Filmlet.");
         	Filmlet filmlet = (Filmlet) target;
         	int id = filmlet.getId();
         	Callback callback = new ProgressMonitorCallback(this){
@@ -125,6 +126,7 @@ public class FilmDetail extends CinequestActivity {
         	}
         	
         } else if (target instanceof Schedule) {
+        	Log.e("FilmDetail.java", "target is Schedule.");
         	Schedule schedule = (Schedule) target;
         	final int id = schedule.getItemId();
         	Callback callback = new ProgressMonitorCallback(this){
@@ -134,11 +136,13 @@ public class FilmDetail extends CinequestActivity {
     				showProgramItem((CommonItem) result);
     			}
     		}; 
+    		
         	if (schedule.isMobileItem())
         		HomeActivity.getQueryManager().getMobileItem(id, callback);
         	else
         		HomeActivity.getQueryManager().getProgramItem(id, callback);        	
         } else if (target instanceof MobileItem) {
+        	Log.e("FilmDetail.java", "target is MobileItem.");
         	MobileItem mobileItem = (MobileItem) target;
         	final int id = mobileItem.getLinkId();
 			String linkType = mobileItem.getLinkType();
@@ -171,7 +175,7 @@ public class FilmDetail extends CinequestActivity {
 						showFilm((CommonItem) result);
 					}});				
 			}			
-        }
+        }*/
 	}	
 	
 	private void showSchedules(Vector<Schedule> schedules)
