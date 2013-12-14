@@ -73,7 +73,7 @@ public class SplashScreenActivity extends Activity {
 		protected Boolean doInBackground(Void... params) {						
 			//Check whether Cinequest calendar exists in Device or Not. If not exists, create Cinequest Calendar in device.
 			
-			String[] proj = new String[]{"_id", "calendar_displayName"};
+			/*String[] proj = new String[]{"_id", "calendar_displayName"};
 			String calSelection = "(calendar_displayName= ?) "; 				
 			String[] calSelectionArgs = new String[] {calendarName}; 
 			Uri event = Uri.parse("content://com.android.calendar/calendars");        
@@ -103,7 +103,7 @@ public class SplashScreenActivity extends Activity {
 				l_managedCursor.close();
 				l_managedCursor=null;
 			}
-
+*/
 					
 			//Create QueryManager Object and assign it to HomeActivity class queryManager variable. 
 			HomeActivity.setQueryManager(new QueryManager());				
