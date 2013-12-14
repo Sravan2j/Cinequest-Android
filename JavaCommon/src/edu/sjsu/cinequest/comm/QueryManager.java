@@ -20,16 +20,13 @@
 package edu.sjsu.cinequest.comm;
 
 import java.io.IOException;
-import java.util.Hashtable;
 
 import org.xml.sax.SAXException;
 
 import android.util.Log;
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
-import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
 import edu.sjsu.cinequest.comm.xmlparser.FestivalParser;
 import edu.sjsu.cinequest.comm.xmlparser.NewsFeedParser;
-import edu.sjsu.cinequest.comm.xmlparser.UserScheduleParser;
 
 /**
  * @author Kevin Ross (cs160_109)
@@ -65,8 +62,6 @@ public class QueryManager {
 	private Object festivalLock = new Object();
 	private boolean festivalQueryInProgress = false;
 	private Object progressLock = new Object();
-	
-	private boolean firstTime = true;
 
 	private String makeQuery(int type, String arg) {
 		return "http://" + queryBase + queries[type] + arg;
@@ -393,7 +388,7 @@ public class QueryManager {
 	 * @param callback
 	 *            returns the result
 	 */
-	public void getProgramItem(final int id, final Callback callback) {
+	/*public void getProgramItem(final int id, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return getFestival(callback).getProgramItemForId(id);
@@ -401,7 +396,7 @@ public class QueryManager {
 				// id), callback);
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Gets a "mobile" item (i.e. a kind of event that is not in the database
@@ -437,7 +432,7 @@ public class QueryManager {
 		});
 	}*/
 
-	public void getSchedule(final Callback callback, final String email,
+	/*public void getSchedule(final Callback callback, final String email,
 			final String password) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
@@ -449,9 +444,9 @@ public class QueryManager {
 						postData, callback);
 			}
 		});
-	}
+	}*/
 
-	public void saveSchedule(final Callback callback, final String email,
+	/*public void saveSchedule(final Callback callback, final String email,
 			final String password, final UserSchedule schedule) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
@@ -465,7 +460,7 @@ public class QueryManager {
 						postData, callback);
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Resolves a relative image URL

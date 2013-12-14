@@ -97,7 +97,7 @@ public class User {
 	// TODO: It would be better to have TWO callbacks: a 
 	// progress monitor callback for running alongside the time-consuming
 	// tasks and a callback for returning the actual result
-	public void syncSchedule(final Action credentialsAction,
+	/*public void syncSchedule(final Action credentialsAction,
 			final Action syncAction, 
 	    final Callback progressCallback, 
 	    final Callback resultCallback,
@@ -206,7 +206,7 @@ public class User {
 						)
 				)
 			).start(new Credentials(email, password), resultCallback);
-	}
+	}*/
 
 	public static class Credentials {
 		public Credentials(String email, String password) {
