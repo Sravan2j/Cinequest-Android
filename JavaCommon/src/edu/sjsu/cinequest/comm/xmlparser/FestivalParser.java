@@ -44,7 +44,6 @@ import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
-import edu.sjsu.cinequest.comm.cinequestitem.Film;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 import edu.sjsu.cinequest.comm.cinequestitem.Show;
 import edu.sjsu.cinequest.comm.cinequestitem.Showing;
@@ -251,8 +250,6 @@ public class FestivalParser extends BasicHandler {
         private List<Show> actualShows;
         private Map<String, Venue> venues;
         private Festival festival = new Festival();
-        
-        private Map<Integer, Film> shortsMap = new LinkedHashMap<Integer, Film>();
         
         private Map<String, Show> showsWithNoEventType = new HashMap<String, Show>();
 		private Map<String, Show> invalidShorts = new HashMap<String, Show>();
@@ -580,13 +577,13 @@ public class FestivalParser extends BasicHandler {
                     // FIXME - TODO 
                     // Populate the individual lists
                     if(type.equals("Film")) {
-                    	festival.getC_films().add(item);
+                    	festival.getFilms().add(item);
   	
                     } else if(type.equals("Event")) {
-                    	festival.getC_events().add(item);
+                    	festival.getEvents().add(item);
                     	
                     } else if(type.equals("Forum")) {
-                    	festival.getC_forums().add(item);
+                    	festival.getForums().add(item);
 
                     }
                 }
@@ -632,11 +629,11 @@ public class FestivalParser extends BasicHandler {
             Vector v = null;
             
             if(type.equals("Film")) {
-            	v = festival.getC_films();
+            	v = festival.getFilms();
             } else if(type.equals("Event")) {
-            	v = festival.getC_events();
+            	v = festival.getEvents();
             } else if(type.equals("Forum")) {
-            	v = festival.getC_forums();
+            	v = festival.getForums();
             }
             
             for(Object obj : v) {
