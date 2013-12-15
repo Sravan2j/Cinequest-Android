@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
+    android:padding="5dp"
     android:visibility="visible"
     tools:context=".MainActivity" >
 
@@ -24,24 +24,25 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/eventName"
         android:layout_below="@+id/eventName"
-        android:text="@string/hello_world" />
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 
-    <TextView
+    <!-- <TextView
         android:id="@+id/endTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/startTime"        
         android:layout_below="@+id/startTime"
         android:text="Small Text"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceSmall" /> -->
 
     <Button
         android:id="@+id/remove"
         android:layout_width="35dip"
         android:layout_height="45dip"
-        android:layout_alignBaseline="@+id/endTime"
-        android:layout_alignBottom="@+id/endTime"
+        android:layout_alignBaseline="@+id/startTime"
+        android:layout_alignBottom="@+id/startTime"
         android:layout_alignParentRight="true"
         android:background="@drawable/trash" />
     

@@ -1,5 +1,6 @@
 package edu.sjsu.cinequest;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,10 +11,13 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.ContentUris;
+import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -56,18 +60,26 @@ class EventData {
 		return eid;
 	}
 	public static class CompName implements Comparator<EventData> {
-        @Override
-        public int compare(EventData arg0, EventData arg1) {
-        	return arg0.getName().compareToIgnoreCase(arg1.getName());       
-        }
-    }
+		@Override
+		public int compare(EventData arg0, EventData arg1) {
+			return arg0.getName().compareToIgnoreCase(arg1.getName());       
+		}
+	}
 }
 public class ScheduleActivity extends Activity {
 	ListView listView;
+	Configuration config;
+	DateFormat dtformat;
+	//SimpleDateFormat sdf;
+	private static final String DATE_TIME_FORMAT = "MMM dd, yyyy'T'HH:mm";
 	private List<EventData> events = new ArrayList<EventData>();
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.schedulelayout);		
+		setContentView(R.layout.schedulelayout);
+
+		config = getApplicationContext().getResources().getConfiguration();
+		//sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
+		dtformat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, config.locale);		
 	}
 
 	public void populateSchedule()
@@ -133,12 +145,21 @@ public class ScheduleActivity extends Activity {
 				if (v == null) v = inflater.inflate(R.layout.eventlistview, null);                                
 				TextView textView = (TextView) v.findViewById(R.id.eventName);
 				textView.setText(q.getName());
-
+				//q.getStime().split("\\s[0-9]+\\:");
+				String sStr[]=q.getStime().split("T");
+				String eStr[]=q.getEtime().split("T");
 				TextView textView1 = (TextView) v.findViewById(R.id.startTime);
-				textView1.setText(q.getStime());
+				if (sStr[0].equalsIgnoreCase(eStr[0])){
+					textView1.setText(sStr[0]+"  Time: "+sStr[1]+" - "+eStr[1]);
 
-				TextView textView2 = (TextView) v.findViewById(R.id.endTime);
-				textView2.setText(q.getEtime());              
+				}
+				else
+				{
+					textView1.setText(sStr[0]+" "+sStr[1]+" - "+eStr[0]+" "+eStr[1]);
+				}
+				textView1.setTypeface(null, Typeface.ITALIC);
+				/*TextView textView2 = (TextView) v.findViewById(R.id.endTime);
+				textView2.setText(q.getEtime());              */
 				Button button1 = (Button) v.findViewById(R.id.remove);
 				button1.setOnClickListener( new OnClickListener() {
 					@Override
@@ -164,13 +185,13 @@ public class ScheduleActivity extends Activity {
 		};
 		listView = (ListView) findViewById(R.id.schedule_listview);
 		listView.setAdapter(adapter);
-		
+
 		listView.setItemsCanFocus(false);
 		l_managedCursor.close();
 		l_managedCursor=null;
 	}
 
-	private static final String DATE_TIME_FORMAT = "yyyy MMM dd, HH:mm:ss";
+
 	public static String getDateTimeStr(int p_delay_min) {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
@@ -183,12 +204,27 @@ public class ScheduleActivity extends Activity {
 		}
 	}
 
-	public static String getDateTimeStr(String p_time_in_millis) {
+	public String getDateTimeStr(String p_time_in_millis) {
 		SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
+		//SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
 		Date l_time = new Date(Long.parseLong(p_time_in_millis));
 		return sdf.format(l_time);
+
+
+		/*Date date = null;
+		try {
+			date = sdf.parse(q.getStartTime());
+		} catch (ParseException e) {
+			// handle exception here !
+		} catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 */
+
+		//return dtformat.format(l_time);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();  // Always call the superclass method first		
