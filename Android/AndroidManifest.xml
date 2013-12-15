@@ -24,12 +24,12 @@
         <activity
             android:name=".HomeActivity"
             android:configChanges="orientation" />
-        <activity
+        <!-- <activity
             android:name=".DVDActivity"
-            android:configChanges="orientation" />
-        <activity
+            android:configChanges="orientation" />-->
+        <!-- <activity
             android:name=".EventsActivity"
-            android:configChanges="orientation" />
+            android:configChanges="orientation" /> -->
         <activity
             android:name=".FilmsActivity"
             android:configChanges="orientation" />
@@ -39,9 +39,9 @@
         <activity
             android:name=".FilmDetail"
             android:configChanges="orientation" />
-        <activity
+       <!--  <activity
             android:name=".ForumsActivity"
-            android:configChanges="orientation" />
+            android:configChanges="orientation" /> -->
         <activity
             android:name=".ScheduleActivity"
             android:configChanges="orientation" />

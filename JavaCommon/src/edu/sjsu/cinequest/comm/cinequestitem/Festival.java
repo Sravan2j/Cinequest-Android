@@ -19,7 +19,6 @@
 
 package edu.sjsu.cinequest.comm.cinequestitem;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,19 +35,16 @@ import java.util.Vector;
  */
 
 public class Festival implements Serializable {
-	private Vector programItems;
-	private Vector films;
+
 	private Vector schedules;
 	private Vector venueLocations;
 	private String lastChanged;
-	private Vector events;
 	
 	private Vector commonItems;
 	
-	private Vector c_films;
-	private Vector c_events;
-	private Vector c_forums;
-	
+	private Vector films;
+	private Vector events;
+	private Vector forums;
 
 	private SortedSet<String> filmDates;
 	private SortedSet<String> eventDates;
@@ -93,32 +89,29 @@ public class Festival implements Serializable {
 		return forumDates;
 	}
 	
-	public Vector getC_films() {
-		return c_films;
+	public Vector getFilms() {
+		return films;
 	}
 
-	public Vector getC_events() {
-		return c_events;
+	public Vector getEvents() {
+		return events;
 	}
 
-	public Vector getC_forums() {
-		return c_forums;
+	public Vector getForums() {
+		return forums;
 	}
 	
 	public Festival()
 	{
-		programItems = new Vector();
-		films = new Vector();
 		schedules = new Vector();
 		venueLocations = new Vector();
-		events = new Vector();
 		lastChanged = "";
 		
 		commonItems = new Vector();
 		commonItemsMap = new HashMap<Integer, CommonItem>();
-		c_films = new Vector();
-		c_events = new Vector();
-		c_forums = new Vector();
+		films = new Vector();
+		events = new Vector();
+		forums = new Vector();
 		
 		filmDates = new TreeSet<String>();
 		eventDates = new TreeSet<String>();
@@ -131,65 +124,26 @@ public class Festival implements Serializable {
 	
 	public boolean isEmpty() { return schedules.size() == 0; }
 	
-	/**
-	 * @return vector of ProgramItems
-	 */
-	public Vector getProgramItems() {
-		return programItems;
-	}
-	/**
-	 * @param programItems the vector of ProgramItems to set
-	 */
-	public void setProgramItems(Vector programItems) {
-		this.programItems = programItems;
-	}
-	/**
-	 * @return vector of Films
-	 */
-	public Vector getFilms() {
-		return films;
-	}
-	/**
-	 * @param films the vector of Films to set
-	 */
-	public void setFilms(Vector films) {
-		this.films = films;
-	}
+
 	/**
 	 * @return vector of Schedules
 	 */
 	public Vector getSchedules() {
 		return schedules;
 	}
-	/**
-	 * @param schedules the vector of Schedules to set
-	 */
-	public void setSchedules(Vector schedules) {
-		this.schedules = schedules;
-	}
+
 	/**
 	 * @return vector of VenueLocations
 	 */
 	public Vector getVenueLocations() {
 		return venueLocations;
 	}
-	/**
-	 * @param venueLocations the vector of VenueLocations to set
-	 */
-	public void setVenueLocations(Vector venueLocations) {
-		this.venueLocations = venueLocations;
-	}
+	
 	/**
 	 * @return lastChanged timestamp
 	 */
 	public String getLastChanged() {
 		return lastChanged;
-	}
-	/**
-	 * @param lastChanged the lastUpdated timestamp 
-	 */
-	public void setLastChanged(String lastChanged) {
-		this.lastChanged = lastChanged == null ? "" : lastChanged;
 	}
 	
 	public Vector getFilmsByDate(String date) {
@@ -204,7 +158,7 @@ public class Festival implements Serializable {
 		return new Vector(getCommonItemsForDate("Forum", date));
 	}
 	
-	public List<CommonItem> getCommonItemsForDate(String type, String date) {
+	private List<CommonItem> getCommonItemsForDate(String type, String date) {
 		
 		List<CommonItem> itemsByDate = null;
 		
@@ -226,49 +180,41 @@ public class Festival implements Serializable {
 		
 	}
 	
-	public Vector getSchedulesForDay(String date) {
+	/*public Vector getSchedulesForDay(String date) {
 		Vector result = new Vector();
 		for (int i = 0; i < schedules.size(); i++) {
 			Schedule schedule = (Schedule) schedules.elementAt(i);
 			if (schedule.getStartTime().startsWith(date)) result.addElement(schedule);
 		}
 		return result;
-	}
+	}*/
 	
-	public Film getFilmForId(int id) {
+	/*public Film getFilmForId(int id) {
 		for (int i = 0; i < films.size(); i++) {
 			Film film = (Film) films.elementAt(i);
 			if (film.getId() == id) return film;
 		}
 		return null;
-	}
+	}*/
 
-	public ProgramItem getProgramItemForId(int id) {
+	/*public ProgramItem getProgramItemForId(int id) {
 		for (int i = 0; i < programItems.size(); i++) {
 			ProgramItem item = (ProgramItem) programItems.elementAt(i);
 			if (item.getId() == id) return item;
 		}
 		return null;
-	}
+	}*/
 	
 	public CommonItem getCommonItemUsingId(int id) {
 		
 		return commonItemsMap.get(id);
-	}
-	
-	public Vector getEvents() {
-		return events;
-	}
-	
-	public void setEvents(Vector events) {
-		this.events = events;
 	}
 
 	/**
 	 * Cleans up after parsing.
 	 * @return this cleaned-up Festival
 	 */
-	public Festival cleanup() {
+	/*public Festival cleanup() {
 		for (int i = 0; i < programItems.size(); i++) {
 			ProgramItem item = (ProgramItem) programItems.elementAt(i);
 			ArrayList<Film> films = item.getFilms(); 
@@ -298,5 +244,5 @@ public class Festival implements Serializable {
 		}
 					
 		return this;
-	}	
+	}*/	
 }

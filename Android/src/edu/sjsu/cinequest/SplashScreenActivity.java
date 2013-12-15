@@ -108,7 +108,7 @@ public class SplashScreenActivity extends Activity {
 			//Create QueryManager Object and assign it to HomeActivity class queryManager variable. 
 			HomeActivity.setQueryManager(new QueryManager());				
 				//Load News Feed, Festival & Venue Feed
-				HomeActivity.getQueryManager().LoadFestival(new Callback(){
+				HomeActivity.getQueryManager().loadFestival(new Callback(){
 					@Override
 					public void invoke(Object result) {								
 						showProgress(false);

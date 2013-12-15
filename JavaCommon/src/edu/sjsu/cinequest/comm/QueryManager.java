@@ -20,70 +20,34 @@
 package edu.sjsu.cinequest.comm;
 
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Vector;
 
 import org.xml.sax.SAXException;
 
 import android.util.Log;
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
-import edu.sjsu.cinequest.comm.cinequestitem.Film;
-import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
-import edu.sjsu.cinequest.comm.cinequestitem.UserSchedule;
-import edu.sjsu.cinequest.comm.xmlparser.DatesParser;
-import edu.sjsu.cinequest.comm.xmlparser.EventsParser;
 import edu.sjsu.cinequest.comm.xmlparser.FestivalParser;
-import edu.sjsu.cinequest.comm.xmlparser.FilmParser;
-import edu.sjsu.cinequest.comm.xmlparser.FilmsParser;
-import edu.sjsu.cinequest.comm.xmlparser.GenresParser;
-import edu.sjsu.cinequest.comm.xmlparser.LinkParser;
 import edu.sjsu.cinequest.comm.xmlparser.NewsFeedParser;
-import edu.sjsu.cinequest.comm.xmlparser.ProgramItemParser;
-import edu.sjsu.cinequest.comm.xmlparser.SeasonParser;
-import edu.sjsu.cinequest.comm.xmlparser.UserScheduleParser;
 
 /**
  * @author Kevin Ross (cs160_109)
  */
 public class QueryManager {
+	
 	private String lastUpdated="";
-	private static final String queryBase = "mobile.cinequest.org/mobileCQ.php";
-	private static final String[] queries = { "?type=program_item&id=", // 0
-			"?type=mode", // 1
-			"?type=film&id=", // 2
-			"?type=films", // 3
-			"?type=schedule&id=", // 4 -- unused
-			"?type=blink&b=prg", // 5
-			"?type=blink&b=dvd", // 6
-			"?type=venues", // 7
-			"?type=genres", // 8
-			"?type=schedules&day=", // 9
-			"?type=fdates", // 10
-			"?type=dvds", // 11
-			"?type=dvd&id=", // 12
-			"?type=films&genre=", // 13
-			"?type=xml&name=", // 14
-			"?type=xml&name=items&id=", // 15, TODO: obsolete--use type 0
-			"?type=schedules", // 16 schedules by date
-			"?type=programs", // 17 program items by title
-			"?type=festival&lastChanged=" // 18 complete festival information
-	};
+
 	private static final String imageBase = "http://mobile.cinequest.org/";
 	private static final String mainImageURL = "imgs/mobile/creative.gif";
 
 	public static final String registrationURL = "http://mobile.cinequest.org/isch_reg.php";
+	
+	public static final String showsFeedURL = "http://payments.cinequest.org/websales/feed.ashx?guid=70d8e056-fa45-4221-9cc7-b6dc88f62c98&showslist=true";
+	public static final String newsFeedURL = "http://www.cinequest.org/news.php";
+	public static final String venuesFeedURL = "http://www.cinequest.org/venuelist.php";
+	
 	private Festival festival = new Festival();
 	private Object festivalLock = new Object();
 	private boolean festivalQueryInProgress = false;
 	private Object progressLock = new Object();
-
-	private String makeQuery(int type, String arg) {
-		return "http://" + queryBase + queries[type] + arg;
-	}
-
-	private String makeQuery(int type, int arg) {
-		return makeQuery(type, "" + arg);
-	}
 	
 	private interface Callable {
 		Object run() throws Throwable;
@@ -129,128 +93,22 @@ public class QueryManager {
 		});
 		t.start();
 	}
-
-	public void getDVDs(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return FilmsParser.parse(makeQuery(11, ""), callback);
-			}
-		});
-	}
-
-	public void getDVD(final int id, final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				Film f = FilmParser.parseFilm(makeQuery(12, id), callback);
-				f.setDownload(true);
-				return f;
-			}
-		});
-	}
-
-	public void getGenres(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return GenresParser.parse(makeQuery(8, ""), callback);
-			}
-		});
-	}
-
-	public void getFilm(final int id, final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				// return FilmParser.parseFilm(makeQuery(2, id), callback);
-				return getFestival(callback).getFilmForId(id);
-			}
-		});
-	}
 	
 	public String getlastUpdated() {
 		return lastUpdated;
-	}
-	/**
-	 * Gets all special events of a given type
-	 * 
-	 * @param type
-	 *            either "forums" or "special_events"
-	 * @param callback
-	 *            returns a vector of Schedule items
-	 */
-	public void getEventSchedules(final String type, final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return EventsParser.parseEvents(makeQuery(14, "events"), type,
-						callback);
-			}
-		});
-	}
-
-	public void getSchedulesDay(final String date, final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				// Vector result = SchedulesParser.parseSchedule(makeQuery(9,
-				// date), callback);
-				Vector result = getFestival(callback).getSchedulesForDay(date);
-				add(result, festival.getEvents(), date);
-				return result;
-			}
-		});
-	}
-
-	private static void add(Vector schedules, Vector events, String date) // TODO:
-																			// Move
-																			// to
-																			// Festival
-	{
-		for (int i = events.size() - 1; i >= 0; i--) {
-			Schedule evt = (Schedule) events.elementAt(i);
-			evt.setSpecialItem(true);
-			String evtTime = evt.getStartTime();
-			if (evtTime.startsWith(date)) {
-				boolean done = false;
-				for (int j = schedules.size() - 1; !done && j >= 0; j--) {
-					Schedule sched = (Schedule) schedules.elementAt(j);
-					if (evt.getItemId() == sched.getItemId()) {
-						schedules.setElementAt(evt, j); // Favor the special
-														// item
-						done = true;
-					} else {
-						String schedTime = sched.getStartTime();
-						int offset = date.length() + 1;
-						if (evtTime.substring(offset).compareTo(
-								schedTime.substring(offset)) > 0) {
-							schedules.insertElementAt(evt, j + 1);
-							done = true;
-						}
-					}
-				}
-				if (!done)
-					schedules.insertElementAt(evt, 0);
-			}
-		}
-	}
-
-	public void getVenues(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return getFestival(callback).getVenueLocations();
-				// return VenuesParser.parse(makeQuery(7, ""), callback);
-			}
-		});
 	}
 
 	public void getAllFilms(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getC_films();//.getFilms();
-				// return FilmsParser.parse(makeQuery(3, ""), callback);
+				return getFestival(callback).getFilms();
 			}
 		});
 	}
 	public void getAllEvents(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getC_events();//.getFilms();	
+				return getFestival(callback).getEvents();
 			}
 		});
 	}
@@ -258,7 +116,7 @@ public class QueryManager {
 	public void getAllForums(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getC_forums();//.getFilms();
+				return getFestival(callback).getForums();
 			}
 		});
 	}
@@ -266,7 +124,7 @@ public class QueryManager {
 	public void getFilmDates(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getFilmDates();//.getFilms();
+				return getFestival(callback).getFilmDates();
 			}
 		});
 	}
@@ -274,7 +132,7 @@ public class QueryManager {
 	public void getEventDates(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getEventDates();//.getFilms();
+				return getFestival(callback).getEventDates();
 			}
 		});
 	}
@@ -282,14 +140,14 @@ public class QueryManager {
 	public void getForumDates(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getForumDates();//.getFilms();
+				return getFestival(callback).getForumDates();
 			}
 		});
 	}
 	public void getFilmsByDate(final String date, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getFilmsByDate(date);//.getFilms();
+				return getFestival(callback).getFilmsByDate(date);
 			}
 		});
 	}
@@ -297,7 +155,7 @@ public class QueryManager {
 	public void getEventsByDate(final String date, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getEventsByDate(date);//.getFilms();
+				return getFestival(callback).getEventsByDate(date);
 			}
 		});
 	}
@@ -305,7 +163,7 @@ public class QueryManager {
 	public void getForumsByDate(final String date, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getForumsByDate(date);//.getFilms();
+				return getFestival(callback).getForumsByDate(date);
 			}
 		});
 	}
@@ -313,38 +171,10 @@ public class QueryManager {
 	public void getCommonItem(final Callback callback, final int id) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {				
-				return getFestival(callback).getCommonItemUsingId(id);//.getFilms();
+				return getFestival(callback).getCommonItemUsingId(id);
 			}
 		});
 					
-	}
-	
-	// TODO
-	public void getFilmsByGenre(final String genre, final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return FilmsParser.parse(makeQuery(13, genre), callback);
-			}
-		});
-	}
-
-	public void getAllPrograms(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return getFestival(callback).getProgramItems();
-				// return ProgramItemsParser.parse(makeQuery(17, ""), callback);
-			}
-		});
-	}
-
-	public void getSchedules(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return getFestival(callback).getSchedules();
-				// return SchedulesParser.parseSchedule(makeQuery(16, ""),
-				// callback);
-			}
-		});
 	}
 
 	/**
@@ -359,122 +189,12 @@ public class QueryManager {
 	public void getSpecialScreen(final String type, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				//return SectionsParser.parse(makeQuery(14, type), callback);
-				return NewsFeedParser.parseNewsFeed("http://www.cinequest.org/news.php", callback);								
+				
+				return NewsFeedParser.parseNewsFeed(newsFeedURL, callback);								
 			}
 		});
 	}
 
-	/**
-	 * A method to get the operating mode (on or off season) from Cinequest's
-	 * servers.
-	 * 
-	 * @param callback
-	 *            returns the result
-	 */
-	public void getSeasonMode(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return SeasonParser.parse(makeQuery(1, ""), callback);
-			}
-		});
-	}
-
-	/**
-	 * A method to get the festival dates from Cinequest.
-	 * 
-	 * @param callback
-	 *            returns the result
-	 */
-	public void getFestivalDates(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return DatesParser.parse(makeQuery(10, ""), callback);
-			}
-		});
-	}
-
-	/**
-	 * Gets a program item
-	 * 
-	 * @param id
-	 *            the item ID
-	 * @param callback
-	 *            returns the result
-	 */
-	public void getProgramItem(final int id, final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return getFestival(callback).getProgramItemForId(id);
-				// return ProgramItemParser.parseProgramItem(makeQuery(0, "" +
-				// id), callback);
-			}
-		});
-	}
-
-	/**
-	 * Gets a "mobile" item (i.e. a kind of event that is not in the database
-	 * but described by an external XML file)
-	 * 
-	 * @param id
-	 *            the item ID
-	 * @param callback
-	 *            returns the result TODO: Obsolete
-	 */
-	public void getMobileItem(final int id, final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return ProgramItemParser.parseProgramItem(makeQuery(15, id),
-						callback);
-			}
-		});
-	}
-
-	public void getDvdLink(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return LinkParser.parse(makeQuery(6, ""), callback);
-			}
-		});
-	}
-
-	public void getTicketLink(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return LinkParser.parse(makeQuery(5, ""), callback);
-			}
-		});
-	}
-
-	public void getSchedule(final Callback callback, final String email,
-			final String password) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				Hashtable postData = new Hashtable();
-				postData.put("type", "SLGET");
-				postData.put("username", email);
-				postData.put("password", password);
-				return UserScheduleParser.parseSchedule("https://" + queryBase,
-						postData, callback);
-			}
-		});
-	}
-
-	public void saveSchedule(final Callback callback, final String email,
-			final String password, final UserSchedule schedule) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				Hashtable postData = new Hashtable();
-				postData.put("type", "SLPUT");
-				postData.put("username", email);
-				postData.put("password", password);
-				postData.put("lastChanged", schedule.getLastChanged());
-				postData.put("items", schedule.getIds());
-				return UserScheduleParser.parseSchedule("https://" + queryBase,
-						postData, callback);
-			}
-		});
-	}
 
 	/**
 	 * Resolves a relative image URL
@@ -497,12 +217,10 @@ public class QueryManager {
 		return resolveRelativeImageURL(mainImageURL);
 	}
 	
-	public void LoadFestival(final Callback callback) {
+	public void loadFestival(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
 				return getFestival(callback);
-				// return ProgramItemParser.parseProgramItem(makeQuery(0, "" +
-				// id), callback);
 			}
 		});
 	}
@@ -521,7 +239,7 @@ public class QueryManager {
 		}
 		synchronized (festivalLock) {
 			
-			String updatedDate=NewsFeedParser.parseNewsFeed("http://www.cinequest.org/news.php", callback).getLastUpdated();			
+			String updatedDate = NewsFeedParser.getLastpdated(newsFeedURL, callback);			
 			Log.i("QueryManager:getFestival-Date Check:","UpdatedDate from News Feed:"+updatedDate+" lastUpdated:"+lastUpdated);
 			
 			if (updatedDate.equalsIgnoreCase(lastUpdated) && (!festival.isEmpty()))
@@ -530,26 +248,17 @@ public class QueryManager {
 				festivalQueryInProgress = true;
 			}
 			try {
-				/*String lastChanged = festival.getLastChanged();
-				int i = lastChanged.indexOf(' ');
-				if (i >= 0) {
-					lastChanged = lastChanged.substring(0, i) + "%20"
-							+ lastChanged.substring(i + 1);
-				}*/
-				/*Festival result = FestivalParser.parseFestival(
-						makeQuery(18, lastChanged), callback);*/
 				
 				// Using the new Xml feed.
 				// FIXME - Should the URL be hardcoded over here.
-				Festival result = FestivalParser.parseFestival("http://payments.cinequest.org/websales/feed.ashx?guid=70d8e056-fa45-4221-9cc7-b6dc88f62c98&showslist=true", callback);
+				Festival result = FestivalParser.parseFestival(showsFeedURL, callback);
 				if (!result.isEmpty()) {
 					festival = result;
 					lastUpdated=updatedDate;					
-				} else
+				} else {
 					Log.i("QueryManager:getFestival","Festival Object is Empty");
-					//festival.setLastChanged(result.getLastChanged());
-				/*festival.setEvents(EventsParser.parseEvents(
-						makeQuery(14, "events"), null, callback));*/
+				}
+
 			} finally {
 				synchronized (progressLock) {
 					festivalQueryInProgress = false;

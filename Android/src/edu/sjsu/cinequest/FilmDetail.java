@@ -22,7 +22,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -43,8 +43,7 @@ import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.HParser;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
-import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
-import edu.sjsu.cinequest.comm.cinequestitem.MobileItem;
+
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 public class FilmDetail extends CinequestActivity {
@@ -111,71 +110,7 @@ public class FilmDetail extends CinequestActivity {
 			// This happens when showing a film inside a program item
 			showFilm((CommonItem) target);
 		} 
-		else if (target instanceof Filmlet) {
-			Filmlet filmlet = (Filmlet) target;
-			int id = filmlet.getId();
-			Callback callback = new ProgressMonitorCallback(this){
-				@Override
-				public void invoke(Object result) {
-					super.invoke(result);
-					showFilm((CommonItem) result);
-				}
-			};
-			if (filmlet.isDownload() || filmlet.isDVD()) {
-				HomeActivity.getQueryManager().getDVD(id, callback);	        		
-			}
-			else {
-				HomeActivity.getQueryManager().getFilm(id, callback);			        		
-			}
 
-		} else if (target instanceof Schedule) {
-			Schedule schedule = (Schedule) target;
-			final int id = schedule.getItemId();
-			Callback callback = new ProgressMonitorCallback(this){
-				@Override
-				public void invoke(Object result) {
-					super.invoke(result);
-					showProgramItem((CommonItem) result);
-				}
-			}; 
-			if (schedule.isMobileItem())
-				HomeActivity.getQueryManager().getMobileItem(id, callback);
-			else
-				HomeActivity.getQueryManager().getProgramItem(id, callback);        	
-		} else if (target instanceof MobileItem) {
-			MobileItem mobileItem = (MobileItem) target;
-			final int id = mobileItem.getLinkId();
-			String linkType = mobileItem.getLinkType();
-			if(linkType.equals("item") || linkType.equals("program_item"))
-			{
-				HomeActivity.getQueryManager().getMobileItem(id, 
-						new ProgressMonitorCallback(this){
-					@Override
-					public void invoke(Object result) {
-						super.invoke(result);
-						showProgramItem((CommonItem) result);
-					}
-				});
-			}        	
-			else if (linkType.equals("DVD")) 
-			{
-				HomeActivity.getQueryManager().getDVD(id,
-						new ProgressMonitorCallback(this) {    		
-					public void invoke(Object result) {
-						super.invoke(result);
-						showFilm((CommonItem) result);
-					}});				
-			}
-			else if (linkType.equals("Film"))
-			{
-				HomeActivity.getQueryManager().getFilm(id,
-						new ProgressMonitorCallback(this) {    		
-					public void invoke(Object result) {
-						super.invoke(result);
-						showFilm((CommonItem) result);
-					}});				
-			}			
-		}
 	}	
 
 	private void showSchedules(Vector<Schedule> schedules)
@@ -219,8 +154,8 @@ public class FilmDetail extends CinequestActivity {
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 		adapter.addSection("Includes",
 				new FilmletListAdapter(this, includes));
-		scheduleList.setAdapter(adapter);
-		scheduleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		includeList.setAdapter(adapter);
+		includeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
