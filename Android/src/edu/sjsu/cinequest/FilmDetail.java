@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Vector;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -17,18 +16,16 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.commonsware.cwac.merge.MergeAdapter;
 import com.facebook.FacebookException;
 import com.facebook.FacebookOperationCanceledException;
 import com.facebook.Request;
@@ -43,7 +40,6 @@ import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.HParser;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
-
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 public class FilmDetail extends CinequestActivity {
@@ -53,18 +49,19 @@ public class FilmDetail extends CinequestActivity {
 	private String fbTitle;
 	private String fbImage;
 	private String fbUrl;
-
+	private MergeAdapter myMergeAdapter;
+	private int includescnt;
 	public void onCreate(Bundle savedInstanceState) {    	
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.filmdetail);
-
+		myMergeAdapter = new MergeAdapter();
 		scheduleList = (ListView)findViewById(R.id.ScheduleList);
-
-		includeList = (ListView)findViewById(R.id.IncludeList);
+		//includeList = (ListView)findViewById(R.id.IncludeList);
 
 		View headerView = getLayoutInflater().inflate(
 				R.layout.detail_layout, null);        
 		ListView listView = (ListView) findViewById(R.id.ScheduleList);
+		//ListView listView1 = (ListView) findViewById(R.id.IncludeList);
 		listView.addHeaderView(headerView, null, false);
 
 		View footerView = getLayoutInflater().inflate(
@@ -138,7 +135,8 @@ public class FilmDetail extends CinequestActivity {
 				((CheckBox)view.findViewById(R.id.myschedule_checkbox)).toggle();				
 			}
 		});*/
-		scheduleList.setAdapter(adapter);
+		myMergeAdapter.addAdapter(adapter);
+		//scheduleList.setAdapter(adapter);
 	}
 
 
@@ -147,15 +145,18 @@ public class FilmDetail extends CinequestActivity {
 		Log.i("FilmDetail:showIncludes",includes.size()+"");
 		if (includes.size() == 0) {
 			//scheduleList.setAdapter(new ScheduleListAdapter(this, includes));
-			includeList.setAdapter(createFilmletList((List<CommonItem>) includes));
+			//includeList.setAdapter(createFilmletList((List<CommonItem>) includes));
 			return;
 		}
-		
+
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 		adapter.addSection("Includes",
 				new FilmletListAdapter(this, includes));
-		includeList.setAdapter(adapter);
-		includeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		myMergeAdapter.addAdapter(adapter);
+		includescnt=adapter.getCount();
+		//includeList.setAdapter(adapter);
+		//includeList.invalidateViews();
+		/*		includeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -164,8 +165,8 @@ public class FilmDetail extends CinequestActivity {
 				launchFilmDetail(result);				
 			}
 		});
+		 */
 
-		
 		/*SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 		adapter.addSection("Includes",
 		    createFilmletList((List<CommonItem>) includes));						
@@ -204,15 +205,15 @@ public class FilmDetail extends CinequestActivity {
 		Log.i("Title",includes.get(1).getTitle());
 		Log.i("TitleId",includes.get(1).getId()+"");
 		Log.i("Title",includes.get(2).getTitle());
-*/
+		 */
 		//FilmletListAdapter adapter = new FilmletListAdapter(this, includes);
 
 		/*ListAdapter adapter=createFilmletList((List<CommonItem>) includes);
 		if(adapter==null){Log.i("NullisIncludes","NullisIncludes");}*/
 		//includeList.setAdapter(adapter);	
-		
+
 		//scheduleList.setAdapter(createFilmletList((List<CommonItem>) includes));
-		
+
 	}
 
 
@@ -342,9 +343,23 @@ public class FilmDetail extends CinequestActivity {
 		addEntry(ssb, "Film Info", in.getFilmInfo());
 
 		((TextView) findViewById(R.id.Properties)).setText(ssb);
-		showSchedules(in.getSchedules());
+
 		showIncludes(in.getCommonItems());
-		
+		showSchedules(in.getSchedules());
+		scheduleList.setAdapter(myMergeAdapter);
+		scheduleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				if (position>0 && position <=includescnt){					
+					Object result = scheduleList.getItemAtPosition( position );
+					launchFilmDetail(result);				
+				}
+			}
+		});
+		/*View storeList = (ListView) getLayoutInflater().inflate(R.layout.shorts, null);		
+		ListView listView = (ListView) findViewById(R.id.ScheduleList);
+		listView.addFooterView(listView);*/
 	}
 
 	public void showProgramItem(CommonItem item) 
