@@ -564,7 +564,9 @@ public class FestivalParser extends BasicHandler {
                 }
               
                 List<String> typeOfFilm = show.customProperties.get("Type of Film");
-                if (typeOfFilm == null || !typeOfFilm.contains("Shorts Program")) {
+                
+                // FIXME - The Xml feed has Shows with 'Type Of Film' as 'Shorts Program'. Not ignoring these entries for the moment.
+                //if (typeOfFilm == null || !typeOfFilm.contains("Shorts Program")) {
                     
                    // item.getCommonItems().add(item);   // FIXME - WHY ?????? why add to itself ??
                     
@@ -579,7 +581,7 @@ public class FestivalParser extends BasicHandler {
                     	festival.getForums().add(item);
 
                     }
-                }
+               // }
 
                 // Now, find out if this ProgramItem has a list of ShortFilms associated with it.
                 List<String> associatedShortIds = show.customProperties.get("ShortID");
