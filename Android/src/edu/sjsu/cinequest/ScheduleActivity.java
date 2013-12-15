@@ -110,7 +110,7 @@ public class ScheduleActivity extends Activity {
 				calendarName                                        
 		}; 
 
-		Uri event = Uri.parse("content://com.android.calendar/calendars");        
+		Uri event = Uri.parse("content://com.android.calendar/calendars");
 		Cursor l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, null );
 		if (l_managedCursor.moveToFirst()) {                        
 

@@ -19,6 +19,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.CalendarContract.Events;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,6 +44,8 @@ public class CinequestActivity extends Activity
 	private static final int HOME_MENUOPTION_ID = Menu.FIRST + 11;
 	private static final int SCHEDULE_MENUOPTION_ID = Menu.FIRST + 12;
 	private static final int ABOUT_MENUOPTION_ID = Menu.FIRST + 13;	
+	public static String calendarName="Cinequest Calendar";
+	public static String m_selectedCalendarId = "Cinequest Calendar";
 
 	/**
 	 * Launches the FilmDetail activity for the given object.
@@ -163,6 +166,7 @@ public class CinequestActivity extends Activity
 			formatContents(v, title, time, venue, du, result);		        
 			button.setTag(result);
 			button.setText("-");
+			populateCalendarID();
 			configureCalendarIcon(v, button, result);
 			Button directions = (Button) v.findViewById(R.id.directionsURL);
 			directions.setTag(result);	        
@@ -187,31 +191,12 @@ public class CinequestActivity extends Activity
 		protected void formatContents(View v, TextView title, TextView time, TextView venue, DateUtils du, Schedule result) {
 		}
 
-
+		//Calendar code for adding/removing events from Device Calendar
 		protected void configureCalendarIcon(View v, final Button button, Schedule result) {
 			button.setVisibility(View.VISIBLE);
 
 			Schedule s = result;							
-
-			String calendarName="Cinequest Calendar";
-			String m_selectedCalendarId = "Cinequest Calendar";
-
-			String[] proj = new String[]{"_id", "calendar_displayName"};			        
-			String calSelection = "(calendar_displayName= ?) ";
-			String[] calSelectionArgs = new String[] {calendarName}; 
-			Uri event = Uri.parse("content://com.android.calendar/calendars");        
-
-			Cursor l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, null );
-
-			if (l_managedCursor.moveToFirst()) {                        			                     
-				int l_idCol = l_managedCursor.getColumnIndex(proj[0]);
-				do {                
-					m_selectedCalendarId = l_managedCursor.getString(l_idCol);                
-				} while (l_managedCursor.moveToNext());
-			}
-
-			l_managedCursor.close();
-			l_managedCursor=null;
+			
 			SimpleDateFormat formatter;			
 			if (s.getStartTime().charAt(10)=='T')
 				formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
@@ -229,28 +214,41 @@ public class CinequestActivity extends Activity
 			}                                        
 			long begin = startDate.getTime();
 			long end = endDate.getTime();
-			proj = new String[]{
+			String[] proj = new String[]{
 					"_id", 
 					"title",
 					"dtstart", 
 			"dtend"};
 
-			calSelection = "((" + Events.CALENDAR_ID + "= ?) " +                                                                         
+			String calSelection = "((calendar_id= ?) " +                                                                         
 					"AND (" +
-					"((" + Events.DTSTART + "= ?) " +
-					"AND (" + Events.DTEND + "= ?) " +
-					"AND (" + Events.TITLE + "= ?) " +
+					"((dtstart= ?) " +
+					"AND (dtend= ?) " +
+					"AND (title= ?) " +
 					") " +                                            
 					")" +
 					")";         
-			calSelectionArgs = new String[] {
+			String[] calSelectionArgs = new String[] {
 					m_selectedCalendarId, begin+"", end+"", s.getTitle()                                       
 			}; 
 
-			event = Uri.parse("content://com.android.calendar/events");
-
-			l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, "dtstart DESC, dtend DESC");
-
+			Uri event=null;
+			Cursor l_managedCursor=null;
+			
+			if (Build.VERSION.SDK_INT >= 8) {
+				event = Uri.parse("content://com.android.calendar/events");
+			} else {
+				//Calendar code for API level < 8, needs lot of testing. 
+				//May be some of the paramters (that we are populating above), have different naming conventions in different API Levels
+				event = Uri.parse("content://calendar/events");
+			}
+			try{
+				l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, "dtstart DESC, dtend DESC");
+			}
+			catch (Exception e){
+				Log.i("CinequestActivity:configureCalendarIcon","Error while retrieving Event details from Calendar");
+			}
+			
 			if (l_managedCursor.getCount()>0) {                                                    
 				button.setBackgroundResource(R.drawable.incalendar);
 				button.setHint("exists");				
@@ -261,7 +259,6 @@ public class CinequestActivity extends Activity
 				button.setHint("notexist");
 			}
 
-
 			button.setOnClickListener(new OnClickListener() {
 
 				@Override
@@ -269,25 +266,6 @@ public class CinequestActivity extends Activity
 					// TODO Auto-generated method stub
 
 					Schedule s = (Schedule) v.getTag();										
-					String calendarName="Cinequest Calendar";
-					String m_selectedCalendarId = "Cinequest Calendar";
-
-					String[] proj = new String[]{"_id", "calendar_displayName"};			        
-					String calSelection = "(calendar_displayName= ?) ";
-					String[] calSelectionArgs = new String[] {calendarName}; 
-					Uri event = Uri.parse("content://com.android.calendar/calendars");        
-
-					Cursor l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, null );
-
-					if (l_managedCursor.moveToFirst()) {                        			                     
-						int l_idCol = l_managedCursor.getColumnIndex(proj[0]);
-						do {                
-							m_selectedCalendarId = l_managedCursor.getString(l_idCol);                
-						} while (l_managedCursor.moveToNext());
-					}
-
-					l_managedCursor.close();
-					l_managedCursor=null;
 					SimpleDateFormat formatter;
 					if (s.getStartTime().charAt(10)=='T')
 						formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
@@ -303,36 +281,47 @@ public class CinequestActivity extends Activity
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					}                                        
+					}
+					
 					long begin = startDate.getTime();
-					long end = endDate.getTime();                     
-					proj = new String[]{
-							"_id", 
-							"title",
-							"dtstart", 
-					"dtend"};
-
-					calSelection = "((" + Events.CALENDAR_ID + "= ?) " +                                                                         
-							"AND (" +
-							"((" + Events.DTSTART + "= ?) " +
-							"AND (" + Events.DTEND + "= ?) " +
-							"AND (" + Events.TITLE + "= ?) " +
-							") " +                                            
-							")" +
-							")";         
-					calSelectionArgs = new String[] {
-							m_selectedCalendarId, begin+"", end+"", s.getTitle()                                       
-					}; 
-
-					event = Uri.parse("content://com.android.calendar/events");
-
-					l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, "dtstart DESC, dtend DESC");
-
-
-
-
+					long end = endDate.getTime();										
+					
 					if (button.getHint().toString()=="exists")
 					{
+						String[] proj = new String[]{
+								"_id", 
+								"title",
+								"dtstart", 
+						"dtend"};
+
+						String calSelection = "((calendar_id= ?) " +                                                                         
+								"AND (" +
+								"((dtstart= ?) " +
+								"AND (dtend= ?) " +
+								"AND (title= ?) " +
+								") " +                                            
+								")" +
+								")";         
+						String[] calSelectionArgs = new String[] {
+								m_selectedCalendarId, begin+"", end+"", s.getTitle()                                       
+						}; 
+
+						Uri event=null;
+						Cursor l_managedCursor=null;
+						if (Build.VERSION.SDK_INT >= 8) {
+							event = Uri.parse("content://com.android.calendar/events");
+						} else {
+							//Calendar code for API level < 8, needs lot of testing. 
+							//May be some of the paramters (that we are populating above), have different naming conventions in different API Levels
+							event = Uri.parse("content://calendar/events");
+						}
+						try{
+							l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, "dtstart DESC, dtend DESC");
+						}
+						catch (Exception e){
+							Log.i("CinequestActivity:configureCalendarIcon","Error while retrieving Event details from Calendar");
+						}
+						
 						int e_id = 0;
 						if (l_managedCursor.moveToFirst()) {														
 							int l_colid = l_managedCursor.getColumnIndex(proj[0]);							
@@ -345,16 +334,26 @@ public class CinequestActivity extends Activity
 						if (Build.VERSION.SDK_INT >= 8) {
 							eventUri = Uri.parse("content://com.android.calendar/events");
 						} else {
+							//Calendar code for API level < 8, needs lot of testing. 
+							//May be some of the paramters (that we are populating above), have different naming conventions in different API Levels
 							eventUri = Uri.parse("content://calendar/events");
 						}                        
 						Uri deleteUri = ContentUris.withAppendedId(eventUri, e_id);
-						int rows = getContentResolver().delete(deleteUri, null, null);
-						if (rows==1){
-							button.setBackgroundResource(R.drawable.notincalendar);
-							button.setHint("notexist");
-							Toast toast = Toast.makeText(getContext(), "Event removed from calendar", Toast.LENGTH_SHORT);
-							toast.show();                        							
+						try
+						{
+							int rows = getContentResolver().delete(deleteUri, null, null);
+							if (rows==1){
+								button.setBackgroundResource(R.drawable.notincalendar);
+								button.setHint("notexist");
+								Toast toast = Toast.makeText(getContext(), "Event removed from calendar", Toast.LENGTH_SHORT);
+								toast.show();                        							
+							}
 						}
+						catch (Exception e){
+							Log.i("CinequestActivity:configureCalendarIcon","Error while removing Events from Calendar");
+						}
+						l_managedCursor.close();
+						l_managedCursor=null;
 					}
 
 					else{
@@ -365,8 +364,8 @@ public class CinequestActivity extends Activity
 						l_event.put("eventLocation", s.getVenue());
 						//l_event.put("dtstart", System.currentTimeMillis());
 						//l_event.put("dtend", System.currentTimeMillis() + 1800*1000);
-						l_event.put("dtstart", startDate.getTime());
-						l_event.put("dtend", endDate.getTime());
+						l_event.put("dtstart", begin);
+						l_event.put("dtend", end);
 						l_event.put("allDay", 0);
 						//status: 0~ tentative; 1~ confirmed; 2~ canceled
 						l_event.put("eventStatus", 1);
@@ -381,17 +380,22 @@ public class CinequestActivity extends Activity
 						if (Build.VERSION.SDK_INT >= 8) {
 							l_eventUri = Uri.parse("content://com.android.calendar/events");
 						} else {
+							//Calendar code for API level < 8, needs lot of testing. 
+							//May be some of the paramters (that we are populating above), have different naming conventions in different API Levels
 							l_eventUri = Uri.parse("content://calendar/events");
 						}
-						Uri l_uri = getContentResolver().insert(l_eventUri, l_event);
-
-						Toast toast = Toast.makeText(getContext(), "Event added to calendar", Toast.LENGTH_SHORT);
-						toast.show();
-						button.setBackgroundResource(R.drawable.incalendar);
-						button.setHint("exists");
+						try{
+							Uri l_uri = getContentResolver().insert(l_eventUri, l_event);
+							Toast toast = Toast.makeText(getContext(), "Event added to calendar", Toast.LENGTH_SHORT);
+							toast.show();
+							button.setBackgroundResource(R.drawable.incalendar);
+							button.setHint("exists");
+						}
+						catch (Exception e){
+							Log.i("CinequestActivity:configureCalendarIcon","Error while adding Events in Calendar");
+						}
 					}
-					l_managedCursor.close();
-					l_managedCursor=null;					
+										
 				}
 
 			});
@@ -484,5 +488,38 @@ public class CinequestActivity extends Activity
 			return super.onOptionsItemSelected(item);
 		}
 
+	}
+	//gets the calendar id for Cinequest 
+	public void populateCalendarID(){
+		String[] proj = new String[]{"_id", "calendar_displayName"};			        
+		String calSelection = "(calendar_displayName= ?) ";
+		String[] calSelectionArgs = new String[] {calendarName};
+		
+		Uri event=null;
+		
+		if (Build.VERSION.SDK_INT >= 8) {
+			event = Uri.parse("content://com.android.calendar/calendars");
+		} else {
+			//Calendar code for API level < 8, needs lot of testing. 
+			//May be some of the paramters (that we are populating above), have different naming conventions in different API Levels
+			event = Uri.parse("content://calendar/calendars");
+		}										      
+		Cursor l_managedCursor = null;
+		try{
+			l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, null );
+
+			if (l_managedCursor.moveToFirst()) {                        			                     
+				int l_idCol = l_managedCursor.getColumnIndex(proj[0]);
+				do {                
+					m_selectedCalendarId = l_managedCursor.getString(l_idCol);                
+				}  while (l_managedCursor.moveToNext());
+			}
+		}
+		catch (Exception e){
+			Log.i("CinequestActivity:populateCalendarID","Error while retrieving Cinequest Calendar ID from device Calendar");
+		}
+
+		l_managedCursor.close();
+		l_managedCursor=null;
 	}
 }
