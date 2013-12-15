@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-import edu.sjsu.cinequest.comm.cinequestitem.Filmlet;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 /**
@@ -39,9 +38,9 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T> {
 		layout_resourceId = resourceId;
 
 		if (list != null && list.size() > 0) {
-			if(list.get(0) instanceof Filmlet)
+			/*if(list.get(0) instanceof Filmlet)
 				sectionType = SectionItems.TYPE_FILMLET;
-			else if(list.get(0) instanceof Schedule)
+			else*/ if(list.get(0) instanceof Schedule)
 				sectionType = SectionItems.TYPE_SCHEDULE;
 		}
 
@@ -106,7 +105,7 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T> {
 			}            
 
 
-		} else if(sectionType == SectionItems.TYPE_FILMLET){
+		} /*else if(sectionType == SectionItems.TYPE_FILMLET){
 
 			Filmlet resultFilmlet = (Filmlet) list.get(position);
 			if (resultFilmlet != null){
@@ -118,7 +117,7 @@ public abstract class SectionAdapter<T> extends ArrayAdapter<T> {
 				}
 
 			}
-		}
+		}*/
 
 		return v;
 	}

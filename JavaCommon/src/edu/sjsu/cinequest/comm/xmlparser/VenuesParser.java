@@ -32,7 +32,6 @@ import android.util.Log;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.Venue;
-import edu.sjsu.cinequest.comm.cinequestitem.VenueLocation;
 
 /**
  * 

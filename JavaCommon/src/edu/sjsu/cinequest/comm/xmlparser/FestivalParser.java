@@ -82,14 +82,14 @@ public class FestivalParser extends BasicHandler {
      * @throws IOException
      */
     public static Festival parseFestival(String url, Callback callback) throws SAXException, IOException {
-    	Log.e("FestivalParser.java", "Within parseFestival(), url:" + url);
+    	Log.d("FestivalParser.java", "Within parseFestival(), url:" + url);
     	
         List<Show> shows = parseShows(url, callback);
         
         // Parse the list of Venues using the Venue XML feed.
         Map<String, Venue> venues = VenuesParser.parse(QueryManager.venuesFeedURL, callback);
         
-        Log.e("FestivalParser.java", "Parsed Shows, Size:" + shows.size());
+        Log.d("FestivalParser.java", "Parsed Shows, Size:" + shows.size());
         return new FestivalConverter(shows, venues).convert();
     }
     
@@ -110,7 +110,7 @@ public class FestivalParser extends BasicHandler {
         // Parse the list of Venues using the Venue XML feed.
         Map<String, Venue> venues = VenuesParser.parse(QueryManager.venuesFeedURL, callback);
         
-        Log.e("FestivalParser.java", "Parsed Shows, Size:" + shows.size());
+        Log.d("FestivalParser.java", "Parsed Shows, Size:" + shows.size());
         FestivalConverter festivalConverter  = new FestivalConverter(shows, venues);
         
         festivalConverter.convert();
@@ -653,14 +653,6 @@ public class FestivalParser extends BasicHandler {
             	
             	this.populateItemsByDate(type, dates, item);    	
             }
-            
-            if(type.equals("Film")) {
-            	Log.e("FestivalParser", "FilmDates:" + festival.getFilmDates().size());
-        	} else if(type.equals("Event")) {
-        		Log.e("FestivalParser", "EventDates:" + festival.getEventDates().size()); 
-        	} else if(type.equals("Forum")) {
-        		Log.e("FestivalParser", "ForumDates:" + festival.getForumDates().size());
-        	}
             
         }
         
