@@ -11,8 +11,7 @@
     	android:paddingRight="15dip"
     	android:visibility="gone"
     	android:id="@+id/myschedule_checkbox"
-    	android:focusable="false"
-    	android:background="@drawable/add"
+    	android:focusable="false"    	
     />
     
     <RelativeLayout

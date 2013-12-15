@@ -24,12 +24,7 @@
         <activity
             android:name=".HomeActivity"
             android:configChanges="orientation" />
-        <!-- <activity
-            android:name=".DVDActivity"
-            android:configChanges="orientation" />-->
-        <!-- <activity
-            android:name=".EventsActivity"
-            android:configChanges="orientation" /> -->
+       
         <activity
             android:name=".FilmsActivity"
             android:configChanges="orientation" />
@@ -39,20 +34,11 @@
         <activity
             android:name=".FilmDetail"
             android:configChanges="orientation" />
-       <!--  <activity
-            android:name=".ForumsActivity"
-            android:configChanges="orientation" /> -->
+       
         <activity
             android:name=".ScheduleActivity"
             android:configChanges="orientation" />
-        <activity
-            android:name=".LoginActivity"
-            android:configChanges="orientation" />
-        <activity
-            android:name=".RegistrationActivity"
-            android:configChanges="orientation" >
-        </activity>
-
+        
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/app_id" />
