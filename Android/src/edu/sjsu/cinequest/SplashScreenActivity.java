@@ -35,7 +35,7 @@ public class SplashScreenActivity extends Activity {
 		loadData = new LoadData();
 		loadData.execute((Void) null);
 		showProgress(true);
-		
+
 	}
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private void showProgress(final boolean show) {
@@ -56,7 +56,7 @@ public class SplashScreenActivity extends Activity {
 							: View.GONE);
 				}
 			});
-			
+
 		} else {
 			// The ViewPropertyAnimator APIs are not available, so simply show
 			// and hide the relevant UI components.
@@ -71,19 +71,38 @@ public class SplashScreenActivity extends Activity {
 	public class LoadData extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {						
-			//Check whether Cinequest calendar exists in Device or Not. If not exists, create Cinequest Calendar in device.
-			
-			/*String[] proj = new String[]{"_id", "calendar_displayName"};
-			String calSelection = "(calendar_displayName= ?) "; 				
-			String[] calSelectionArgs = new String[] {calendarName}; 
-			Uri event = Uri.parse("content://com.android.calendar/calendars");        
 
-			Cursor l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, null );
+			boolean BEFORE_JELLYBEAN = android.os.Build.VERSION.SDK_INT < 16;
+			String ACCOUNT_TYPE = BEFORE_JELLYBEAN ? "org.sufficientlysecure.localcalendar.account"
+					: "LOCAL";
+
+			//Check whether Cinequest calendar exists in Device or Not. If not exists, create Cinequest Calendar in device.			
+			String[] proj = new String[]{"_id", "calendar_displayName"};
+			String calSelection = "(calendar_displayName= ?) "; 				
+			String[] calSelectionArgs = new String[] {calendarName};			
+
+			Uri event;                    
+			if (Build.VERSION.SDK_INT >= 8) {
+				event = Uri.parse("content://com.android.calendar/calendars");
+			} else {
+				//Calendar code for API level < 8, needs lot of testing. 
+				//May be some of the paramters (that we are populating above), have different naming conventions in different API Levels
+				event = Uri.parse("content://calendar/calendars");
+			}
+
+			Cursor l_managedCursor = null;
+			try{
+				l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, null );
+			}
+			catch (Exception e){
+				Log.i("SplashScreenActivity:LoadData","Error while checking whether Cinequest Calendar ID exists in Device Calendar or not");
+			}
+
 			if (l_managedCursor.getCount()<=0) {                                                    
 
 				ContentValues l_event = new ContentValues();
 				l_event.put("account_name", "Cinequest");
-				l_event.put("account_type", "LOCAL");                  
+				l_event.put("account_type", ACCOUNT_TYPE);                  
 				l_event.put("name", calendarName);
 				//l_event.put("displayName", "Cinequest Calendar");
 				//l_event.put("color", 0xffff0000);
@@ -95,33 +114,40 @@ public class SplashScreenActivity extends Activity {
 				l_event.put("calendar_timezone", TimeZone.getDefault().getID());
 				l_event.put("ownerAccount", "owner");
 				l_event.put("visible", 1);
+				l_event.put("sync_events", 1);
 				Uri.Builder builder = event.buildUpon();
 				builder.appendQueryParameter("account_name", "Cinequest");
-				builder.appendQueryParameter("account_type", "LOCAL");                
+				builder.appendQueryParameter("account_type", ACCOUNT_TYPE);                
 				builder.appendQueryParameter( "caller_is_syncadapter", "true");
-				Uri uri = getContentResolver().insert(builder.build(), l_event); 
-				l_managedCursor.close();
-				l_managedCursor=null;
+				try{
+					Uri uri = getContentResolver().insert(builder.build(), l_event);
+					if (uri == null)
+						Log.i("SplashScreenActivity:LoadData","IllegalArgumentException");
+				}
+				catch (Exception e){
+					Log.i("SplashScreenActivity:LoadData","Error while creating Cinequest Calendar in Device Calendar");
+				}
 			}
-*/
-					
+			l_managedCursor.close();
+			l_managedCursor=null;
+
 			//Create QueryManager Object and assign it to HomeActivity class queryManager variable. 
 			HomeActivity.setQueryManager(new QueryManager());				
-				//Load News Feed, Festival & Venue Feed
-				HomeActivity.getQueryManager().loadFestival(new Callback(){
-					@Override
-					public void invoke(Object result) {								
-						showProgress(false);
-						Intent i = new Intent(SplashScreenActivity.this,MainTab.class);
-						i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						startActivity(i);
-						finish();						
-					}
-					@Override public void starting() {}			
-					@Override public void failure(Throwable t) {
-						Platform.getInstance().log(t);				
-					}        	
-				});			
+			//Load News Feed, Festival & Venue Feed
+			HomeActivity.getQueryManager().loadFestival(new Callback(){
+				@Override
+				public void invoke(Object result) {								
+					showProgress(false);
+					Intent i = new Intent(SplashScreenActivity.this,MainTab.class);
+					i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(i);
+					finish();						
+				}
+				@Override public void starting() {}			
+				@Override public void failure(Throwable t) {
+					Platform.getInstance().log(t);				
+				}        	
+			});			
 			// TODO: register the new account here.
 			return true;
 		}
@@ -129,7 +155,7 @@ public class SplashScreenActivity extends Activity {
 		@Override
 		protected void onPostExecute(final Boolean success) {						
 			if (success) {
-				
+
 			} 
 		}
 
