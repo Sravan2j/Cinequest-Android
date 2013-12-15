@@ -532,6 +532,8 @@ public class FestivalParser extends BasicHandler {
         		}      		
         	}
         	
+        	Log.e("FestivalParser.java", "getDatesFromCommonItem, size:" + dates.size());
+        	
         	return dates;
         }
         
@@ -602,9 +604,18 @@ public class FestivalParser extends BasicHandler {
                 for (Showing showing : show.currentShowings) {
                     Schedule schedule = getSchedule(showing, item);
                     festival.getSchedules().add(schedule);
-                    if (uniqueVenues.add(schedule.getVenue())) // Added for the first time
+                    
+                    if (uniqueVenues.add(schedule.getVenue())) { // Added for the first time
                         festival.getVenueLocations().add(getVenueLocation(showing.venue));
-                    for (CommonItem children : item.getCommonItems()) children.getSchedules().add(schedule);
+                    }
+                    
+                    for (CommonItem children : item.getCommonItems()) { 
+                    	children.getSchedules().add(schedule);
+
+                    }
+                   
+                    // FIXME - Add the schedule to the main item
+                    item.getSchedules().add(schedule);
                 }
             }  	
             
