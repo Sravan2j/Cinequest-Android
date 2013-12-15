@@ -15,6 +15,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -89,6 +90,8 @@ public class ScheduleActivity extends Activity {
 	SimpleDateFormat sdf;
 	//Configuration config;
 	//DateFormat dtformat;	
+	private static String calendarName="Cinequest Calendar";
+	private static String m_selectedCalendarId = "Cinequest Calendar";
 	private static final String DATE_TIME_FORMAT = "MMM dd, yyyy'T'HH:mm";
 	private List<EventData> events = new ArrayList<EventData>();
 	protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +104,7 @@ public class ScheduleActivity extends Activity {
 
 	public void populateSchedule()
 	{
-		String calendarName="Cinequest Calendar";
-		String m_selectedCalendarId = "Cinequest Calendar";
+
 		String[] proj = new String[]{"_id", "calendar_displayName"};
 		String calSelection = 
 				"(calendar_displayName= ?) ";
@@ -110,14 +112,28 @@ public class ScheduleActivity extends Activity {
 				calendarName                                        
 		}; 
 
-		Uri event = Uri.parse("content://com.android.calendar/calendars");
-		Cursor l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, null );
-		if (l_managedCursor.moveToFirst()) {                        
+		Uri event=null;
+		if (Build.VERSION.SDK_INT >= 8) {
+			event = Uri.parse("content://com.android.calendar/calendars");
+		} else {
+			//Calendar code for API level < 8, needs lot of testing. 
+			//May be some of the paramters (that we are populating above), have different naming conventions in different API Levels
+			event = Uri.parse("content://calendar/calendars");
+		}		
 
-			int l_idCol = l_managedCursor.getColumnIndex(proj[0]);
-			do {                
-				m_selectedCalendarId = l_managedCursor.getString(l_idCol);                
-			} while (l_managedCursor.moveToNext());
+		Cursor l_managedCursor = null;
+		try{
+			l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, null );
+			if (l_managedCursor.moveToFirst()) {                        
+
+				int l_idCol = l_managedCursor.getColumnIndex(proj[0]);
+				do {                
+					m_selectedCalendarId = l_managedCursor.getString(l_idCol);                
+				} while (l_managedCursor.moveToNext());
+			}
+		}
+		catch (Exception e){
+			Log.i("ScheduleActivity:populateSchedule","Error while retrieving Cinequest Calendar ID from device Calendar");
 		}
 
 		l_managedCursor.close();
@@ -125,11 +141,21 @@ public class ScheduleActivity extends Activity {
 
 		Uri l_eventUri;
 
-		l_eventUri = Uri.parse("content://com.android.calendar/events");
+		if (Build.VERSION.SDK_INT >= 8) {
+			l_eventUri = Uri.parse("content://com.android.calendar/events");
+		} else {
+			//Calendar code for API level < 8, needs lot of testing. 
+			//May be some of the paramters (that we are populating above), have different naming conventions in different API Levels
+			l_eventUri = Uri.parse("content://calendar/events");
+		}
+
 		String[] l_projection = new String[]{"_id","title", "dtstart", "dtend"};
-
-		l_managedCursor = this.getContentResolver().query(l_eventUri, l_projection, "calendar_id=" + m_selectedCalendarId, null, "dtstart DESC, dtend DESC");
-
+		try{
+			l_managedCursor = this.getContentResolver().query(l_eventUri, l_projection, "calendar_id=" + m_selectedCalendarId, null, "dtstart DESC, dtend DESC");
+		}
+		catch (Exception e){
+			Log.i("ScheduleActivity:populateSchedule","Error while retrieving events from Cinequest Calendar");
+		}
 		if (l_managedCursor.moveToFirst()) {
 			String l_title;
 			String l_begin;
@@ -191,14 +217,22 @@ public class ScheduleActivity extends Activity {
 						if (Build.VERSION.SDK_INT >= 8) {
 							eventUri = Uri.parse("content://com.android.calendar/events");
 						} else {
+							//Calendar code for API level < 8, needs lot of testing. 
+							//May be some of the paramters (that we are populating above), have different naming conventions in different API Levels
 							eventUri = Uri.parse("content://calendar/events");
 						}                        
 						Uri deleteUri = ContentUris.withAppendedId(eventUri, q.getEId());
-						int rows = getContentResolver().delete(deleteUri, null, null);
-						if (rows==1){
-							events.remove(position);
-							listView.invalidateViews();
+						try{
+							int rows = getContentResolver().delete(deleteUri, null, null);
+							if (rows==1){
+								events.remove(position);
+								listView.invalidateViews();
+							}
 						}
+						catch (Exception e){
+							Log.i("ScheduleActivity:populateSchedule","Error while removing Events from Calendar");
+						}
+
 					}
 				});
 				return v;                                
