@@ -121,9 +121,9 @@ public class HomeActivity extends Activity {
 			}
 		}); */       
 
-		title_image = (ImageView) this.findViewById(R.id.homescreen_title_image);
+		/*title_image = (ImageView) this.findViewById(R.id.homescreen_title_image);
 		title_image.setImageDrawable(getResources().getDrawable(R.drawable.creative));
-
+*/
 		list = (ListView)this.findViewById(R.id.home_newslist);
 		/*list.setAdapter(new SeparatedListAdapter(this));
 
@@ -205,7 +205,7 @@ public class HomeActivity extends Activity {
 			ImageLoader imageLoader = new ImageLoader(this);
 			imageLoader.clearCache();			
 		}*/
-		title_image.setVisibility(View.GONE);
+		//title_image.setVisibility(View.GONE);
 		final List<News> news=newsSections.getNewsList();
 		ArrayList<String> imgURL = new ArrayList<String>();
 		for (int i=0;i<news.size();i++)

@@ -42,11 +42,19 @@
   
   <ImageView
   	android:layout_width="fill_parent"
-  	android:layout_height="wrap_content"
+  	android:layout_height="70dp"
   	android:id="@+id/homescreen_title_image"
-  	android:maxHeight="160dip"  	
+  	android:maxHeight="50dip"  	
+  	android:background="@drawable/filmreel"
   	/>
-  	
+  	<View
+    android:layout_width="fill_parent"
+    android:layout_height="1dp"
+    android:background="@android:color/darker_gray"/>
+  	<View
+    android:layout_width="fill_parent"
+    android:layout_height="2dp"
+    />
   	<ListView
 		  android:id="@+id/home_newslist"
 		  android:layout_width="fill_parent"
