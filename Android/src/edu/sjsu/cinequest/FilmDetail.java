@@ -56,18 +56,15 @@ public class FilmDetail extends CinequestActivity {
 		setContentView(R.layout.filmdetail);
 		myMergeAdapter = new MergeAdapter();
 		scheduleList = (ListView)findViewById(R.id.ScheduleList);
-		//includeList = (ListView)findViewById(R.id.IncludeList);
 
+		ListView listView = (ListView) findViewById(R.id.ScheduleList);
 		View headerView = getLayoutInflater().inflate(
 				R.layout.detail_layout, null);        
-		ListView listView = (ListView) findViewById(R.id.ScheduleList);
-		//ListView listView1 = (ListView) findViewById(R.id.IncludeList);
 		listView.addHeaderView(headerView, null, false);
 
 		View footerView = getLayoutInflater().inflate(
 				R.layout.shareoptions, null);
 		listView.addFooterView(footerView, null, false);
-
 
 		Button fbButton = (Button) findViewById(R.id.fbshare);
 		fbButton.setOnClickListener(new OnClickListener() {			
@@ -126,26 +123,13 @@ public class FilmDetail extends CinequestActivity {
 			}
 		});
 
-		//toggle the checkbox upon list-item click
-		/*		scheduleList.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long id) {
-				((CheckBox)view.findViewById(R.id.myschedule_checkbox)).toggle();				
-			}
-		});*/
 		myMergeAdapter.addAdapter(adapter);
-		//scheduleList.setAdapter(adapter);
 	}
 
 
 	private void showIncludes(final ArrayList<CommonItem> includes)
-	{		
-		Log.i("FilmDetail:showIncludes",includes.size()+"");
+	{				
 		if (includes.size() == 0) {
-			//scheduleList.setAdapter(new ScheduleListAdapter(this, includes));
-			//includeList.setAdapter(createFilmletList((List<CommonItem>) includes));
 			return;
 		}
 
@@ -154,66 +138,6 @@ public class FilmDetail extends CinequestActivity {
 				new FilmletListAdapter(this, includes));
 		myMergeAdapter.addAdapter(adapter);
 		includescnt=adapter.getCount();
-		//includeList.setAdapter(adapter);
-		//includeList.invalidateViews();
-		/*		includeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long id) {
-				Object result = includes.get( position );
-				launchFilmDetail(result);				
-			}
-		});
-		 */
-
-		/*SeparatedListAdapter adapter = new SeparatedListAdapter(this);
-		adapter.addSection("Includes",
-		    createFilmletList((List<CommonItem>) includes));						
-		//toggle the checkbox upon list-item click
-		scheduleList.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long id) {
-				((CheckBox)view.findViewById(R.id.myschedule_checkbox)).toggle();				
-			}
-		});
-		includeList.setAdapter(adapter);
-		 */	
-
-		/*ArrayAdapter<CommonItem> adapter = new ArrayAdapter<CommonItem>(
-				FilmDetail.this, R.layout.listitem_title_only, includes) {
-			@Override
-			public View getView(int position, View v, ViewGroup parent) {
-
-				LayoutInflater inflater = LayoutInflater.from(getContext());
-				CommonItem q = getItem(position);                                
-				if (v == null) v = inflater.inflate(R.layout.listitem_title_only, null);                                
-				TextView textView = (TextView) v.findViewById(R.id.listitem_titletext);
-				textView.setText(q.getTitle());                                                                
-				return v;                                
-			}                            
-		};
-
-
-		scheduleList.setAdapter(adapter);
-
-
-		Log.i("Title",includes.get(0).getTitle());
-		Log.i("TitleId",includes.get(0).getId()+"");
-		Log.i("Title",includes.get(1).getTitle());
-		Log.i("TitleId",includes.get(1).getId()+"");
-		Log.i("Title",includes.get(2).getTitle());
-		 */
-		//FilmletListAdapter adapter = new FilmletListAdapter(this, includes);
-
-		/*ListAdapter adapter=createFilmletList((List<CommonItem>) includes);
-		if(adapter==null){Log.i("NullisIncludes","NullisIncludes");}*/
-		//includeList.setAdapter(adapter);	
-
-		//scheduleList.setAdapter(createFilmletList((List<CommonItem>) includes));
-
 	}
 
 
@@ -357,38 +281,8 @@ public class FilmDetail extends CinequestActivity {
 				}
 			}
 		});
-		/*View storeList = (ListView) getLayoutInflater().inflate(R.layout.shorts, null);		
-		ListView listView = (ListView) findViewById(R.id.ScheduleList);
-		listView.addFooterView(listView);*/
 	}
 
-	public void showProgramItem(CommonItem item) 
-	{
-		ArrayList<CommonItem> films = item.getCommonItems();//.getFilms();
-
-		if (films.size() == 1)
-		{
-			showFilm(films.get(0));
-		} 
-		else  						
-		{
-			// Show just the ProgramItem data
-			fbTitle = item.getTitle();
-			fbUrl = item.getInfoLink();
-			SpannableString title = new SpannableString(item.getTitle());
-			title.setSpan(new RelativeSizeSpan(1.2F), 0, title.length(), 0);
-			((TextView) findViewById(R.id.Title)).setText(title);
-
-			TextView tv = (TextView) findViewById(R.id.Description);
-			HParser parser = new HParser();
-			parser.parse(item.getDescription());
-
-			tv.setText(createSpannableString(parser));
-
-			showImage(item.getImageURL(), parser.getImageURLs());			
-			showFilms(films);
-		}
-	}
 	//New function to login to facebook // tanuvir-12Nov13
 	void loginToFacebook(){
 		try {

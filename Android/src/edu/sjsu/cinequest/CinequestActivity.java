@@ -19,7 +19,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.CalendarContract.Events;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -64,7 +63,7 @@ public class CinequestActivity extends Activity
 	 * @return the list adapter
 	 */
 
-	protected ListAdapter createScheduleList(List<Schedule> listItems) {
+	/*protected ListAdapter createScheduleList(List<Schedule> listItems) {
 		if (listItems.size() == 0) {
 			return new SeparatedListAdapter(this);
 		}
@@ -91,10 +90,9 @@ public class CinequestActivity extends Activity
 		}
 		return adapter;
 	}
-
+	 */
 	//protected ListAdapter createFilmletList(List<? extends Filmlet> listItems) {
-	protected ListAdapter createFilmletList(List<? extends CommonItem> listItems) {
-		Log.i("CinequestActivity","Entered");
+	protected ListAdapter createFilmletList(List<? extends CommonItem> listItems) {		
 		if (listItems.size() == 0) {
 			return new SeparatedListAdapter(this);
 		} 
@@ -115,8 +113,7 @@ public class CinequestActivity extends Activity
 			adapter.addSection(
 					titleInit, titleInit,	
 					new FilmletListAdapter(this, filmsTitleMap.get(titleInit)));
-		}
-		Log.i("CinequestActivity","Success");
+		}		
 		return adapter;
 	}
 
@@ -154,7 +151,7 @@ public class CinequestActivity extends Activity
 			TextView time = (TextView) v.findViewById(R.id.timetext);
 			TextView venue = (TextView) v.findViewById(R.id.venuetext);
 			//CheckBox checkbox = (CheckBox) v.findViewById(R.id.myschedule_checkbox);
-			Button checkbox = (Button) v.findViewById(R.id.myschedule_checkbox);	                
+			Button button = (Button) v.findViewById(R.id.myschedule_checkbox);	                
 			final Schedule result = getItem(position);            
 			title.setText(result.getTitle());	                 
 			if (result.isSpecialItem())
@@ -164,9 +161,9 @@ public class CinequestActivity extends Activity
 			time.setText("Time: " + startTime + " - " + endTime);
 			venue.setText("Venue: " + result.getVenue());
 			formatContents(v, title, time, venue, du, result);		        
-			checkbox.setTag(result);
-			checkbox.setText("-");
-			configureCheckBox(v, checkbox, result);
+			button.setTag(result);
+			button.setText("-");
+			configureCalendarIcon(v, button, result);
 			Button directions = (Button) v.findViewById(R.id.directionsURL);
 			directions.setTag(result);	        
 			directions.setOnClickListener(new OnClickListener() {
@@ -176,9 +173,7 @@ public class CinequestActivity extends Activity
 					// TODO Auto-generated method stub
 
 					Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
-							Uri.parse(result.getDirectionsURL()));
-					/*Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-						    Uri.parse("google.navigation:q=Camera+12+Cinemas,201+S+2nd+St,+San+Jose,+CA+95113"));*/	
+							Uri.parse(result.getDirectionsURL()));					
 					startActivity(intent);
 				}
 
@@ -192,30 +187,9 @@ public class CinequestActivity extends Activity
 		protected void formatContents(View v, TextView title, TextView time, TextView venue, DateUtils du, Schedule result) {
 		}
 
-		/**
-		 * This contains the configuration of the checkbox. By default,
-		 * the checkbox adds or removes the schedule item in the user's schedule.
-		 * Override if you want a different behavior.
-		 */
 
-		/*protected void configureCheckBox(View v, CheckBox checkbox, final Schedule result) {
-			checkbox.setVisibility(View.VISIBLE);
-			checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
-				public void onCheckedChanged(CompoundButton buttonView,
-						boolean isChecked) {
-					Schedule s = (Schedule) buttonView.getTag();
-					if (isChecked){
-						HomeActivity.getUser().getSchedule().add(s);
-					} else{
-						HomeActivity.getUser().getSchedule().remove(s);
-					}					
-				}				
-			});
-
-			checkbox.setChecked(HomeActivity.getUser().getSchedule().contains(result));
-		}*/
-		protected void configureCheckBox(View v, final Button checkbox, Schedule result) {
-			checkbox.setVisibility(View.VISIBLE);
+		protected void configureCalendarIcon(View v, final Button button, Schedule result) {
+			button.setVisibility(View.VISIBLE);
 
 			Schedule s = result;							
 
@@ -278,17 +252,17 @@ public class CinequestActivity extends Activity
 			l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, "dtstart DESC, dtend DESC");
 
 			if (l_managedCursor.getCount()>0) {                                                    
-				checkbox.setBackgroundResource(R.drawable.incalendar);
-				checkbox.setHint("exists");				
+				button.setBackgroundResource(R.drawable.incalendar);
+				button.setHint("exists");				
 			}
 			else
 			{
-				checkbox.setBackgroundResource(R.drawable.notincalendar);
-				checkbox.setHint("notexist");
+				button.setBackgroundResource(R.drawable.notincalendar);
+				button.setHint("notexist");
 			}
 
 
-			checkbox.setOnClickListener(new OnClickListener() {
+			button.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
@@ -354,10 +328,10 @@ public class CinequestActivity extends Activity
 
 					l_managedCursor = getContentResolver().query(event, proj, calSelection, calSelectionArgs, "dtstart DESC, dtend DESC");
 
-					
 
 
-					if (checkbox.getHint().toString()=="exists")
+
+					if (button.getHint().toString()=="exists")
 					{
 						int e_id = 0;
 						if (l_managedCursor.moveToFirst()) {														
@@ -376,11 +350,10 @@ public class CinequestActivity extends Activity
 						Uri deleteUri = ContentUris.withAppendedId(eventUri, e_id);
 						int rows = getContentResolver().delete(deleteUri, null, null);
 						if (rows==1){
-							checkbox.setBackgroundResource(R.drawable.notincalendar);
-							checkbox.setHint("notexist");
+							button.setBackgroundResource(R.drawable.notincalendar);
+							button.setHint("notexist");
 							Toast toast = Toast.makeText(getContext(), "Event removed from calendar", Toast.LENGTH_SHORT);
-							toast.show();                        
-							//v.invalidate();
+							toast.show();                        							
 						}
 					}
 
@@ -414,21 +387,15 @@ public class CinequestActivity extends Activity
 
 						Toast toast = Toast.makeText(getContext(), "Event added to calendar", Toast.LENGTH_SHORT);
 						toast.show();
-						checkbox.setBackgroundResource(R.drawable.incalendar);
-						checkbox.setHint("exists");
+						button.setBackgroundResource(R.drawable.incalendar);
+						button.setHint("exists");
 					}
 					l_managedCursor.close();
-					l_managedCursor=null;
-					
-					//HomeActivity.getUser().getSchedule().add(s);
-					/*else{
-						HomeActivity.getUser().getSchedule().remove(s);
-					}	*/	
+					l_managedCursor=null;					
 				}
 
 			});
 
-			//checkbox.setChecked(HomeActivity.getUser().getSchedule().contains(result));
 		}
 	}	
 
@@ -472,22 +439,18 @@ public class CinequestActivity extends Activity
 	private void goHome(){
 
 		Intent i = new Intent();
-		//setResult(RESULT_OK, i);
-		//finish();		
 		i.setClass(this, MainTab.class);		
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        /*i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        i.putExtra("tab", 0);*/
 		startActivity(i);
 	}
 	private void goSchedule(){
 		Intent i = new Intent();		
 		i.setClass(this, MainTab.class);		
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);        
-        i.putExtra("open_tab", 4);
+		i.putExtra("open_tab", 4);
 		startActivity(i);
 	}
-	
+
 	/**
 	 * Create a menu to be displayed when user hits Menu key on device
 	 */
@@ -522,5 +485,4 @@ public class CinequestActivity extends Activity
 		}
 
 	}
-
 }

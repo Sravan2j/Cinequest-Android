@@ -3,7 +3,7 @@
 
     <string name="app_name">Cinequest</string>
     <string name="versionCode">1201161053</string>
-    <string name="versionName">2012-01-16 10:53</string>
+    <string name="versionName">2013-12-15 10:53</string>
     <string name="login_prompt">This feature needs you to be logged in.\nWould you like to sign in now?</string>
     <string name="login_instruction">Login using your cinequest.org interactive scheduler account email and password.</string>
     <string name="register_instruction">Don\'t have a cinequest.org interactive scheduler account yet?</string>
