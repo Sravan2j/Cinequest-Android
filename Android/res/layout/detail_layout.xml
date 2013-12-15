@@ -5,49 +5,45 @@
     android:layout_weight="1"
     android:orientation="vertical" >
 
-	<TextView 
-		android:text="" 
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
-		android:gravity="center_horizontal"
-		android:id="@+id/Title"
-		android:layout_weight="1"
-		android:padding="10dp"
-	/>
-		
-	<ImageView 
-		android:id="@+id/Image" 
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
-		android:layout_weight="1"
-		android:layout_margin="10dp"
-	/>
-	
-	<TextView 
-		android:text="" 
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
-		android:id="@+id/Description"
-		android:layout_weight="1"
-		android:padding="10dp"
-	/>
-	
-	<TextView
-	    android:id="@+id/SmallImages"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_gravity="start"
-	    android:layout_weight="1"
-	    android:text="" />
-	
-	<TextView 
-		android:text="" 
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
-		android:id="@+id/Properties"
-		android:layout_weight="1"
-		android:padding="10dp"
-	/>
-	
+    <TextView
+        android:id="@+id/Title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:padding="10dp"
+        android:text="" />
+
+    <ImageView
+        android:id="@+id/Image"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/Description"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="10dp"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/SmallImages"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_weight="1"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/Properties"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="10dp"
+        android:text="" />
+
+
 </LinearLayout>
-  

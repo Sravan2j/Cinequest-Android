@@ -102,8 +102,8 @@ public class SplashScreenActivity extends Activity {
 				Uri uri = getContentResolver().insert(builder.build(), l_event); 
 				l_managedCursor.close();
 				l_managedCursor=null;
-			}*/
-
+			}
+*/
 					
 			//Create QueryManager Object and assign it to HomeActivity class queryManager variable. 
 			HomeActivity.setQueryManager(new QueryManager());				

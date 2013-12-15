@@ -19,6 +19,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.CalendarContract.Events;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -93,6 +94,7 @@ public class CinequestActivity extends Activity
 
 	//protected ListAdapter createFilmletList(List<? extends Filmlet> listItems) {
 	protected ListAdapter createFilmletList(List<? extends CommonItem> listItems) {
+		Log.i("CinequestActivity","Entered");
 		if (listItems.size() == 0) {
 			return new SeparatedListAdapter(this);
 		} 
@@ -114,6 +116,7 @@ public class CinequestActivity extends Activity
 					titleInit, titleInit,	
 					new FilmletListAdapter(this, filmsTitleMap.get(titleInit)));
 		}
+		Log.i("CinequestActivity","Success");
 		return adapter;
 	}
 
