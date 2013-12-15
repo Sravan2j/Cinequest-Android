@@ -1,5 +1,9 @@
 package edu.sjsu.cinequest;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.SortedSet;
 
 import android.content.Intent;
@@ -19,6 +23,9 @@ public class FilmsActivity extends CinequestActivity {
 	//private String[] dates ;
 	private SortedSet<String> dates;
 	public static final String ALPHA = "A - Z";
+	
+	DateUtils du = new DateUtils();
+	
 
 	// TODO: move menus down to CinequestActivity
 
@@ -135,7 +142,7 @@ public class FilmsActivity extends CinequestActivity {
 					adapter.add(ALPHA);
 					for (String date : dates) 
 					{						
-						adapter.add(date);
+						adapter.add(du.format(date, DateUtils.DATE_DEFAULT));
 					}
 				}
 			});			
@@ -152,7 +159,7 @@ public class FilmsActivity extends CinequestActivity {
 					adapter.add(ALPHA);
 					for (String date : dates) 
 					{						
-						adapter.add(date);
+						adapter.add(du.format(date, DateUtils.DATE_DEFAULT));
 					}
 				}
 			});
@@ -169,7 +176,7 @@ public class FilmsActivity extends CinequestActivity {
 					adapter.add(ALPHA);
 					for (String date : dates) 
 					{						
-						adapter.add(date);
+						adapter.add(du.format(date, DateUtils.DATE_DEFAULT));
 					}
 					
 				}
