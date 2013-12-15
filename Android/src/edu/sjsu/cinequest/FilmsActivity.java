@@ -142,7 +142,8 @@ public class FilmsActivity extends CinequestActivity {
 					adapter.add(ALPHA);
 					for (String date : dates) 
 					{						
-						adapter.add(du.format(date, DateUtils.DATE_DEFAULT));
+						//adapter.add(du.format(date, DateUtils.DATE_DEFAULT));
+						adapter.add(localizeDate(date));
 					}
 				}
 			});			
@@ -159,7 +160,8 @@ public class FilmsActivity extends CinequestActivity {
 					adapter.add(ALPHA);
 					for (String date : dates) 
 					{						
-						adapter.add(du.format(date, DateUtils.DATE_DEFAULT));
+						//adapter.add(du.format(date, DateUtils.DATE_DEFAULT));
+						adapter.add(localizeDate(date));
 					}
 				}
 			});
@@ -176,7 +178,8 @@ public class FilmsActivity extends CinequestActivity {
 					adapter.add(ALPHA);
 					for (String date : dates) 
 					{						
-						adapter.add(du.format(date, DateUtils.DATE_DEFAULT));
+						//adapter.add(du.format(date, DateUtils.DATE_DEFAULT));
+						adapter.add(localizeDate(date));
 					}
 					
 				}
@@ -184,5 +187,26 @@ public class FilmsActivity extends CinequestActivity {
 			displayList();
 		}
 		
+	}
+	
+	/**
+	 * This method will localize the given date according the device locale.
+	 * 
+	 * @param inputDate The input date.
+	 * @return The equivalent date in device locale
+	 */
+	private String localizeDate( String inputDate ) {
+		
+		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+
+		Date date = null;
+		try {
+			date = fmt.parse(inputDate);
+		} catch (ParseException e) {
+			return inputDate;
+		}
+
+		DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
+		return dateFormat.format(date);	
 	}
 }
