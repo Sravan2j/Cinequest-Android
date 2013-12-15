@@ -532,8 +532,6 @@ public class FestivalParser extends BasicHandler {
         		}      		
         	}
         	
-        	Log.e("FestivalParser.java", "getDatesFromCommonItem, size:" + dates.size());
-        	
         	return dates;
         }
         
