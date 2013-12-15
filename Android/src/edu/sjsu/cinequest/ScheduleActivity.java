@@ -1,6 +1,5 @@
 package edu.sjsu.cinequest;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,13 +10,11 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.ContentUris;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,21 +27,22 @@ import android.widget.TextView;
 /**
  * The Schedule Tab of the app 
  * 
- * @author Prabhjeet Ghuman
+ * @author Sravankumar Reddy Javaji
  *
  */
 
 class EventData {
 	public int eid;
 	public String name;
-
 	public String stime;
 	public String etime;
-	public EventData(int _eid,String _name, String _stime, String _etime) {
+	public Long SDateInMillis;
+	public EventData(int _eid,String _name, String _stime, String _etime, Long _SDateInMillis) {
 		eid = _eid;
 		name = _name;
 		stime = _stime;
 		etime = _etime;
+		SDateInMillis = _SDateInMillis;
 	}
 
 	public String getName() {
@@ -59,36 +57,53 @@ class EventData {
 	public int getEId() {
 		return eid;
 	}
+	public Long getSDateInMillis() {
+		return SDateInMillis;
+	}
+	//ordering items Alphabetically
 	public static class CompName implements Comparator<EventData> {
 		@Override
 		public int compare(EventData arg0, EventData arg1) {
 			return arg0.getName().compareToIgnoreCase(arg1.getName());       
 		}
 	}
+	//for ordering items chronologically
+	public static class CompDate implements Comparator<EventData> {
+		@Override
+		public int compare(EventData arg0, EventData arg1) {
+			if (arg0.getSDateInMillis() > arg1.getSDateInMillis())
+			{
+				return 1;
+			}
+			else if (arg0.getSDateInMillis() < arg1.getSDateInMillis())
+			{
+				return -1;
+			}
+			else  
+				return arg0.getName().compareToIgnoreCase(arg1.getName());			       
+		}
+	}
 }
 public class ScheduleActivity extends Activity {
-	ListView listView;
-	Configuration config;
-	DateFormat dtformat;
-	//SimpleDateFormat sdf;
+	ListView listView;	
+	SimpleDateFormat sdf;
+	//Configuration config;
+	//DateFormat dtformat;	
 	private static final String DATE_TIME_FORMAT = "MMM dd, yyyy'T'HH:mm";
 	private List<EventData> events = new ArrayList<EventData>();
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedulelayout);
-
-		config = getApplicationContext().getResources().getConfiguration();
-		//sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
-		dtformat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, config.locale);		
+		sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
+		//config = getApplicationContext().getResources().getConfiguration();
+		//dtformat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, config.locale);		
 	}
 
 	public void populateSchedule()
 	{
 		String calendarName="Cinequest Calendar";
 		String m_selectedCalendarId = "Cinequest Calendar";
-
 		String[] proj = new String[]{"_id", "calendar_displayName"};
-
 		String calSelection = 
 				"(calendar_displayName= ?) ";
 		String[] calSelectionArgs = new String[] {
@@ -120,6 +135,7 @@ public class ScheduleActivity extends Activity {
 			String l_begin;
 			String l_end;
 			int e_id;
+			long StartDateInMillis;
 			int l_colid = l_managedCursor.getColumnIndex(l_projection[0]);
 			int l_colTitle = l_managedCursor.getColumnIndex(l_projection[1]);
 			int l_colBegin = l_managedCursor.getColumnIndex(l_projection[2]);
@@ -129,12 +145,18 @@ public class ScheduleActivity extends Activity {
 				l_title = l_managedCursor.getString(l_colTitle);
 				l_begin = getDateTimeStr(l_managedCursor.getString(l_colBegin));
 				l_end = getDateTimeStr(l_managedCursor.getString(l_colEnd));
-				EventData edata= new EventData(e_id, l_title, l_begin, l_end);
+				StartDateInMillis = Long.parseLong(l_managedCursor.getString(l_colBegin));
+				EventData edata= new EventData(e_id, l_title, l_begin, l_end, StartDateInMillis);
 				events.add(edata);
 			} 
 			while (l_managedCursor.moveToNext());
 		}
-		Collections.sort(events, new EventData.CompName());
+
+		//Uncomment below method, when you need to sort the listitems in schedule tab, by title.
+		//Collections.sort(events, new EventData.CompName());
+
+		Collections.sort(events, new EventData.CompDate());
+
 		ArrayAdapter<EventData> adapter = new ArrayAdapter<EventData>(
 				this.getApplicationContext(), R.layout.eventlistview, events) {
 			@Override
@@ -145,21 +167,22 @@ public class ScheduleActivity extends Activity {
 				if (v == null) v = inflater.inflate(R.layout.eventlistview, null);                                
 				TextView textView = (TextView) v.findViewById(R.id.eventName);
 				textView.setText(q.getName());
-				//q.getStime().split("\\s[0-9]+\\:");
+
 				String sStr[]=q.getStime().split("T");
 				String eStr[]=q.getEtime().split("T");
 				TextView textView1 = (TextView) v.findViewById(R.id.startTime);
-				if (sStr[0].equalsIgnoreCase(eStr[0])){
+				//if start date and end date of event won't match, then we will be displaying both the dates.
+				//Else we will display only date once, followed by time.
+				if (sStr[0].equalsIgnoreCase(eStr[0]))
+				{
 					textView1.setText(sStr[0]+"  Time: "+sStr[1]+" - "+eStr[1]);
-
 				}
 				else
 				{
 					textView1.setText(sStr[0]+" "+sStr[1]+" - "+eStr[0]+" "+eStr[1]);
 				}
 				textView1.setTypeface(null, Typeface.ITALIC);
-				/*TextView textView2 = (TextView) v.findViewById(R.id.endTime);
-				textView2.setText(q.getEtime());              */
+
 				Button button1 = (Button) v.findViewById(R.id.remove);
 				button1.setOnClickListener( new OnClickListener() {
 					@Override
@@ -178,8 +201,6 @@ public class ScheduleActivity extends Activity {
 						}
 					}
 				});
-
-
 				return v;                                
 			}                            
 		};
@@ -204,25 +225,10 @@ public class ScheduleActivity extends Activity {
 		}
 	}
 
-	public String getDateTimeStr(String p_time_in_millis) {
-		SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
-		//SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
+	public String getDateTimeStr(String p_time_in_millis) {	
 		Date l_time = new Date(Long.parseLong(p_time_in_millis));
 		return sdf.format(l_time);
-
-
-		/*Date date = null;
-		try {
-			date = sdf.parse(q.getStartTime());
-		} catch (ParseException e) {
-			// handle exception here !
-		} catch (java.text.ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 */
-
-		//return dtformat.format(l_time);
+		//return dtformat.format(l_time);    //to get the locale date
 	}
 
 	@Override
@@ -231,6 +237,5 @@ public class ScheduleActivity extends Activity {
 		events.clear();
 		populateSchedule();
 	}
-
 }
 
