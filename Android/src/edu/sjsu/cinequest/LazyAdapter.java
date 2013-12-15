@@ -55,20 +55,6 @@ public class LazyAdapter extends BaseAdapter {
         ImageView image=(ImageView)vi.findViewById(R.id.image);
         text.setText(news.get(position).getName());
         imageLoader.DisplayImage(data[position], image);
-        /*Button moreinfo = (Button) vi.findViewById(R.id.infoicon);			       
-		moreinfo.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
-					    Uri.parse(news.get(position).getInfoLink()));			
-				activity.startActivity(intent);
-			}
-			
-		});
-*/
         return vi;
     }
 }
