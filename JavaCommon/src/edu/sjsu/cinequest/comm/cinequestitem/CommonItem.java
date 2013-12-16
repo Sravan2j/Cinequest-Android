@@ -20,6 +20,7 @@
 package edu.sjsu.cinequest.comm.cinequestitem;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -245,5 +246,34 @@ public class CommonItem extends CinequestItem {
     public String toString()
     {
         return super.toString() + "[items=" + commonItems + "]";
+    }
+    
+    /**
+     * Returns the startTime of the earliest Schedule for a given date
+     * 
+     * @param date The given date
+     * @return The earliest time
+     */
+    public String getEarliestTime( String date ) {
+    	
+    	String earliestTime = null;
+    	
+    	Iterator it = schedules.iterator();
+    	
+    	while(it.hasNext()) {
+    		
+    		Schedule schedule = (Schedule)it.next();
+    		
+    		String startTime = schedule.getStartTime().split("T")[1];
+    		
+    		if(earliestTime == null) {
+    			earliestTime = startTime;
+    		} else if(earliestTime.compareTo(startTime) > 0) {
+    			earliestTime = startTime;
+    		}
+    		
+    	}
+    	
+    	return earliestTime;  	
     }
 }

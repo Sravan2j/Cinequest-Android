@@ -19,6 +19,8 @@
 
 package edu.sjsu.cinequest.comm.cinequestitem;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +32,9 @@ import java.util.Vector;
  * Festival class represents the complete information of the Festival
  *
  * @author Snigdha Mokkapati
+ * @author Rohit Vobbilisetty
  *
- * @version 0.1
+ * @version 1.0
  */
 
 public class Festival implements Serializable {
@@ -158,6 +161,13 @@ public class Festival implements Serializable {
 		return new Vector(getCommonItemsForDate("Forum", date));
 	}
 	
+	/**
+	 * This method returns the list of CommonItems associated with the given date. The resulting list items are sorted based on the time.
+	 * 
+	 * @param type Film/Event/Forum
+	 * @param date The given date
+	 * @return List of CommonItems
+	 */
 	private List<CommonItem> getCommonItemsForDate(String type, String date) {
 		
 		List<CommonItem> itemsByDate = null;
@@ -176,34 +186,14 @@ public class Festival implements Serializable {
 					
 		}
 		
+		if(itemsByDate != null) {
+			Collections.sort(itemsByDate, new CommonItemComparator(date));
+		}
+		
 		return itemsByDate;
 		
 	}
-	
-	/*public Vector getSchedulesForDay(String date) {
-		Vector result = new Vector();
-		for (int i = 0; i < schedules.size(); i++) {
-			Schedule schedule = (Schedule) schedules.elementAt(i);
-			if (schedule.getStartTime().startsWith(date)) result.addElement(schedule);
-		}
-		return result;
-	}*/
-	
-	/*public Film getFilmForId(int id) {
-		for (int i = 0; i < films.size(); i++) {
-			Film film = (Film) films.elementAt(i);
-			if (film.getId() == id) return film;
-		}
-		return null;
-	}*/
 
-	/*public ProgramItem getProgramItemForId(int id) {
-		for (int i = 0; i < programItems.size(); i++) {
-			ProgramItem item = (ProgramItem) programItems.elementAt(i);
-			if (item.getId() == id) return item;
-		}
-		return null;
-	}*/
 	
 	public CommonItem getCommonItemUsingId(int id) {
 		
@@ -245,4 +235,25 @@ public class Festival implements Serializable {
 					
 		return this;
 	}*/	
+	
+	/**
+	 * This Comparator will first compare the Earliest Time associated with the CommonItem. 
+	 * If they are equal, their respective titles will be compared.
+	 *
+	 */
+	class CommonItemComparator implements Comparator<CommonItem> {
+		String date = null;
+		public CommonItemComparator(String date) {
+			this.date = date;
+		}
+		
+	    public int compare(CommonItem item1, CommonItem item2) {
+	    	
+	    	if(item1.getEarliestTime(date).equals(item2.getEarliestTime(date))) {
+	    		return item1.getTitle().compareTo(item2.getTitle());
+	    	}
+	    	
+	        return item1.getEarliestTime(date).compareTo(item2.getEarliestTime(date));
+	    }
+	}
 }
