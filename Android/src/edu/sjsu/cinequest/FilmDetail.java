@@ -92,6 +92,14 @@ public class FilmDetail extends CinequestActivity {
 				openWebPage();
 			}
 		});
+        
+        Button youtubeButton = (Button) findViewById(R.id.youtube);
+        youtubeButton.setOnClickListener(new OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				checkOnYoutube();
+			}
+		});
 	
 		fetchServerData(getIntent().getExtras());	
 	}
@@ -398,7 +406,7 @@ public class FilmDetail extends CinequestActivity {
 		i.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
 		i.putExtra(Intent.EXTRA_SUBJECT, "Cinequest Film Festival : " + fbTitle);
 		i.putExtra(Intent.EXTRA_TEXT   , "You should check this movie out : " + fbUrl);
-		try {
+		try  {
 			startActivity(Intent.createChooser(i, "Send mail..."));
 		} catch (android.content.ActivityNotFoundException ex) {
 			Toast.makeText(this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
@@ -409,6 +417,13 @@ public class FilmDetail extends CinequestActivity {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setData(Uri.parse(fbUrl));
 		startActivity(intent);
+	}
+	public void checkOnYoutube(){
+		// Launch the Youtube view with the relevant film name searched for 
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setData(Uri.parse("https://www.youtube.com/results?search_query=" + fbTitle));
+		startActivity(intent);
+
 	}
 
 }

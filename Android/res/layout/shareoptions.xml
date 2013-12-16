@@ -42,6 +42,11 @@
             android:layout_width="40dp"
             android:layout_height="39dp"
             android:background="@drawable/chrome" />
+        <Button
+            android:id="@+id/youtube"
+            android:layout_width="40dp"
+            android:layout_height="39dp"
+            android:background="@drawable/youtube" />
     </LinearLayout>
 
 </LinearLayout>
