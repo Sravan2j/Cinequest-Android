@@ -19,12 +19,14 @@
 
 package edu.sjsu.cinequest.comm.cinequestitem;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -161,6 +163,7 @@ public class Festival implements Serializable {
 		return new Vector(getCommonItemsForDate("Forum", date));
 	}
 	
+	
 	/**
 	 * This method returns the list of CommonItems associated with the given date. The resulting list items are sorted based on the time.
 	 * 
@@ -190,8 +193,83 @@ public class Festival implements Serializable {
 			Collections.sort(itemsByDate, new CommonItemComparator(date));
 		}
 		
-		return itemsByDate;
+		return itemsByDate;	
+	}
+	
+	public TreeMap<String, List<CommonItem>> getFilmsByDateGroupedByTime(String date) {
+		return getCommonItemsForDateGroupedByTime("Film", date);
+	}
+	
+	public TreeMap<String, List<CommonItem>> getEventsByDateGroupedByTime(String date) {
+		return getCommonItemsForDateGroupedByTime("Event", date);
+	}
+	
+	public TreeMap<String, List<CommonItem>> getForumsByDateGroupedByTime(String date) {
+		return getCommonItemsForDateGroupedByTime("Forum", date);
+	}
+	
+	/**
+	 * This method returns the list of CommonItems associated with the given date. The resulting list items are sorted based on the time.
+	 * 
+	 * @param type Film/Event/Forum
+	 * @param date The given date
+	 * @return List of CommonItems
+	 */
+	private TreeMap<String, List<CommonItem>> getCommonItemsForDateGroupedByTime(String type, String date) {
 		
+		List<CommonItem> itemsByDate = null;
+		
+		if(type.equals("Film")) {
+			
+			itemsByDate = filmsByDateMap.get(date);
+			
+		} else if(type.equals("Event")) {
+			
+			itemsByDate = eventsByDateMap.get(date);
+			
+			
+		} else if(type.equals("Forum")) {
+			itemsByDate = forumsByDateMap.get(date);
+					
+		}
+		
+		/*if(itemsByDate != null) {
+			Collections.sort(itemsByDate, new CommonItemComparator(date));
+		}*/
+		
+		// The List of CommonItems will be converted into a HashMap (Key:Time; Value: List of CommonItems)
+		
+		TreeMap<String, List<CommonItem>> categorizedItems = new TreeMap<String, List<CommonItem>>();
+		// Collect the List of StartTimes. This will act as the key to the Map.
+		
+		
+		for(CommonItem item : itemsByDate) {
+			SortedSet<String> startTimes = item.getStartTimes(date);
+			
+			for(String startTime : startTimes) {
+				
+				List<CommonItem> itemsByTime = null;
+				boolean found = true;
+				
+				if(categorizedItems.containsKey(startTime)) {
+					itemsByTime = categorizedItems.get(startTime);
+				} else {
+					itemsByTime = new ArrayList<CommonItem>();
+					found = false;
+				}
+				
+				itemsByTime.add(item);
+				
+				// Also sort the list based on the Title of the CommonItem
+				Collections.sort(itemsByTime, new CommonItemComparator(date));
+				
+				if(!found) {
+					categorizedItems.put(startTime, itemsByTime);
+				}			
+			}
+		}
+		
+		return categorizedItems;	
 	}
 
 	
@@ -249,9 +327,9 @@ public class Festival implements Serializable {
 		
 	    public int compare(CommonItem item1, CommonItem item2) {
 	    	
-	    	if(item1.getEarliestTime(date).equals(item2.getEarliestTime(date))) {
+	    	/*if(item1.getEarliestTime(date).equals(item2.getEarliestTime(date))) {
 	    		return item1.getTitle().compareTo(item2.getTitle());
-	    	}
+	    	}*/
 	    	
 	        return item1.getEarliestTime(date).compareTo(item2.getEarliestTime(date));
 	    }

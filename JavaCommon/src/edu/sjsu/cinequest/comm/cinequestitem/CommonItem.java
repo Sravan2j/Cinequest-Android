@@ -20,7 +20,12 @@
 package edu.sjsu.cinequest.comm.cinequestitem;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 /**
@@ -275,5 +280,24 @@ public class CommonItem extends CinequestItem {
     	}
     	
     	return earliestTime;  	
+    }
+    
+    public SortedSet<String> getStartTimes(String date) {
+    	
+    	SortedSet<String> startTimes = new TreeSet<String>();
+    	
+    	Iterator it = schedules.iterator();
+    	
+    	while(it.hasNext()) {
+    	
+    		Schedule schedule = (Schedule) it.next();
+    		
+    		String startTime = schedule.getStartTime().split("T")[1];
+    		
+    		startTimes.add(startTime);
+    		
+    	}
+    	
+    	return startTimes;
     }
 }
