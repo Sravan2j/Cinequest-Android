@@ -28,6 +28,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import android.util.Log;
+
 /**
  * Copy of ProgramItem. Represents a Film/Event/Forum
  * 
@@ -282,6 +284,12 @@ public class CommonItem extends CinequestItem {
     	return earliestTime;  	
     }
     
+    /**
+     *  Returns the list of StartTimes for the given Date.
+     * 
+     * @param date The date on which this item has a schedule
+     * @return The associated list of StartTimes
+     */
     public SortedSet<String> getStartTimes(String date) {
     	
     	SortedSet<String> startTimes = new TreeSet<String>();
@@ -292,9 +300,15 @@ public class CommonItem extends CinequestItem {
     	
     		Schedule schedule = (Schedule) it.next();
     		
-    		String startTime = schedule.getStartTime().split("T")[1];
+    		String[] values = schedule.getStartTime().split("T");
+    		String startDate = values[0];
     		
-    		startTimes.add(startTime);
+    		// Consider the StartTime only if their Dates match.
+    		if(date.equals(startDate)) {
+    		
+    			String startTime = values[1];	
+    			startTimes.add(startTime);
+    		}
     		
     	}
     	

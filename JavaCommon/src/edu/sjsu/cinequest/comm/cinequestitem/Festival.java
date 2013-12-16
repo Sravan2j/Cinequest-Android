@@ -30,6 +30,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import android.util.Log;
+
 /**
  * Festival class represents the complete information of the Festival
  *

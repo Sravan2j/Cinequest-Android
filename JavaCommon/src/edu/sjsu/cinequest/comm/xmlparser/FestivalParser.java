@@ -103,7 +103,7 @@ public class FestivalParser extends BasicHandler {
      * @throws IOException
      */
     public static void logErrors(String url, Callback callback) throws SAXException, IOException {
-    	Log.e("FestivalParser.java", "Within logErrors(), url:" + url);
+    	Log.d("FestivalParser.java", "Within logErrors(), url:" + url);
     	
         List<Show> shows = parseShows(url, callback);
         
@@ -667,35 +667,34 @@ public class FestivalParser extends BasicHandler {
         	
         	// Now populate the Map which stores CommonItems by Dates
         	
-        	Map<String, List<CommonItem>> filmsByDateMap = null;
+        	Map<String, List<CommonItem>> itemsByDateMap = null;
         	
         	if(type.equals("Film")) {
-        		filmsByDateMap = festival.getFilmsByDateMap();
+        		itemsByDateMap = festival.getFilmsByDateMap();
         	} else if(type.equals("Event")) {
-        		filmsByDateMap = festival.getEventsByDateMap();
+        		itemsByDateMap = festival.getEventsByDateMap();
         	} else if(type.equals("Forum")) {
-        		filmsByDateMap = festival.getForumsByDateMap();
+        		itemsByDateMap = festival.getForumsByDateMap();
         	}
         	
         	for(String date : dates) {
         		
-        		List<CommonItem> filmsList;
+        		List<CommonItem> itemsList;
         		boolean found = false;
         		
-        		if(filmsByDateMap.containsKey(date)) {
-        			filmsList = filmsByDateMap.get(date);
+        		if(itemsByDateMap.containsKey(date)) {
+        			itemsList = itemsByDateMap.get(date);
         			found = true;
         		} else {
-        			filmsList = new ArrayList<CommonItem>();
+        			itemsList = new ArrayList<CommonItem>();
         		}
         		
-        		filmsList.add(item);
+        		itemsList.add(item);
         		
         		if(!found) {
-        			filmsByDateMap.put(date, filmsList);
+        			itemsByDateMap.put(date, itemsList);
         		}       		
-        	}
-        	
+        	}     	
         }
     }
 }
