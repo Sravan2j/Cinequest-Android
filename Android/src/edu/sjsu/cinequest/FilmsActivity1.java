@@ -1,9 +1,11 @@
 package edu.sjsu.cinequest;
 
 import java.util.List;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import android.os.Bundle;
+import edu.sjsu.cinequest.CinequestActivity.FilmletListAdapter;
 import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 
 /**
@@ -15,7 +17,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
 	private String target;
 	private String tab;
 	private static Vector<CommonItem> mFilms_byTitle;
-	private static Vector<CommonItem> mSchedule_byDate;
+	private static TreeMap<String, List<CommonItem>> mSchedule_byDate;
 
 	//unique id's for menu options
 	// private static final int SORT_MENUOPTION_ID = Menu.FIRST;
@@ -54,7 +56,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
 					@Override
 					public void invoke(Object result) {
 						super.invoke(result);
-						mSchedule_byDate = (Vector<CommonItem>) result;
+						mSchedule_byDate = (TreeMap<String, List<CommonItem>>) result;
 						refreshListContents(mSchedule_byDate);
 					}
 				});
@@ -64,7 +66,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
 					@Override
 					public void invoke(Object result) {
 						super.invoke(result);
-						mSchedule_byDate = (Vector<CommonItem>) result;
+						mSchedule_byDate = (TreeMap<String, List<CommonItem>>) result;
 						refreshListContents(mSchedule_byDate);
 					}
 				});
@@ -75,7 +77,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
 					@Override
 					public void invoke(Object result) {
 						super.invoke(result);
-						mSchedule_byDate = (Vector<CommonItem>) result;
+						mSchedule_byDate = (TreeMap<String, List<CommonItem>>) result;
 						refreshListContents(mSchedule_byDate);
 					}
 				});
@@ -118,13 +120,20 @@ public class FilmsActivity1 extends CinequestTabActivity {
 	@Override
 	protected void refreshListContents(List<?> listItems) {
 		if (listItems == null) return;
-		if(isByDate()) {
-			//Here the listview should be sorted by time instead of arranging them alphabetically  
-			setListViewAdapter(createFilmletList((List<CommonItem>) listItems));
-		}
-		else {
-			setListViewAdapter(createFilmletList((List<CommonItem>) listItems));
-		}
-	}
 
+		setListViewAdapter(createFilmletList((List<CommonItem>) listItems));
+
+	}
+	protected void refreshListContents(TreeMap<String, List<CommonItem>> listItems) {
+		if (listItems == null) return;		  
+		SeparatedListIndexedAdapter adapter = new SeparatedListIndexedAdapter(this);
+		
+		for (String titleInit : listItems.keySet()) { 
+			adapter.addSection(
+					titleInit, titleInit,	
+					new FilmletListAdapter(this, listItems.get(titleInit)));
+		}
+		
+		setListViewAdapter(adapter);
+	}
 }

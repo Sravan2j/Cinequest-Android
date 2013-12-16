@@ -145,7 +145,7 @@ public class QueryManager {
 	public void getFilmsByDate(final String date, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getFilmsByDate(date);
+				return getFestival(callback).getFilmsByDateGroupedByTime(date);
 			}
 		});
 	}
@@ -153,7 +153,7 @@ public class QueryManager {
 	public void getEventsByDate(final String date, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getEventsByDate(date);
+				return getFestival(callback).getEventsByDateGroupedByTime(date);
 			}
 		});
 	}
@@ -161,7 +161,7 @@ public class QueryManager {
 	public void getForumsByDate(final String date, final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getForumsByDate(date);
+				return getFestival(callback).getForumsByDateGroupedByTime(date);
 			}
 		});
 	}
