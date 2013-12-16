@@ -396,8 +396,8 @@ public class FilmDetail extends CinequestActivity {
 		Intent i = new Intent(Intent.ACTION_SEND);
 		i.setType("message/rfc822");
 		i.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
-		i.putExtra(Intent.EXTRA_SUBJECT, "Cinequest File Festival " + fbTitle);
-		i.putExtra(Intent.EXTRA_TEXT   , "You should check this movie out " + fbUrl);
+		i.putExtra(Intent.EXTRA_SUBJECT, "Cinequest File Festival : " + fbTitle);
+		i.putExtra(Intent.EXTRA_TEXT   , "You should check this movie out : " + fbUrl);
 		try {
 			startActivity(Intent.createChooser(i, "Send mail..."));
 		} catch (android.content.ActivityNotFoundException ex) {
