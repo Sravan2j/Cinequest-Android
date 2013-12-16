@@ -84,7 +84,7 @@ public class FilmDetail extends CinequestActivity {
 				sendEmail();		
 			}
 		});
-		/*   
+		   
         Button infoButton = (Button) findViewById(R.id.moreinfo);
         infoButton.setOnClickListener(new OnClickListener() {			
 			@Override
@@ -92,8 +92,7 @@ public class FilmDetail extends CinequestActivity {
 				openWebPage();
 			}
 		});
-		 */ 
-
+	
 		fetchServerData(getIntent().getExtras());	
 	}
 
@@ -396,9 +395,9 @@ public class FilmDetail extends CinequestActivity {
 	public void sendEmail(){
 		Intent i = new Intent(Intent.ACTION_SEND);
 		i.setType("message/rfc822");
-		i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"testreciever@example.com"});
-		i.putExtra(Intent.EXTRA_SUBJECT, "subject of email");
-		i.putExtra(Intent.EXTRA_TEXT   , "body of email goes here");
+		i.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
+		i.putExtra(Intent.EXTRA_SUBJECT, "Cinequest File Festival " + fbTitle);
+		i.putExtra(Intent.EXTRA_TEXT   , "You should check this movie out " + fbUrl);
 		try {
 			startActivity(Intent.createChooser(i, "Send mail..."));
 		} catch (android.content.ActivityNotFoundException ex) {
@@ -408,7 +407,7 @@ public class FilmDetail extends CinequestActivity {
 	}
 	public void openWebPage(){
 		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setData(Uri.parse("www.google.com"));
+		intent.setData(Uri.parse(fbUrl));
 		startActivity(intent);
 	}
 
