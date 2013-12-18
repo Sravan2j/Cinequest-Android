@@ -27,26 +27,42 @@
 
         <Button
             android:id="@+id/fbshare"
-            android:layout_width="53dp"
-            android:layout_height="48dp"
-            android:background="@drawable/fb" />
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/fb"
+            android:text="Facebook"
+            android:textSize="8sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/background" />
 
         <Button
             android:id="@+id/gmail"
             android:layout_width="40dp"
-            android:layout_height="39dp"
-            android:background="@drawable/gmail" />
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/gmail"
+            android:text="Mail"
+            android:textSize="8sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/background" />
 
         <Button
             android:id="@+id/moreinfo"
             android:layout_width="40dp"
-            android:layout_height="39dp"
-            android:background="@drawable/chrome" />
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/chrome"
+            android:text="More Info"
+            android:textSize="8sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/background" />
         <Button
             android:id="@+id/youtube"
             android:layout_width="40dp"
-            android:layout_height="39dp"
-            android:background="@drawable/youtube" />
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/youtube" 
+            android:text="You Tube"
+            android:textSize="8sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/background"/>
     </LinearLayout>
 
 </LinearLayout>
