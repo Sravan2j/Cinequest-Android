@@ -88,6 +88,10 @@ class EventData {
 public class ScheduleActivity extends Activity {
 	ListView listView;	
 	SimpleDateFormat sdf;
+	private DateUtils du;
+	String fStartTime="";
+	String fEndTime="";
+	boolean is24HourFormat=false;
 	//Configuration config;
 	//DateFormat dtformat;	
 	private static String calendarName="Cinequest Calendar";
@@ -98,6 +102,7 @@ public class ScheduleActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedulelayout);
 		sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
+		du = new DateUtils();
 		//config = getApplicationContext().getResources().getConfiguration();
 		//dtformat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, config.locale);		
 	}
@@ -201,7 +206,18 @@ public class ScheduleActivity extends Activity {
 				//Else we will display only date once, followed by time.
 				if (sStr[0].equalsIgnoreCase(eStr[0]))
 				{
-					textView1.setText(sStr[0]+"  Time: "+sStr[1]+" - "+eStr[1]);
+					if(!is24HourFormat)
+					{
+ 
+					fStartTime=du.formatTime(sStr[1]);
+					fEndTime=du.formatTime(eStr[1]);
+					}
+					else
+					{
+						fStartTime=sStr[1];
+						fEndTime=eStr[1];
+					}
+					textView1.setText(sStr[0]+"  Time: "+fStartTime+" - "+fEndTime);
 				}
 				else
 				{
@@ -267,9 +283,10 @@ public class ScheduleActivity extends Activity {
 
 	@Override
 	protected void onResume() {
-		super.onResume();  // Always call the superclass method first		
+		super.onResume();  // Always call the superclass method first
+		is24HourFormat=android.text.format.DateFormat.is24HourFormat(this);
 		events.clear();
 		populateSchedule();
-	}
+	}			
 }
 

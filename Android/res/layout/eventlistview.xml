@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="5dp"
+    android:padding="4dp"
     android:visibility="visible"
     tools:context=".MainActivity" >
 
@@ -44,6 +44,7 @@
         android:layout_alignBaseline="@+id/startTime"
         android:layout_alignBottom="@+id/startTime"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="8dip"
         android:background="@drawable/trash" />
     
 </RelativeLayout>

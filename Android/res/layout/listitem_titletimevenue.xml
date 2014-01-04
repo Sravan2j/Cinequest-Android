@@ -50,7 +50,7 @@
             android:layout_toRightOf="@id/timetext"
             android:layout_alignParentRight="true"
             android:layout_below="@id/titletext"
-            android:layout_marginLeft="30dip"
+            android:layout_marginLeft="13dip"
             android:layout_marginTop="8dip"
         />
 

@@ -18,7 +18,6 @@ import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.CalendarContract.Events;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -137,6 +136,7 @@ public class CinequestActivity extends Activity
 	protected  class ScheduleListAdapter extends ArrayAdapter<Schedule> {
 		private static final int RESOURCE_ID = R.layout.listitem_titletimevenue;
 		private DateUtils du = new DateUtils();
+		boolean is24HourFormat=android.text.format.DateFormat.is24HourFormat(getContext());
 
 		public ScheduleListAdapter(Context context, List<Schedule> list) 
 		{
@@ -161,6 +161,13 @@ public class CinequestActivity extends Activity
 				title.setTypeface(null, Typeface.ITALIC);			
 			String startTime = du.format(result.getStartTime(), DateUtils.TIME_SHORT);        	
 			String endTime = du.format(result.getEndTime(), DateUtils.TIME_SHORT);
+			if(!is24HourFormat)
+			{
+				startTime=du.formatTime(startTime);
+				if (startTime.length()==7) startTime="0"+startTime;
+				endTime=du.formatTime(endTime);
+				if (endTime.length()==7) endTime="0"+endTime;
+			}
 			time.setText("Time: " + startTime + " - " + endTime);
 			venue.setText("Venue: " + result.getVenue());
 			formatContents(v, title, time, venue, du, result);		        

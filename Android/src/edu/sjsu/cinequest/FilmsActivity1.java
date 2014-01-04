@@ -5,7 +5,6 @@ import java.util.TreeMap;
 import java.util.Vector;
 
 import android.os.Bundle;
-import edu.sjsu.cinequest.CinequestActivity.FilmletListAdapter;
 import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 
 /**
@@ -18,7 +17,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
 	private String tab;
 	private static Vector<CommonItem> mFilms_byTitle;
 	private static TreeMap<String, List<CommonItem>> mSchedule_byDate;
-
+	private DateUtils du;
 	//unique id's for menu options
 	// private static final int SORT_MENUOPTION_ID = Menu.FIRST;
 	//private static final int ADD_CONTEXTMENU_ID = Menu.FIRST + 1;
@@ -29,6 +28,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
 		target = getIntent().getExtras().getString("target");
 		tab = getIntent().getExtras().getString("tab");		
 		super.onCreate(savedInstanceState);
+		du = new DateUtils();
 	}
 
 	/**
@@ -125,15 +125,25 @@ public class FilmsActivity1 extends CinequestTabActivity {
 
 	}
 	protected void refreshListContents(TreeMap<String, List<CommonItem>> listItems) {
+		boolean is24HourFormat=android.text.format.DateFormat.is24HourFormat(this);		
 		if (listItems == null) return;		  
 		SeparatedListIndexedAdapter adapter = new SeparatedListIndexedAdapter(this);
-		
+		String formattedTime="";
 		for (String titleInit : listItems.keySet()) { 
+			if(!is24HourFormat)
+			{
+				formattedTime=du.formatTime(titleInit);				
+			}
+			else
+			{
+				formattedTime=titleInit;
+			}
 			adapter.addSection(
-					titleInit, titleInit,	
+					formattedTime, titleInit,
+					//titleInit, titleInit,	
 					new FilmletListAdapter(this, listItems.get(titleInit)));
 		}
-		
+
 		setListViewAdapter(adapter);
 	}
 }

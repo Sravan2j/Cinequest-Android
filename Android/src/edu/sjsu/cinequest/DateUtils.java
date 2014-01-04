@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import android.util.Log;
-
 public class DateUtils {
     public static final int NORMAL_MODE = 0;
     public static final int FESTIVAL_TEST_MODE = 1;
@@ -31,7 +29,7 @@ public class DateUtils {
     public static final int DAY_ONLY = 2;
     public static final int DATE_LONG = 3;
     
-    
+    private String formattedTime="";
     /*
      * If you need more date or date/time formats, add a constant here. 
      * Also add the formatter below. Each formatter's index should match
@@ -153,4 +151,19 @@ public class DateUtils {
         return sdf.format(new Date());
     }
     
+    protected String formatTime(String time) {	
+		String[] parts = time.split(":");		
+		int hours = Integer.parseInt(parts[0]);
+		if(hours>=12)
+		{
+			if(hours>12)hours-=12;
+			formattedTime=hours+":"+parts[1]+" PM";
+		}
+		else
+		{
+			if(hours==0)hours=12;
+			formattedTime=hours+":"+parts[1]+" AM";
+		}
+		return formattedTime;
+	}
 }
