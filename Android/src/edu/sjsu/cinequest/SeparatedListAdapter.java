@@ -1,6 +1,8 @@
 package edu.sjsu.cinequest;
 
 // http://blogingtutorials.blogspot.com/2010/09/separating-lists-with-headers-in.html
+// http://jsharkey.org/blog/2008/08/18/separating-lists-with-headers-in-android-09/
+// just added the second link that has the same content as the first link, but it shows the image of separating lists with headers.
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,8 +16,11 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
+/*
+ * A separating list adapter with headers that can be used in listview.
+ */
 public class SeparatedListAdapter extends BaseAdapter {
-	public final Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();  
+    public final Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();  
     public final ArrayAdapter<String> headers;  
     public Vector<Schedule> list;
     public final static int TYPE_SECTION_HEADER = 0;  
@@ -33,7 +38,10 @@ public class SeparatedListAdapter extends BaseAdapter {
         this.sections.put(section, adapter);
     }  
     
-    
+    /*
+     * Get the number of items in the data set represented by this adapter.
+     * @return the number of all sections in listview.
+     */
 	public int getCount() {
 		// total together all sections, plus one for each section header  
         int total = 0;  
@@ -41,7 +49,10 @@ public class SeparatedListAdapter extends BaseAdapter {
             total += adapter.getCount() + 1;  
         return total;  
 	}
-
+	
+	/*
+	 * Get the data item associated with the specified position in the data set
+	 */
 	public Object getItem(int position) {
 		//If the list is used to store the sections, return from it
 		if(list != null){
@@ -66,6 +77,9 @@ public class SeparatedListAdapter extends BaseAdapter {
 		
 	}
 
+	/*
+	 * Get the number of types of views that will be created by getView().
+	 */
 	public int getViewTypeCount() {  
         // assume that headers count as one, then total all sections  
         int total = 1;  
@@ -74,6 +88,9 @@ public class SeparatedListAdapter extends BaseAdapter {
         return total;  
     }  
 	
+	/*
+	 * Get the type of View that will be created by getView().
+	 */
 	public int getItemViewType(int position) {  
         int type = 1;  
         for(Object section : this.sections.keySet()) {  
@@ -90,15 +107,24 @@ public class SeparatedListAdapter extends BaseAdapter {
         }  
         return -1;  
     }  
-  
+  	
+  	/*
+  	 * Indicates whether all the items in this adapter are selectable.
+  	 */
     public boolean areAllItemsSelectable() {  
         return false;  
     }  
-  
+  	
+  	/*
+  	 * Indicates whether the item at the specified position is enabled.
+  	 */
     public boolean isEnabled(int position) {  
         return (getItemViewType(position) != TYPE_SECTION_HEADER);  
     }  
 	
+	/*
+	 * Get the row id associated with the specified position in the list.
+	 */
 	public long getItemId(int position) {
 		return position; 
 	}
@@ -112,6 +138,10 @@ public class SeparatedListAdapter extends BaseAdapter {
 	        super.getView(view,context,cursor);
 	    }
 */
+	
+	/*
+	 * Get a view that displays the data at the specified position in the data set.
+	 */
 	public View getView(int position, View convertView, ViewGroup parent) {
 		/* CheckBox checker = (CheckBox)convertView.findViewById(R.id.CheckBox);
 
