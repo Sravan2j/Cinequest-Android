@@ -34,26 +34,32 @@ public class LazyAdapter extends BaseAdapter {
         imageLoader=new ImageLoader(activity.getApplicationContext());
     }
 
+    //returns the length of the String array data
     public int getCount() {
         return data.length;
     }
 
+    //returns the position of a particular element
     public Object getItem(int position) {
         return position;
     }
 
+    //returns the associated Item ID of a particular element
     public long getItemId(int position) {
         return position;
     }
     
     public View getView(final int position, View convertView, ViewGroup parent) {
         View vi=convertView;
+        //if the passed convertView doesn't exist, this will create a new instance
         if(convertView==null)
             vi = inflater.inflate(R.layout.row_listview_item, null);
 
+        //Generate the correct Views for the activity
         TextView text=(TextView)vi.findViewById(R.id.text);;
         ImageView image=(ImageView)vi.findViewById(R.id.image);
         text.setText(news.get(position).getName());
+        //loads an image from the requested location
         imageLoader.DisplayImage(data[position], image);
         return vi;
     }
