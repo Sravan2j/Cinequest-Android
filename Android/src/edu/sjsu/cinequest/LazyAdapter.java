@@ -34,21 +34,30 @@ public class LazyAdapter extends BaseAdapter {
         imageLoader=new ImageLoader(activity.getApplicationContext());
     }
 
-    //returns the length of the String array data
+    /**
+     * @return the length of the String array data
+     */
     public int getCount() {
         return data.length;
     }
 
-    //returns the position of a particular element
+    /**
+     * @return the position of a particular element
+     */
     public Object getItem(int position) {
         return position;
     }
 
-    //returns the associated Item ID of a particular element
+    /**
+     * @return the associated Item ID of a particular element
+     */
     public long getItemId(int position) {
         return position;
     }
     
+    /**
+     * @return a converts a View into TextView and an ImageView a specified location
+     */
     public View getView(final int position, View convertView, ViewGroup parent) {
         View vi=convertView;
         //if the passed convertView doesn't exist, this will create a new instance
