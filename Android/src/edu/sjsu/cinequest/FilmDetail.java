@@ -81,6 +81,7 @@ public class FilmDetail extends CinequestActivity {
 		gmailButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
+				//Share information about movies through mailing
 				sendEmail();		
 			}
 		});
@@ -97,6 +98,7 @@ public class FilmDetail extends CinequestActivity {
         youtubeButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
+				// Search on youtube videos about the film
 				checkOnYoutube();
 			}
 		});

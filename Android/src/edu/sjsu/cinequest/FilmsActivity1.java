@@ -51,7 +51,8 @@ public class FilmsActivity1 extends CinequestTabActivity {
 	@Override
 	protected void fetchServerData() {
 		if(isByDate()) {
-			if (tab.equalsIgnoreCase("films")){				
+			if (tab.equalsIgnoreCase("films")){	
+				//Get Filmes by date from server
 				HomeActivity.getQueryManager().getFilmsByDate(target, new ProgressMonitorCallback(this) {
 					@Override
 					public void invoke(Object result) {
@@ -62,6 +63,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
 				});
 			}
 			else if(tab.equalsIgnoreCase("events")){
+				//Get Events by date from server
 				HomeActivity.getQueryManager().getEventsByDate(target, new ProgressMonitorCallback(this) {
 					@Override
 					public void invoke(Object result) {
@@ -73,6 +75,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
 			}
 			else if(tab.equalsIgnoreCase("forums"))
 			{
+				//Get Forums by date from server
 				HomeActivity.getQueryManager().getForumsByDate(target, new ProgressMonitorCallback(this) {
 					@Override
 					public void invoke(Object result) {
@@ -85,7 +88,8 @@ public class FilmsActivity1 extends CinequestTabActivity {
 		}
 		else
 		{
-			if (tab.equalsIgnoreCase("films")){				
+			if (tab.equalsIgnoreCase("films")){	
+				//Get all filmes from server
 				HomeActivity.getQueryManager().getAllFilms (new ProgressMonitorCallback(this) {           		 
 					public void invoke(Object result) {
 						super.invoke(result);
@@ -96,6 +100,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
 			}
 			else if(tab.equalsIgnoreCase("events"))
 			{
+				//Get all events from server
 				HomeActivity.getQueryManager().getAllEvents (new ProgressMonitorCallback(this) {           		 
 					public void invoke(Object result) {
 						super.invoke(result);
@@ -106,6 +111,7 @@ public class FilmsActivity1 extends CinequestTabActivity {
 			}
 			else if(tab.equalsIgnoreCase("forums"))
 			{
+				//Get all forums from server
 				HomeActivity.getQueryManager().getAllForums (new ProgressMonitorCallback(this) {           		 
 					public void invoke(Object result) {
 						super.invoke(result);
