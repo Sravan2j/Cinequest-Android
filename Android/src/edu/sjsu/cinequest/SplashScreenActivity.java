@@ -20,7 +20,11 @@ import edu.sjsu.cinequest.android.AndroidPlatform;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
-
+/*
+ * SplashScreenActivity loads an authentication mechanism and displays all relevant features for
+ * registering with cinequest.
+ * @author Dmitri Dimov
+ * */
 public class SplashScreenActivity extends Activity {
 	private LoadData loadData = null;
 	private View mLoginStatusView;
@@ -32,10 +36,9 @@ public class SplashScreenActivity extends Activity {
 		setContentView(R.layout.activity_splash_screen);
 		mLoginStatusView = findViewById(R.id.login_status);						
 		Platform.setInstance(new AndroidPlatform(getApplicationContext()));		
-		loadData = new LoadData();
+		loadData = new LoadData(); //There might be a problem in three lines
 		loadData.execute((Void) null);
-		showProgress(true);
-
+		showProgress(true); //progress bar shows but nothing is shown
 	}
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private void showProgress(final boolean show) {

@@ -35,7 +35,10 @@ import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.WebConnection;
 
 // http://android-developers.blogspot.com/2011/09/androids-http-clients.html
-
+/*
+ * AndroidWebConnection connects to internet by trying different key,value to get a response.
+ * @author Dmitri Dimov
+ * */
 public class AndroidWebConnection extends WebConnection {
 	private String url;
 	private Hashtable postData;
@@ -70,7 +73,10 @@ public class AndroidWebConnection extends WebConnection {
     public void setPostParameters(Hashtable postData) throws IOException {
     	this.postData = postData;
     }
-    
+    /*
+     * If there was a response, do not look for a response, continue.
+     * If there was no response, hit some hosts see who will respond.
+     * */
     private void execute() throws IOException
     {
         Platform.getInstance().log("AndroidWebConnection.execute: Opening connection to " + url);

@@ -85,6 +85,11 @@ class EventData {
 		}
 	}
 }
+/*
+ * Any film related events are going to be displayed with this class.
+ * ALlows consumer to view any film related information with ScheduleActivity class.
+ * @author Dmitri Dimov
+ * */
 public class ScheduleActivity extends Activity {
 	ListView listView;	
 	SimpleDateFormat sdf;
