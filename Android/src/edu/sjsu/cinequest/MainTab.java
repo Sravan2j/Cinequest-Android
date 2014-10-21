@@ -4,12 +4,12 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TabHost;
-/*
+/**
  * Main tab is a tab that displays contents of News,Films, Events, Forums, Schedule
  * to the consumer. For easy navigation and information lookup.
  * This tab is th head tab from which consumer can navigate all necessary film related
  * information.
- * */
+ */
 public class MainTab extends TabActivity {
 
 	public void onCreate(Bundle savedInstanceState) {    	    	

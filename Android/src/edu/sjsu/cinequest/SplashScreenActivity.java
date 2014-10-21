@@ -20,10 +20,10 @@ import edu.sjsu.cinequest.android.AndroidPlatform;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
-/*
+/**
  * SplashScreenActivity loads an authentication mechanism and displays all relevant features for
  * registering with cinequest.
- * */
+ */
 public class SplashScreenActivity extends Activity {
 	private LoadData loadData = null;
 	private View mLoginStatusView;
