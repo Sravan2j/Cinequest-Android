@@ -37,7 +37,6 @@ import edu.sjsu.cinequest.comm.WebConnection;
 // http://android-developers.blogspot.com/2011/09/androids-http-clients.html
 /*
  * AndroidWebConnection connects to internet by trying different key,value to get a response.
- * @author Dmitri Dimov
  * */
 public class AndroidWebConnection extends WebConnection {
 	private String url;

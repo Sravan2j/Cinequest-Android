@@ -9,7 +9,6 @@ import android.widget.TabHost;
  * to the consumer. For easy navigation and information lookup.
  * This tab is th head tab from which consumer can navigate all necessary film related
  * information.
- * @author Dmitri Dimov
  * */
 public class MainTab extends TabActivity {
 

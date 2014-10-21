@@ -23,7 +23,6 @@ import edu.sjsu.cinequest.comm.QueryManager;
 /*
  * SplashScreenActivity loads an authentication mechanism and displays all relevant features for
  * registering with cinequest.
- * @author Dmitri Dimov
  * */
 public class SplashScreenActivity extends Activity {
 	private LoadData loadData = null;
