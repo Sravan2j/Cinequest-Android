@@ -40,7 +40,7 @@ public class MainTab extends TabActivity {
 		tabHost.addTab(spec);
 
 		intent = new Intent().setClass(this, ScheduleActivity.class);        
-		spec = tabHost.newTabSpec("schedule").setIndicator("Schedule",getResources().getDrawable(R.drawable.schedule_icon)).setContent(intent);
+		spec = tabHost.newTabSpec("My Cinequest").setIndicator("My Cinequest",getResources().getDrawable(R.drawable.schedule_icon)).setContent(intent);
 		tabHost.addTab(spec);
 
 		// Default tab is the first tab.
