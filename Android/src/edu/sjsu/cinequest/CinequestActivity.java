@@ -34,9 +34,9 @@ import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
-/*
- * This superclass has convenience methods for making lists of schedules and
- * filmlets.
+/**
+  This superclass has convenience methods for making lists of schedules and
+  filmlets.
  */
 public class CinequestActivity extends Activity
 {
@@ -47,8 +47,8 @@ public class CinequestActivity extends Activity
 	public static String m_selectedCalendarId = "Cinequest Calendar";
 
 	/**
-	 * Launches the FilmDetail activity for the given object.
-	 * @param result Object; Can be Schedule, Filmlet etc
+	 Launches the FilmDetail activity for the given object.
+	  @param result Object; Can be Schedule, Filmlet etc
 	 */
 	protected void launchFilmDetail(Object result) {
 		Intent intent = new Intent();
@@ -58,42 +58,10 @@ public class CinequestActivity extends Activity
 	}
 
 	/**
-	 * Creates a list of schedules
-	 * @param listItems the list items
-	 * @param isChecked a function to determine when to check a checkbox, or null for no checkboxes
-	 * @param listener the listener for checkboxes, or null for no checkboxes
-	 * @return the list adapter
+	 Creates a list of schedules
+	 @param listItems the list items
+	  @return the list adapter
 	 */
-
-	/*protected ListAdapter createScheduleList(List<Schedule> listItems) {
-		if (listItems.size() == 0) {
-			return new SeparatedListAdapter(this);
-		}
-		SeparatedListIndexedAdapter adapter  = new SeparatedListIndexedAdapter(this);
-
-
-		TreeMap<String, ArrayList<Schedule>> filmsMap 
-		= new TreeMap<String, ArrayList<Schedule>>();
-
-		for(Schedule s : listItems) {
-			String day = s.getStartTime().substring(0, 10);
-
-			if (!filmsMap.containsKey(day))
-				filmsMap.put(day, new ArrayList<Schedule>());
-			filmsMap.get(day).add(s);
-		}
-
-		DateUtils du = new DateUtils();
-		for (String day : filmsMap.keySet()) { 
-			ArrayList<Schedule> filmsForDay = filmsMap.get(day); 			
-			String header = du.format(day, DateUtils.DATE_DEFAULT); 			
-			String key = du.format(day, DateUtils.DAY_ONLY); 			
-			adapter.addSection(header, key, new ScheduleListAdapter(this, filmsForDay));
-		}
-		return adapter;
-	}
-	 */
-	//protected ListAdapter createFilmletList(List<? extends Filmlet> listItems) {
 	protected ListAdapter createFilmletList(List<? extends CommonItem> listItems) {		
 		if (listItems.size() == 0) {
 			return new SeparatedListAdapter(this);
@@ -119,6 +87,12 @@ public class CinequestActivity extends Activity
 		return adapter;
 	}
 
+	/**
+		A method to get the first (relevant) letter of a title
+		@param title The title of the film
+		@param previousInitial the previous inititla
+		@return The initial of the movie title
+	*/
 	private static String getTitleInitial(String title, String previousInitial) {
 		String ucTitle = title.toUpperCase();
 		if (ucTitle.startsWith("A ") || ucTitle.startsWith("AN ") || ucTitle.startsWith("THE "))
@@ -128,10 +102,11 @@ public class CinequestActivity extends Activity
 		return initial;
 	}
 
+
 	/**
-	 * An adapter for a list of schedule items. These lists occur (1) in the Films tab 
-	 * (when sorted by date), Events and Forums tabs, (2) in each film detail,
-	 * and (3) in the Schedule tab.
+	  An adapter for a list of schedule items. These lists occur (1) in the Films tab 
+	  (when sorted by date), Events and Forums tabs, (2) in each film detail,
+	  and (3) in the Schedule tab.
 	 */
 	protected  class ScheduleListAdapter extends ArrayAdapter<Schedule> {
 		private static final int RESOURCE_ID = R.layout.listitem_titletimevenue;
@@ -153,7 +128,6 @@ public class CinequestActivity extends Activity
 			TextView title = (TextView) v.findViewById(R.id.titletext);
 			TextView time = (TextView) v.findViewById(R.id.timetext);
 			TextView venue = (TextView) v.findViewById(R.id.venuetext);
-			//CheckBox checkbox = (CheckBox) v.findViewById(R.id.myschedule_checkbox);
 			Button button = (Button) v.findViewById(R.id.myschedule_checkbox);	                
 			final Schedule result = getItem(position);            
 			title.setText(result.getTitle());	                 
@@ -193,12 +167,15 @@ public class CinequestActivity extends Activity
 		}
 
 		/**
-		 * Override to change the formatting of the contents
+		  Override to change the formatting of the contents
 		 */
 		protected void formatContents(View v, TextView title, TextView time, TextView venue, DateUtils du, Schedule result) {
 		}
 
 		//Calendar code for adding/removing events from Device Calendar
+		/**
+		Add or remove events from Device Calendar
+		*/
 		protected void configureCalendarIcon(View v, final Button button, Schedule result) {
 			button.setVisibility(View.VISIBLE);
 
@@ -216,7 +193,7 @@ public class CinequestActivity extends Activity
 				startDate = (Date) formatter.parse(s.getStartTime());
 				endDate = (Date) formatter.parse(s.getEndTime());
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}                                        
 			long begin = startDate.getTime();
