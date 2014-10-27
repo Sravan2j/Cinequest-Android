@@ -51,5 +51,26 @@ public class MainTab extends TabActivity {
 		// Default tab is the first tab.
 		int tab = getIntent().getIntExtra("open_tab", 0);
 		tabHost.setCurrentTab(tab);                
-	}
+	
+		tabHost.setOnTabChangedListener(new OnTabChangeListener(){
+
+			@Override
+			public void onTabChanged(String arg0) {
+				// TODO Auto-generated method stub
+				setTabColor(tabHost); 
+			}
+			
+		});
+		setTabColor(tabHost);
+    }
+    
+    //Set tab color
+    public void setTabColor(TabHost tabHost){
+    	for(int i=0; i < tabHost.getTabWidget().getChildCount(); i++)
+        {
+            tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.BLACK); //inactive tabs
+        }
+    	tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.RED); //selected, active tabs
+    }
+    
 }
