@@ -1,6 +1,8 @@
 package edu.sjsu.cinequest;
 
+import android.graphics.Color;
 import android.app.TabActivity;
+import android.widget.TabHost.OnTabChangeListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TabHost;
@@ -12,13 +14,13 @@ import android.widget.TabHost;
  */
 public class MainTab extends TabActivity {
 
-	public void onCreate(Bundle savedInstanceState) {    	    	
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
 
 		// Get host object from super class
-		TabHost tabHost = getTabHost();
+		final TabHost tabHost = getTabHost();
 		TabHost.TabSpec spec;
 		Intent intent;
 
@@ -44,13 +46,13 @@ public class MainTab extends TabActivity {
 		spec = tabHost.newTabSpec("forums").setIndicator("Forums",getResources().getDrawable(R.drawable.forums_icon)).setContent(intent);
 		tabHost.addTab(spec);
 
-		intent = new Intent().setClass(this, ScheduleActivity.class);        
+		intent = new Intent().setClass(this, ScheduleActivity.class);
 		spec = tabHost.newTabSpec("schedule").setIndicator("Schedule",getResources().getDrawable(R.drawable.schedule_icon)).setContent(intent);
 		tabHost.addTab(spec);
 
 		// Default tab is the first tab.
 		int tab = getIntent().getIntExtra("open_tab", 0);
-		tabHost.setCurrentTab(tab);                
+		tabHost.setCurrentTab(tab);
 	
 		tabHost.setOnTabChangedListener(new OnTabChangeListener(){
 
