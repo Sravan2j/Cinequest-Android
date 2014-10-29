@@ -1,19 +1,26 @@
 package edu.sjsu.cinequest;
 
+import android.graphics.Color;
 import android.app.TabActivity;
+import android.widget.TabHost.OnTabChangeListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TabHost;
-
+/**
+ * Main tab is a tab that displays contents of News,Films, Events, Forums, Schedule
+ * to the consumer. For easy navigation and information lookup.
+ * This tab is th head tab from which consumer can navigate all necessary film related
+ * information.
+ */
 public class MainTab extends TabActivity {
 
-	public void onCreate(Bundle savedInstanceState) {    	    	
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
 
 		// Get host object from super class
-		TabHost tabHost = getTabHost();
+		final TabHost tabHost = getTabHost();
 		TabHost.TabSpec spec;
 		Intent intent;
 
@@ -45,6 +52,27 @@ public class MainTab extends TabActivity {
 
 		// Default tab is the first tab.
 		int tab = getIntent().getIntExtra("open_tab", 0);
-		tabHost.setCurrentTab(tab);                
-	}
+		tabHost.setCurrentTab(tab);
+	
+		tabHost.setOnTabChangedListener(new OnTabChangeListener(){
+
+			@Override
+			public void onTabChanged(String arg0) {
+				// TODO Auto-generated method stub
+				setTabColor(tabHost); 
+			}
+			
+		});
+		setTabColor(tabHost);
+    }
+    
+    //Set tab color
+    public void setTabColor(TabHost tabHost){
+    	for(int i=0; i < tabHost.getTabWidget().getChildCount(); i++)
+        {
+            tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.BLACK); //inactive tabs
+        }
+    	tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.RED); //selected, active tabs
+    }
+    
 }
