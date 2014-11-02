@@ -29,10 +29,10 @@ public class MainTab extends TabActivity {
 		tabHost.addTab(spec);
 
 		// Create the intent associated with the activity
-		intent = new Intent().setClass(this, FilmsActivity.class);
-		intent.putExtra("tab", "films");
+		intent = new Intent().setClass(this, IndexActivity.class);
+		intent.putExtra("tab", "index");
 		// Create a new TabSpec with a name, an icon and intent
-		spec = tabHost.newTabSpec("films").setIndicator("Films",getResources().getDrawable(R.drawable.film_icon)).setContent(intent);
+		spec = tabHost.newTabSpec("index").setIndicator("Index",getResources().getDrawable(R.drawable.film_icon)).setContent(intent);
 		// Add it to the tab
 		tabHost.addTab(spec);
 
