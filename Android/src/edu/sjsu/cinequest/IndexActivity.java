@@ -45,9 +45,9 @@ public class IndexActivity extends CinequestActivity {
 		filmsButton.setEnabled(false);
 		currentType = IndexType.FILMS;
 		
-		filmsButton.setBackgroundColor(Color.RED);
+		filmsButton.setBackgroundResource(R.drawable.enabledfilmsbutton);
 		filmsButton.setTextColor(Color.WHITE);
-		eventsButton.setBackgroundColor(Color.BLACK);
+		eventsButton.setBackgroundResource(R.drawable.disabledeventsbutton);
 		eventsButton.setTextColor(Color.RED);
 		
 		registerForContextMenu(listview);
@@ -114,9 +114,9 @@ public class IndexActivity extends CinequestActivity {
 		filmsButton.setEnabled(false);
 		eventsButton.setEnabled(true);
 		
-		filmsButton.setBackgroundColor(Color.RED);
+		filmsButton.setBackgroundResource(R.drawable.enabledfilmsbutton);
 		filmsButton.setTextColor(Color.WHITE);
-		eventsButton.setBackgroundColor(Color.BLACK);
+		eventsButton.setBackgroundResource(R.drawable.disabledeventsbutton);
 		eventsButton.setTextColor(Color.RED);
 		
 		fetchServerData(currentType);
@@ -127,9 +127,9 @@ public class IndexActivity extends CinequestActivity {
 		filmsButton.setEnabled(true);
 		eventsButton.setEnabled(false);
 		
-		eventsButton.setBackgroundColor(Color.RED);
+		eventsButton.setBackgroundResource(R.drawable.enabledeventsbutton);
 		eventsButton.setTextColor(Color.WHITE);
-		filmsButton.setBackgroundColor(Color.BLACK);
+		filmsButton.setBackgroundResource(R.drawable.disabledfilmsbutton);
 		filmsButton.setTextColor(Color.RED);
 		
 		fetchServerData(currentType);

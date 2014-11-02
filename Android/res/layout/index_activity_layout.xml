@@ -21,7 +21,8 @@
 	        android:onClick="filmsButtonOnClick"
 	        android:padding="4dp"
 	        android:text="Films"
-	        android:textSize="20sp" />
+	        android:textSize="20sp"
+	        android:background="@drawable/enabledfilmsbutton" />
 	    
 	    <Button
 	        android:id="@+id/index_activity_events_button"
@@ -33,7 +34,8 @@
 	        android:onClick="eventsButtonOnclick"
 	        android:padding="4dp"
 	        android:text="Events"
-	        android:textSize="20sp" />
+	        android:textSize="20sp"
+	        android:background="@drawable/enabledfilmsbutton" />
 
     </LinearLayout>    
 
