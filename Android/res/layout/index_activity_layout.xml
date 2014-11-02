@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical" 
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  >
+	
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:orientation="horizontal" >
+
+	    <Button
+	        android:id="@+id/index_activity_films_button"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="30dp"
+	        android:layout_marginRight="-5dp"
+	        android:layout_weight="1"
+	        android:onClick="filmsButtonOnClick"
+	        android:padding="4dp"
+	        android:text="Films"
+	        android:textSize="20sp" />
+	    
+	    <Button
+	        android:id="@+id/index_activity_events_button"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="-5dp"
+	        android:layout_marginRight="30dp"
+	        android:layout_weight="1"
+	        android:onClick="eventsButtonOnclick"
+	        android:padding="4dp"
+	        android:text="Events"
+	        android:textSize="20sp" />
+
+    </LinearLayout>    
+
+	<ListView 
+		android:id="@+id/index_activity_listview"
+	 	android:layout_width="fill_parent"
+	 	android:layout_height="wrap_content"
+	 	android:background="@android:color/transparent"
+	 	android:layout_weight="1" 
+	 />
+	 
+	 <TextView
+	  	android:id="@+id/msg_for_empty_schedule"
+	  	android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:textColor="#FFFFFF"
+		android:textStyle="italic"
+		android:layout_gravity="center_vertical|center_horizontal"		
+		android:layout_margin="14dip"
+		android:layout_weight="1"
+		android:visibility="gone"
+		/>
+
+</LinearLayout>
