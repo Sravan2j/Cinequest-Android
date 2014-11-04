@@ -89,23 +89,6 @@ public class FilmsActivity extends CinequestActivity {
 			displayList();
 
 		}
-		else if (tab.equalsIgnoreCase("forums"))
-		{
-			HomeActivity.getQueryManager().getForumDates (new ProgressMonitorCallback(this) {           		 
-				public void invoke(Object result) {
-					super.invoke(result);
-					dates = (SortedSet<String>) result;
-					adapter.add(ALPHA);
-					for (String date : dates) 
-					{						
-						adapter.add(localizeDate(date));
-					}
-
-				}
-			});
-			displayList();
-		}
-
 	}
 
 	/**
