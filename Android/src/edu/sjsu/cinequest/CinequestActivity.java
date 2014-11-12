@@ -35,8 +35,12 @@ import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 /**
-  This superclass has convenience methods for making lists of schedules and
-  filmlets.
+ *This superclass has convenience methods for making lists of schedules and
+ *filmlets.
+ *
+ *It also contains ListAdapters ScheduleListAdapter and FilmletListAdapter.
+ *It handles MenuOptions: Home, Schedule, and About
+ *
  */
 public class CinequestActivity extends Activity
 {
@@ -90,7 +94,7 @@ public class CinequestActivity extends Activity
 	/**
 		A method to get the first (relevant) letter of a title
 		@param title The title of the film
-		@param previousInitial the previous inititla
+		@param previousInitial the previous initital
 		@return The initial of the movie title
 	*/
 	private static String getTitleInitial(String title, String previousInitial) {
@@ -118,6 +122,10 @@ public class CinequestActivity extends Activity
 			super(context, RESOURCE_ID, list);
 		}
 
+		/* (non-Javadoc)
+		 * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
+		 * 
+		 */
 		@Override
 		public View getView(int position, View v, ViewGroup parent) {            
 			if (v == null) {
@@ -167,14 +175,16 @@ public class CinequestActivity extends Activity
 		}
 
 		/**
-		  Override to change the formatting of the contents
+		 * Override to change the formatting of the contents
+		 * @param View to be formated, title, time, venue, du, result
 		 */
 		protected void formatContents(View v, TextView title, TextView time, TextView venue, DateUtils du, Schedule result) {
 		}
 
 		//Calendar code for adding/removing events from Device Calendar
 		/**
-		Add or remove events from Device Calendar
+		* Configures the Calendar code for adding/removing events from Device Calendar
+		* @param The View to configure the button and Schedule
 		*/
 		protected void configureCalendarIcon(View v, final Button button, Schedule result) {
 			button.setVisibility(View.VISIBLE);
@@ -400,6 +410,11 @@ public class CinequestActivity extends Activity
 			super(context, RESOURCE_ID, (List<CommonItem>) list);
 		}
 
+		/* (non-Javadoc)
+		 * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
+		 * @param position (int), view, and the parent ViewGroup
+		 * @return the view
+		 */
 		@Override
 		public View getView(int position, View v, ViewGroup parent) {            
 			if (v == null) {
@@ -422,7 +437,7 @@ public class CinequestActivity extends Activity
 	}	
 
 	/**
-	 * Take the user to home activity
+	 * Takes the user to home activity from the current activity.
 	 */
 	private void goHome(){
 
@@ -431,6 +446,10 @@ public class CinequestActivity extends Activity
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(i);
 	}
+	
+	/**
+	 * Takes the user to the schedule activity from the current activity. 
+	 */
 	private void goSchedule(){
 		Intent i = new Intent();		
 		i.setClass(this, MainTab.class);		
@@ -473,7 +492,10 @@ public class CinequestActivity extends Activity
 		}
 
 	}
-	//gets the calendar id for Cinequest 
+	
+	/**
+	 * Gets the calendar id for Cinequest and populates it. 
+	 */
 	public void populateCalendarID(){
 		String[] proj = new String[]{"_id", "calendar_displayName"};			        
 		String calSelection = "(calendar_displayName= ?) ";
