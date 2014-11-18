@@ -20,6 +20,7 @@
 package edu.sjsu.cinequest.comm;
 
 import java.io.IOException;
+import java.util.Vector;
 
 import org.xml.sax.SAXException;
 
@@ -119,6 +120,17 @@ public class QueryManager {
 		});
 	}
 	
+	public void getAllEventsAndForums(final Callback callback){
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				Festival festival = getFestival(callback);
+				Vector vt = new Vector(festival.getEvents());
+				vt.addAll(festival.getForums());
+				return vt;
+			}
+		});
+	}
+
 	public void getFilmDates(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
