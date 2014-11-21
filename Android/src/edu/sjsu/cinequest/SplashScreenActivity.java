@@ -35,8 +35,8 @@ public class SplashScreenActivity extends Activity {
 	private ProgressBar progressBar; // added progress bar
 	private TextView loginStatusMessage; // added login text view
 	private static String calendarName="Cinequest Calendar";
-	private static String downServerMessage = "The server is temporarily down due to maintenance.<br/>"
-					        + "Please come back later.";
+	private static String downServerMessage = "Apologies, the server is not responding.<br/>"
+					        + "Please re-open the app, or contact us for help.";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
