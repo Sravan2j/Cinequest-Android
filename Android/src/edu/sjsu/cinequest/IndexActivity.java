@@ -1,6 +1,8 @@
 package edu.sjsu.cinequest;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import android.graphics.Color;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -26,6 +29,7 @@ public class IndexActivity extends CinequestActivity {
     private TextView mEmptyListViewMessage;
     private SeparatedListIndexedAdapter adp;
     private ClearableEditText searchText;
+    private boolean searchable = true;
     private IndexType currentType;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -43,8 +47,6 @@ public class IndexActivity extends CinequestActivity {
 	    }
 	});
 
-	searchText = (ClearableEditText) findViewById(R.id.searchText);
-
 	filmsButton = (Button) findViewById(R.id.index_activity_films_button);
 	eventsButton = (Button) findViewById(R.id.index_activity_events_button);
 
@@ -60,22 +62,34 @@ public class IndexActivity extends CinequestActivity {
 
 	fetchServerData(currentType);
 
-	listview.setTextFilterEnabled(true);
+	listview.setTextFilterEnabled(searchable);
+	
+	if (searchable) {
+	
+	    searchText = (ClearableEditText) findViewById(R.id.searchText);
+	    
+	    searchText.setVisibility(View.VISIBLE);
+	    
+	    searchText.addTextChangedListener(new TextWatcher() {
+		@Override
+		public void afterTextChanged(Editable s) {}
 
-	searchText.addTextChangedListener(new TextWatcher() {
-	    @Override
-	    public void afterTextChanged(Editable s) {}
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+			int after) {}
 
-	    @Override
-	    public void beforeTextChanged(CharSequence s, int start, int count,
-		    int after) {}
-
-	    @Override
-	    public void onTextChanged(CharSequence s, int start, int before,
-		    int count) {
-		//adp.getFilter().filter(s);
-	    }
-	});
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+			int count) {
+		    if (s.length() > 0) {
+			SeparatedListAdapter filterAdp = createFilterAdapter(s.toString());
+			listview.setAdapter(filterAdp);
+		    } else {
+			adp.setAsAdapterFor(listview);
+		    }
+		}
+	    });
+	}
     }
 
     /**
@@ -86,13 +100,19 @@ public class IndexActivity extends CinequestActivity {
      @Override
      public void onResume(){
 	super.onResume();
+	
 	if(currentType == IndexType.FILMS){
 	    refreshListContents(mFilms_byTitle);    
 	}else{
 	    refreshListContents(mEvents_byTitle);    
 	}
-
      }
+     
+     @Override
+     protected void onPause() {
+	 super.onPause();
+	 searchText.setText("");
+     };
 
      private void fetchServerData(IndexType indexType) {
 	 if (indexType == IndexType.FILMS) {
@@ -133,6 +153,7 @@ public class IndexActivity extends CinequestActivity {
      }	
 
      public void filmsButtonOnClick(View view){
+	 searchText.setText("");
 	 currentType = IndexType.FILMS;
 	 filmsButton.setEnabled(false);
 	 eventsButton.setEnabled(true);
@@ -146,6 +167,7 @@ public class IndexActivity extends CinequestActivity {
      }
 
      public void eventsButtonOnclick(View view){
+	 searchText.setText("");
 	 currentType = IndexType.EVENTS;
 	 filmsButton.setEnabled(true);
 	 eventsButton.setEnabled(false);
@@ -158,4 +180,33 @@ public class IndexActivity extends CinequestActivity {
 	 fetchServerData(currentType);
      }
 
+     private SeparatedListAdapter createFilterAdapter(String pattern) {
+	 Map<String, Adapter> sections = adp.sections;
+	 pattern = pattern.toLowerCase();
+	 int count = 0, numItems = 0, i;
+	 String headerTitle = "Found ";
+	 CommonItem item = null;
+	 ArrayList<CommonItem> list = new ArrayList<CommonItem>();
+	 for (Adapter adapter : sections.values()) {
+	     numItems = adapter.getCount();
+	     for (i = 0; i < numItems; i++) {
+		item = (CommonItem) adapter.getItem(i);
+		if (item.getTitle().toLowerCase().contains(pattern)) {
+		    list.add(item);
+		    count++;
+		}
+	     }
+	 }
+	 
+	 if (currentType == IndexType.FILMS)
+	     headerTitle += count + " film(s)";
+	 else
+	     headerTitle += count + " event(s)";
+	 
+	 FilmletListAdapter filmAdp = new CinequestActivity.FilmletListAdapter(this, list);
+	 SeparatedListIndexedAdapter filterAdapter = new SeparatedListIndexedAdapter(this, true);
+	 filterAdapter.addSection(headerTitle, filmAdp);
+	 
+	 return filterAdapter;
+     }
 }

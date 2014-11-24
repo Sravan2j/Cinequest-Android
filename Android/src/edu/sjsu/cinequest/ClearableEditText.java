@@ -14,9 +14,9 @@ import android.widget.EditText;
 public class ClearableEditText extends EditText {
 
     public String defaultValue = "";
-    final Drawable imgX = getResources().getDrawable(android.R.drawable.presence_offline ); // X image
-
-
+    //final Drawable imgX = getResources().getDrawable(android.R.drawable.presence_offline); // X image
+    final Drawable imgX = getResources().getDrawable(R.drawable.ic_action_remove); // X image
+    
     public ClearableEditText(Context context) {
         super(context);
 
