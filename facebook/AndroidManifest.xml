@@ -19,4 +19,8 @@
       package="com.facebook.android">
     <application/>
     <uses-sdk android:minSdkVersion="8" />
+      <!--
+<uses-sdk    android:targetSdkVersion="21"/> This is what I used to set the target to API 21 to test in android lolipop, while making an
+emulator running on Android version 5 instead of line #21
+          -->
 </manifest>
