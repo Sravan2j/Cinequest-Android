@@ -4,10 +4,15 @@ package edu.sjsu.cinequest;
 // http://jsharkey.org/blog/2008/08/18/separating-lists-with-headers-in-android-09/
 // just added the second link that has the same content as the first link, but it shows the image of separating lists with headers.
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.Vector;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,22 +26,24 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
  */
 public class SeparatedListAdapter extends BaseAdapter {
     public final Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();  
-    public final ArrayAdapter<String> headers;  
+    public final ArrayAdapter<String> headers;
     public Vector<Schedule> list;
     public final static int TYPE_SECTION_HEADER = 0;  
-
-    public SeparatedListAdapter(Context context) {  
+    public boolean SortKeys;
+    public SeparatedListAdapter(Context context) {
+    	SortKeys = false;
         headers = new ArrayAdapter<String>(context, R.layout.list_header);  
-    }  
+    }
     
     public void setList(Vector<Schedule> list)
     {
     	this.list = list;
     }
-    public void addSection(String section, Adapter adapter) {  
-        this.headers.add(section);  
+
+	public void addSection(String section, Adapter adapter) {  
+        this.headers.add(section);
         this.sections.put(section, adapter);
-    }  
+    }
     
     /*
      * Get the number of items in the data set represented by this adapter.
@@ -59,7 +66,6 @@ public class SeparatedListAdapter extends BaseAdapter {
 			Schedule schedule = list.get(position-1);
 			return schedule;
 		}
-		
 		//else return from the sections Map
 		for(Object section : this.sections.keySet()) {
             Adapter adapter = sections.get(section);  
@@ -67,8 +73,8 @@ public class SeparatedListAdapter extends BaseAdapter {
             int size = adapter.getCount() + 1;  
   
             // check if position inside this section  
-            if(position == 0) return section;  
-            if(position < size) return adapter.getItem(position - 1);  
+            if(position  == 0) return section;
+            else if(position < size){return adapter.getItem(position - 1); }  
   
             // otherwise jump into next section  
             position -= size;  
@@ -91,7 +97,7 @@ public class SeparatedListAdapter extends BaseAdapter {
 	/*
 	 * Get the type of View that will be created by getView().
 	 */
-	public int getItemViewType(int position) {  
+	public int getItemViewType(int position) {
         int type = 1;  
         for(Object section : this.sections.keySet()) {  
             Adapter adapter = sections.get(section);  
@@ -99,14 +105,14 @@ public class SeparatedListAdapter extends BaseAdapter {
   
             // check if position inside this section  
             if(position == 0) return TYPE_SECTION_HEADER;  
-            if(position < size) return type + adapter.getItemViewType(position - 1);  
+            else if(position < size) return type + adapter.getItemViewType(position - 1);  
   
             // otherwise jump into next section  
             position -= size;  
             type += adapter.getViewTypeCount();  
         }  
         return -1;  
-    }  
+    }
   	
   	/*
   	 * Indicates whether all the items in this adapter are selectable.
@@ -142,6 +148,7 @@ public class SeparatedListAdapter extends BaseAdapter {
 	/*
 	 * Get a view that displays the data at the specified position in the data set.
 	 */
+	@SuppressLint("NewApi")
 	public View getView(int position, View convertView, ViewGroup parent) {
 		/* CheckBox checker = (CheckBox)convertView.findViewById(R.id.CheckBox);
 
@@ -150,20 +157,62 @@ public class SeparatedListAdapter extends BaseAdapter {
 	        // call super class for default binding
 	     //   super.getView(view,context,cursor);
 	      * */
-	      
-		int sectionnum = 0;  
-        for(Object section : this.sections.keySet()) {  
+		int sectionnum = 0;
+		if(SortKeys)
+		{
+			Comparator cmp = new Comparator<String>() { //This sorts the headers in ascending order based on day
+				@Override
+				public int compare(String lhs, String rhs) {
+					String[] temp1 = lhs.split(" ");
+					String[] temp2 = rhs.split(" ");
+					if(Integer.parseInt(temp1[2]) > Integer.parseInt(temp2[2]))
+					{ return 1; }
+					else if(Integer.parseInt(temp1[2]) == Integer.parseInt(temp2[2])) 
+					{ return 0; }
+					else { return -1; }
+				}
+			};
+			Comparator cmp2 = new Comparator<Map.Entry<String, Adapter>>(){
+				@Override
+				public int compare(Entry<String, Adapter> lhs,
+						Entry<String, Adapter> rhs) {
+					String[] temp1 = lhs.getKey().split(" ");
+					String[] temp2 = rhs.getKey().split(" ");
+					if(Integer.parseInt(temp1[2]) > Integer.parseInt(temp2[2]))
+					{ return 1; }
+					else if(Integer.parseInt(temp1[2]) == Integer.parseInt(temp2[2])) 
+					{ return 0; }
+					else { return -1; }
+				}
+			};
+			Vector<String> sheaders = new Vector<String>();
+			for(int i = 0; i < headers.getCount(); i++)
+			{
+				sheaders.add(headers.getItem(i));
+			}
+			Collections.sort(sheaders, cmp);
+			headers.clear();
+			headers.addAll(sheaders);
+			Vector<Map.Entry<String, Adapter>> ssections = new Vector<Map.Entry<String, Adapter>>(sections.entrySet());
+			sections.clear();
+			Collections.sort(ssections, cmp2);
+			for(Map.Entry<String, Adapter> sentry: ssections)
+			{
+				sections.put(sentry.getKey(), sentry.getValue());
+			}
+		}
+		for(Object section : this.sections.keySet()) {  
             Adapter adapter = sections.get(section);  
             int size = adapter.getCount() + 1;  
   
             // check if position inside this section  
             if(position == 0) return headers.getView(sectionnum, convertView, parent);  
-            if(position < size) return adapter.getView(position - 1, convertView, parent);  
+            else if(position < size) return adapter.getView(position - 1, convertView, parent);  
   
             // otherwise jump into next section  
-            position -= size;  
+            position -= size;
             sectionnum++;  
-        }  
+        }
 		return null;
 	}
 

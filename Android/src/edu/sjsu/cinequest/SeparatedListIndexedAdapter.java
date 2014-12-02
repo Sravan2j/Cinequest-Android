@@ -2,10 +2,12 @@ package edu.sjsu.cinequest;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
 import android.content.Context;
 import android.widget.Adapter;
 import android.widget.LinearLayout;
@@ -58,6 +60,7 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 	public SeparatedListIndexedAdapter(Context context, boolean sortkeys) {
 		this(context);
 		SortKeysFirst = sortkeys;
+		SortKeys = sortkeys;
 	}
 	
 	public void setAsAdapterFor(ListView listview){
@@ -74,7 +77,6 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 		this.listview.setAdapter(this);
 		this.listview.setFastScrollEnabled(true);
 	}
-	
 	
 	public void addSection(String section, String sectionKey, Adapter adapter) {
 		super.addSection(section, adapter);
@@ -97,7 +99,6 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 	            String key = it.next();
 	            keyList.add(key);
 			}
-	
 			Collections.sort(keyList);
 		}
 		
@@ -149,7 +150,7 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 		else
 			listview.setId(0);
 	}
-
+	
 	@Override
 	public int getPositionForSection(int section) {
 		String letter = sectionKeys[section];			 
@@ -160,11 +161,38 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 	public int getSectionForPosition(int position) {
 		return 0;
 	}
-
+	
 	@Override
 	public Object[] getSections() {
 		buildIndex();
 		return sectionKeys;
 	}
+	/**
+	 * Verifies, if this sections already exists
+	 * */
+	public boolean haveSection(String sectionKey)
+	{
+		return sections.containsKey(sectionKey);
+	}
 	
+	/**
+	 * Returns an adapter for section
+	 * */
+	public Adapter getAdapterForSection(String section)
+	{
+		return sections.get(section);
+	}
+	
+	/**
+	 * Replace an adapter for current Adapter
+	 * */
+	public void appendAdapter(String section, Adapter adapter)
+	{
+		Adapter temp = sections.get(section);
+		if(adapter != null)
+		{
+			sections.remove(section);
+			sections.put(section, adapter);
+		}
+	}
 }
