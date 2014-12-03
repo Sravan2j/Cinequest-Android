@@ -17,6 +17,7 @@
 	 	
 	 	android:background="@android:color/transparent"
 	 	android:layout_weight="1" 
+	 	android:listSelector="#FF0000"
 	 />
 	 
 	 <TextView
