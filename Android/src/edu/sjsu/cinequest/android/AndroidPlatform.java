@@ -96,7 +96,7 @@ public class AndroidPlatform extends Platform {
 		} catch (ParserConfigurationException e) {
 			throw new SAXException(e.toString());
 		}
-		/**
+		/*
 		 * Android crap--search for
 		 * http://www.google.com/search?q=android+XML+parser+8859-1 The parser
 		 * can't infer the character encoding from the xml encoding attribute,
