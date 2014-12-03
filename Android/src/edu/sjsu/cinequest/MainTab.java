@@ -36,9 +36,9 @@ public class MainTab extends TabActivity {
 		// Add it to the tab
 		tabHost.addTab(spec);
 
-		intent = new Intent().setClass(this, FilmsActivity.class);
-		intent.putExtra("tab", "events");
-		spec = tabHost.newTabSpec("events").setIndicator("Events",getResources().getDrawable(R.drawable.events_icon)).setContent(intent);
+		intent = new Intent().setClass(this, FilmsActivity1.class);
+		intent.putExtra("tab", "schedule");
+		spec = tabHost.newTabSpec("schedule").setIndicator("Schedule",getResources().getDrawable(R.drawable.events_icon)).setContent(intent);
 		tabHost.addTab(spec);
 
 		intent = new Intent().setClass(this, ScheduleActivity.class);        
