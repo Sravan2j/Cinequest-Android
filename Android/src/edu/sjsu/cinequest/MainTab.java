@@ -31,7 +31,7 @@ public class MainTab extends TabActivity {
 		spec = tabHost
 				.newTabSpec("news")
 				.setIndicator("News",
-						getResources().getDrawable(R.drawable.news))
+						getResources().getDrawable(R.drawable.ic_tab_news))
 				.setContent(intent);
 		tabHost.addTab(spec);
 
@@ -42,7 +42,7 @@ public class MainTab extends TabActivity {
 		spec = tabHost
 				.newTabSpec("index")
 				.setIndicator("Index",
-						getResources().getDrawable(R.drawable.film_icon))
+						getResources().getDrawable(R.drawable.ic_tab_film))
 				.setContent(intent);
 		// Add it to the tab
 		tabHost.addTab(spec);
@@ -52,7 +52,7 @@ public class MainTab extends TabActivity {
 		spec = tabHost
 				.newTabSpec("schedule")
 				.setIndicator("Schedule",
-						getResources().getDrawable(R.drawable.events_icon))
+						getResources().getDrawable(R.drawable.ic_tab_schedule))
 				.setContent(intent);
 		tabHost.addTab(spec);
 
@@ -60,7 +60,7 @@ public class MainTab extends TabActivity {
 		spec = tabHost
 				.newTabSpec("My Cinequest")
 				.setIndicator("My Cinequest",
-						getResources().getDrawable(R.drawable.schedule_icon))
+						getResources().getDrawable(R.drawable.ic_tab_event))
 				.setContent(intent);
 		tabHost.addTab(spec);
 
