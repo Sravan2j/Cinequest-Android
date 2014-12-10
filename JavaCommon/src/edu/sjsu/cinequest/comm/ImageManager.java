@@ -59,6 +59,13 @@ public class ImageManager
     private Object fetchImage(String imageUrl, boolean usePersistentCache) throws IOException
     {
         Object image = null;
+        // the problem of image not loading is right here because of url encoding
+        // check if there are spaces in image url
+        if ((imageUrl.contains("image") || imageUrl.contains(".jpg")) && imageUrl.contains(" ")) {
+            // replace " " with "%20"
+            imageUrl = imageUrl.replace(" ", "%20");
+        }
+        
         HttpURLConnection connection = ConnectionHelper.open(imageUrl);
         if (!connection.getHeaderField("content-type").startsWith("image"))
         {
