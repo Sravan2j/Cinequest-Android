@@ -3,6 +3,7 @@ package edu.sjsu.cinequest;
 import android.graphics.Color;
 import android.app.TabActivity;
 import android.widget.TabHost.OnTabChangeListener;
+import android.widget.TextView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TabHost;
@@ -66,8 +67,13 @@ public class MainTab extends TabActivity {
     	for(int i=0; i < tabHost.getTabWidget().getChildCount(); i++)
         {
             tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.BLACK); //inactive tabs
+            
         }
     	tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.RED); //selected, active tabs
+    	
+    	int k = tabHost.getTabWidget().getChildCount() - 1;
+    	TextView tv = (TextView) tabHost.getTabWidget().getChildAt(k).findViewById(android.R.id.title);
+        tv.setTextSize(12);
     }
     
 }
