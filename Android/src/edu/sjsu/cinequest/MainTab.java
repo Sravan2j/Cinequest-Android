@@ -1,6 +1,8 @@
 package edu.sjsu.cinequest;
 
 import android.app.TabActivity;
+import android.widget.TabHost.OnTabChangeListener;
+import android.widget.TextView;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -76,16 +78,20 @@ public class MainTab extends TabActivity {
 
 		});
 		setTabColor(tabHost);
-	}
-
-	// Set tab color
-	public void setTabColor(TabHost tabHost) {
-		for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) {
-			tabHost.getTabWidget().getChildAt(i)
-					.setBackgroundColor(Color.BLACK); // inactive tabs
-		}
-		tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab())
-				.setBackgroundColor(Color.RED); // selected, active tabs
-	}
+    }
+    
+    //Set tab color and text size of last tab
+    public void setTabColor(TabHost tabHost){
+    	for(int i=0; i < tabHost.getTabWidget().getChildCount(); i++)
+        {
+            tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.BLACK); //inactive tabs
+            
+        }
+    	tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.RED); //selected, active tabs
+    	
+    	int k = tabHost.getTabWidget().getChildCount() - 1;
+    	TextView tv = (TextView) tabHost.getTabWidget().getChildAt(k).findViewById(android.R.id.title);
+        tv.setTextSize(12);
+    }
 
 }
