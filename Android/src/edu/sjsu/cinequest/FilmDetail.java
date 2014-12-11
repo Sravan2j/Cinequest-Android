@@ -93,11 +93,11 @@ public class FilmDetail extends CinequestActivity {
 			}
 		});
         
-        Button youtubeButton = (Button) findViewById(R.id.youtube);
+        Button youtubeButton = (Button) findViewById(R.id.twitter);
         youtubeButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
-				checkOnYoutube();
+				checkOnTwitter();
 			}
 		});
 	
@@ -418,10 +418,10 @@ public class FilmDetail extends CinequestActivity {
 		intent.setData(Uri.parse(fbUrl));
 		startActivity(intent);
 	}
-	public void checkOnYoutube(){
+	public void checkOnTwitter(){
 		// Launch the Youtube view with the relevant film name searched for 
 		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setData(Uri.parse("https://www.youtube.com/results?search_query=" + fbTitle));
+		intent.setData(Uri.parse("https://www.twitter.com/search?q=" + fbTitle));
 		startActivity(intent);
 
 	}
