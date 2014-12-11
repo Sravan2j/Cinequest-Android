@@ -13,29 +13,42 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import edu.sjsu.cinequest.android.AndroidPlatform;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
-
+/**
+ * SplashScreenActivity loads an authentication mechanism and displays all relevant features for
+ * registering with cinequest.
+ */
 public class SplashScreenActivity extends Activity {
 	private LoadData loadData = null;
 	private View mLoginStatusView;
+	private ProgressBar progressBar; // added progress bar
+	private TextView loginStatusMessage; // added login text view
 	private static String calendarName="Cinequest Calendar";
+	private static String downServerMessage = "Apologies, the server is not responding.<br/>"
+					        + "Please re-open the app, or contact us for help.";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);		
 		setContentView(R.layout.activity_splash_screen);
-		mLoginStatusView = findViewById(R.id.login_status);						
+		mLoginStatusView = findViewById(R.id.login_status);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+		loginStatusMessage = (TextView) findViewById(R.id.login_status_message);
 		Platform.setInstance(new AndroidPlatform(getApplicationContext()));		
-		loadData = new LoadData();
+		loadData = new LoadData(); //There might be a problem in three lines
 		loadData.execute((Void) null);
-		showProgress(true);
-
+		showProgress(true); //progress bar shows but nothing is shown
 	}
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private void showProgress(final boolean show) {
@@ -145,7 +158,20 @@ public class SplashScreenActivity extends Activity {
 				}
 				@Override public void starting() {}			
 				@Override public void failure(Throwable t) {
-					Platform.getInstance().log(t);				
+					Platform.getInstance().log(t);
+					/* launch the main tab activity anyways, but it will contain nothing
+					showProgress(false);
+					Intent i = new Intent(SplashScreenActivity.this,MainTab.class);
+					i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(i);
+					finish();
+					*/
+					
+					// display server down instead		
+					progressBar.setVisibility(View.GONE);
+					loginStatusMessage.setGravity(Gravity.CENTER);
+					loginStatusMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+					loginStatusMessage.setText(Html.fromHtml(downServerMessage));
 				}        	
 			});			
 			// TODO: register the new account here.
