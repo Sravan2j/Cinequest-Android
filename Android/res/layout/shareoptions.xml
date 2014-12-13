@@ -12,7 +12,7 @@
         style="?android:attr/listSeparatorTextViewStyle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#6D7B8D"
+        android:background="#ff0000" 
         android:paddingBottom="2dip"
         android:paddingLeft="5dip"
         android:paddingTop="2dip"

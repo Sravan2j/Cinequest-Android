@@ -96,11 +96,14 @@ public class AndroidPlatform extends Platform {
 		} catch (ParserConfigurationException e) {
 			throw new SAXException(e.toString());
 		}
-		/**
+		/*
 		 * Android crap--search for
 		 * http://www.google.com/search?q=android+XML+parser+8859-1 The parser
 		 * can't infer the character encoding from the xml encoding attribute,
 		 * so we have to hardwire 8859-1 here.
+		 * Instead of 8859-1, I hardcoded the encoding to UTF-8, since it was 
+		 * previously hardcoded to ISO-8895-I for the reasons stated above
+		 * - Michael Singh
 		 */
 		if (getFromCache(url, sp, handler, MAX_CACHE_AGE))
 			return;
@@ -115,7 +118,7 @@ public class AndroidPlatform extends Platform {
 			// Store the xml source
 			xmlRawBytesCache.put(url, xmlSource);
 			InputSource in = new InputSource(new InputStreamReader(
-					new ByteArrayInputStream(xmlSource), "ISO-8859-1"));
+					new ByteArrayInputStream(xmlSource), "UTF-8"));
 			sp.parse(in, handler);
 		} catch (IOException e) {
 			Platform.getInstance().log(e);
@@ -125,7 +128,9 @@ public class AndroidPlatform extends Platform {
 					CallbackException.ERROR);
 		}
 	}
-
+	/*
+	* Changed encoding from ISO-8895-I to UTF-8
+	*/
 	private boolean getFromCache(String url, SAXParser sp,
 			DefaultHandler handler, long maxage) throws SAXException,
 			IOException {
@@ -133,7 +138,7 @@ public class AndroidPlatform extends Platform {
 		// XML exists in cache and isn't too old
 		if (bytes != null) {
 			InputSource in = new InputSource(new InputStreamReader(
-					new ByteArrayInputStream(bytes), "ISO-8859-1"));
+					new ByteArrayInputStream(bytes), "UTF-8"));
 			sp.parse(in, handler);
 			Platform.getInstance().log(
 					"AndroidPlatform.getFromCache: Returned cached response for "

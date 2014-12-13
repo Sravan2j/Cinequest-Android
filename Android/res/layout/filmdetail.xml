@@ -6,6 +6,7 @@
 	android:layout_height="fill_parent" 
 	android:id="@+id/ScheduleList"
 	android:clickable="true"
+	android:listSelector="#FF0000"
 	
 />
 	
