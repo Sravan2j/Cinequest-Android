@@ -81,7 +81,6 @@ public class FilmDetail extends CinequestActivity {
 		gmailButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
-				//Share information about movies through mailing
 				sendEmail();		
 			}
 		});
@@ -98,7 +97,6 @@ public class FilmDetail extends CinequestActivity {
         youtubeButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
-				// Search on youtube videos about the film
 				checkOnYoutube();
 			}
 		});
@@ -309,7 +307,7 @@ public class FilmDetail extends CinequestActivity {
 					if (session.isOpened()) {
 
 						// make request to the /me API
-						Request.executeMeRequestAsync(session,
+						Request.newMeRequest(session,
 								new Request.GraphUserCallback() {
 
 							// callback after Graph API response with user
@@ -322,7 +320,7 @@ public class FilmDetail extends CinequestActivity {
 									Log.d("MyFunc", "User: "+ user.getName());
 								}
 							}
-						});
+						}).executeAsync();
 					}
 				}
 			});
