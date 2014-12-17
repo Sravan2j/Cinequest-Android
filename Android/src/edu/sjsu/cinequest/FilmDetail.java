@@ -307,7 +307,7 @@ public class FilmDetail extends CinequestActivity {
 					if (session.isOpened()) {
 
 						// make request to the /me API
-						Request.executeMeRequestAsync(session,
+						Request.newMeRequest(session,
 								new Request.GraphUserCallback() {
 
 							// callback after Graph API response with user
@@ -320,7 +320,7 @@ public class FilmDetail extends CinequestActivity {
 									Log.d("MyFunc", "User: "+ user.getName());
 								}
 							}
-						});
+						}).executeAsync();
 					}
 				}
 			});
