@@ -55,11 +55,11 @@
             android:textColor="#FFFFFF"
             android:background="@drawable/background" />
         <Button
-            android:id="@+id/youtube"
+            android:id="@+id/twitter"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:drawableTop="@drawable/youtube" 
-            android:text="You Tube"
+            android:drawableTop="@drawable/twitter" 
+            android:text="Twitter"
             android:textSize="8sp"
             android:textColor="#FFFFFF"
             android:background="@drawable/background"/>
