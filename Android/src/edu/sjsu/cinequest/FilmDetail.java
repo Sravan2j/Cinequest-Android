@@ -282,7 +282,7 @@ public class FilmDetail extends CinequestActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
-				if (position>0 && position <=includescnt){					
+				if (position>0 && position <=includescnt){
 					Object result = scheduleList.getItemAtPosition( position );
 					launchFilmDetail(result);				
 				}
