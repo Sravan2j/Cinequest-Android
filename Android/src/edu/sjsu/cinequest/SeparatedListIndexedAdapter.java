@@ -188,7 +188,6 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 	 * */
 	public void appendAdapter(String section, Adapter adapter)
 	{
-		Adapter temp = sections.get(section);
 		if(adapter != null)
 		{
 			sections.remove(section);

@@ -1,6 +1,5 @@
 package edu.sjsu.cinequest;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,9 +8,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import edu.sjsu.cinequest.CinequestActivity.FilmletListAdapter;
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentUris;
 import android.database.Cursor;
@@ -24,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -34,7 +29,7 @@ import android.widget.TextView;
  * The Schedule Tab of the app 
  * 
  * @author Sravankumar Reddy Javaji
- * @author Dmitri Dimov
+ *
  */
 
 class EventData {
@@ -94,36 +89,26 @@ class EventData {
  * Any film related events are going to be displayed with this class.
  * Allows consumer to view any film related information with ScheduleActivity class.
  */
-public class ScheduleActivity extends CinequestActivity {
+public class ScheduleActivity extends Activity {
 	ListView listView;	
 	SimpleDateFormat sdf;
 	private DateUtils du;
 	String fStartTime="";
 	String fEndTime="";
 	boolean is24HourFormat=false;
-
+	//Configuration config;
+	//DateFormat dtformat;	
 	private static String calendarName="Cinequest Calendar";
 	private static String m_selectedCalendarId = "Cinequest Calendar";
 	private static final String DATE_TIME_FORMAT = "MMM dd, yyyy'T'HH:mm";
 	private List<EventData> events = new ArrayList<EventData>();
-	private TextView nothingToday;	//Shows an empty list when the list is empty
-
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedulelayout);
 		sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
 		du = new DateUtils();
-		nothingToday = (TextView) this.findViewById(R.id.msg_for_empty_schedyle);
-		listView = (ListView) findViewById(R.id.schedule_listview);
-		registerForContextMenu(listView);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();  // Always call the superclass method first
-		is24HourFormat=android.text.format.DateFormat.is24HourFormat(this);
-		events.clear();
-		populateSchedule();
+		//config = getApplicationContext().getResources().getConfiguration();
+		//dtformat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, config.locale);		
 	}
 
 	public void populateSchedule()
@@ -206,113 +191,82 @@ public class ScheduleActivity extends CinequestActivity {
 		//Collections.sort(events, new EventData.CompName());
 
 		Collections.sort(events, new EventData.CompDate());
-		//The line below creates a new schedule will all sorted information of everything user added
-		//up to this point. Note:SeparatedListIndexedAdapter does not sort information because
-		//events are already sorted!
-		SeparatedListIndexedAdapter separatedSchedule = new SeparatedListIndexedAdapter(this);
-		ArrayAdapter<EventData> adapter = null;
-		List<EventData> byDay = null;
-		int lastDay = 0;
-		for(int i = 0; i < events.size(); i++)
-		{
-			//Have adapter store only events related to given day!
-			String day = events.get(i).getStime().split(",")[0].split(" ")[1];
-			if(lastDay == 0)
-			{
-				lastDay = Integer.parseInt(day);
-				byDay = new ArrayList<EventData>(); //This generates a new ArrayList for every day
-			}
-			if(lastDay == Integer.parseInt(day))
-			{
-				byDay.add(events.get(i));	//Collects all events for that day
-			}
-			//The code below assigns all events for given day to adapter if next day is different or we
-			//reached the end of all events for today
-			if((i + 1 < events.size() &&
-					lastDay != Integer.parseInt(events.get(i+1).getStime().split(",")[0].split(" ")[1])) &&
-					lastDay == Integer.parseInt(day) || i == events.size() - 1)
-			{
-				adapter = new ArrayAdapter<EventData>(this.getApplicationContext(), R.layout.eventlistview, byDay) {
-					@Override
-					public View getView(final int position, View v, ViewGroup parent) {
 
-						LayoutInflater inflater = LayoutInflater.from(getContext());
-						final EventData q = getItem(position);                                
-						if (v == null) v = inflater.inflate(R.layout.eventlistview, null);                                
-						TextView textView = (TextView) v.findViewById(R.id.eventName);
-						textView.setText(q.getName());
-
-						String sStr[]=q.getStime().split("T");
-						String eStr[]=q.getEtime().split("T");
-						
-						TextView textView1 = (TextView) v.findViewById(R.id.startTime);
-						//if start date and end date of event won't match, then we will be displaying both the dates.
-						//Else we will display only date once, followed by time.
-						if (sStr[0].equalsIgnoreCase(eStr[0]))
-						{
-							if(!is24HourFormat)
-							{
-								fStartTime=du.formatTime(sStr[1]);
-								fEndTime=du.formatTime(eStr[1]);
-							}
-							else
-							{
-								fStartTime=sStr[1];
-								fEndTime=eStr[1];
-							}
-							textView1.setText(sStr[0]+"  Time: "+fStartTime+" - "+fEndTime);
-						}
-						else
-						{
-							textView1.setText(sStr[0]+" "+sStr[1]+" - "+eStr[0]+" "+eStr[1]);
-						}
-						textView1.setTypeface(null, Typeface.ITALIC);
-						return v;                                
-					}                            
-				};
-				//add this adapter to a SeparatedListIndexedAdapter
-				separatedSchedule.addSection(localizeHumanFormat(events.get(i).getStime()), events.get(i).getStime().split(",")[0], adapter);
-				lastDay = 0;
-			}
-		}
-		
-		separatedSchedule.setAsAdapterFor(listView);
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		ArrayAdapter<EventData> adapter = new ArrayAdapter<EventData>(
+				this.getApplicationContext(), R.layout.eventlistview, events) {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long id) {
-					System.out.println("HERE!");
-			}
-		});
-		if(separatedSchedule.getCount() == 0){
-			listView.setVisibility(View.GONE);
-			nothingToday.setVisibility(View.VISIBLE);
-		}else{
-			listView.setVisibility(View.VISIBLE);
-			nothingToday.setVisibility(View.GONE);
-		}
-		//listView.setItemsCanFocus(false);
+			public View getView(final int position, View v, ViewGroup parent) {
+
+				LayoutInflater inflater = LayoutInflater.from(getContext());
+				final EventData q = getItem(position);                                
+				if (v == null) v = inflater.inflate(R.layout.eventlistview, null);                                
+				TextView textView = (TextView) v.findViewById(R.id.eventName);
+				textView.setText(q.getName());
+
+				String sStr[]=q.getStime().split("T");
+				String eStr[]=q.getEtime().split("T");
+				TextView textView1 = (TextView) v.findViewById(R.id.startTime);
+				//if start date and end date of event won't match, then we will be displaying both the dates.
+				//Else we will display only date once, followed by time.
+				if (sStr[0].equalsIgnoreCase(eStr[0]))
+				{
+					if(!is24HourFormat)
+					{
+ 
+					fStartTime=du.formatTime(sStr[1]);
+					fEndTime=du.formatTime(eStr[1]);
+					}
+					else
+					{
+						fStartTime=sStr[1];
+						fEndTime=eStr[1];
+					}
+					textView1.setText(sStr[0]+"  Time: "+fStartTime+" - "+fEndTime);
+				}
+				else
+				{
+					textView1.setText(sStr[0]+" "+sStr[1]+" - "+eStr[0]+" "+eStr[1]);
+				}
+				textView1.setTypeface(null, Typeface.ITALIC);
+
+				Button button1 = (Button) v.findViewById(R.id.remove);
+				button1.setOnClickListener( new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Uri eventUri;                    
+						if (Build.VERSION.SDK_INT >= 8) {
+							eventUri = Uri.parse("content://com.android.calendar/events");
+						} else {
+							//Calendar code for API level < 8, needs lot of testing. 
+							//May be some of the paramters (that we are populating above), have different naming conventions in different API Levels
+							eventUri = Uri.parse("content://calendar/events");
+						}                        
+						Uri deleteUri = ContentUris.withAppendedId(eventUri, q.getEId());
+						try{
+							int rows = getContentResolver().delete(deleteUri, null, null);
+							if (rows==1){
+								events.remove(position);
+								listView.invalidateViews();
+							}
+						}
+						catch (Exception e){
+							Log.i("ScheduleActivity:populateSchedule","Error while removing Events from Calendar");
+						}
+
+					}
+				});
+				return v;                                
+			}                            
+		};
+		listView = (ListView) findViewById(R.id.schedule_listview);
+		listView.setAdapter(adapter);
+
+		listView.setItemsCanFocus(false);
 		l_managedCursor.close();
 		l_managedCursor=null;
 	}
 
-	@SuppressLint("SimpleDateFormat")
-	private String localizeHumanFormat(String inputDate)
-	{
-		SimpleDateFormat fmt = new SimpleDateFormat(DATE_TIME_FORMAT);
-		Date date = null;
-		try {
-			date = fmt.parse(inputDate);
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
-		String dateInHumForm = (String)android.text.format.DateFormat.format("EEEE, MMMM dd", date);
-		String[] temp = dateInHumForm.split(" ");
-		int dayOfMonth = Integer.parseInt(temp[2]);
-		return temp[0] + " " + temp[1] + " " + dayOfMonth;
-	}
 
-	@SuppressWarnings("deprecation")
 	public static String getDateTimeStr(int p_delay_min) {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
@@ -328,6 +282,14 @@ public class ScheduleActivity extends CinequestActivity {
 	public String getDateTimeStr(String p_time_in_millis) {	
 		Date l_time = new Date(Long.parseLong(p_time_in_millis));
 		return sdf.format(l_time);
+		//return dtformat.format(l_time);    //to get the locale date
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();  // Always call the superclass method first
+		is24HourFormat=android.text.format.DateFormat.is24HourFormat(this);
+		events.clear();
+		populateSchedule();
 	}			
 }
-
