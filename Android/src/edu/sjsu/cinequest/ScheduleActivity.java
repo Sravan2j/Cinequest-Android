@@ -115,6 +115,7 @@ public class ScheduleActivity extends CinequestActivity {
 		du = new DateUtils();
 		nothingToday = (TextView) this.findViewById(R.id.msg_for_empty_schedyle);
 		listView = (ListView) findViewById(R.id.schedule_listview);
+		registerForContextMenu(listView);
 	}
 
 	@Override
@@ -209,44 +210,6 @@ public class ScheduleActivity extends CinequestActivity {
 		//up to this point. Note:SeparatedListIndexedAdapter does not sort information because
 		//events are already sorted!
 		SeparatedListIndexedAdapter separatedSchedule = new SeparatedListIndexedAdapter(this);
-		/*{
-			public View getView(final int position, View convertView, ViewGroup parent)
-			{
-				View v = super.getView(position, convertView, parent);
-				if(position > 0)
-				{
-					
-				}*/
-				//final EventData q = (EventData) 
-				
-				/*Button button1 = (Button) v.findViewById(R.id.remove);
-				button1.setOnClickListener( new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Uri eventUri;                    
-						if (Build.VERSION.SDK_INT >= 8) {
-							eventUri = Uri.parse("content://com.android.calendar/events");
-						} else {
-							//Calendar code for API level < 8, needs lot of testing. 
-							//May be some of the parameters (that we are populating above), have different naming conventions in different API Levels
-							eventUri = Uri.parse("content://calendar/events");
-						}                        
-						Uri deleteUri = ContentUris.withAppendedId(eventUri, q.getEId());
-						try{
-							int rows = getContentResolver().delete(deleteUri, null, null);
-							if (rows==1){
-								events.remove(position);
-								listView.invalidateViews();
-							}
-						}
-						catch (Exception e){
-							Log.i("ScheduleActivity:populateSchedule","Error while removing Events from Calendar");
-						}
-					}
-				});*/
-			/*	return v;
-			}
-		};*/
 		ArrayAdapter<EventData> adapter = null;
 		List<EventData> byDay = null;
 		int lastDay = 0;
@@ -314,7 +277,6 @@ public class ScheduleActivity extends CinequestActivity {
 		}
 		
 		separatedSchedule.setAsAdapterFor(listView);
-		registerForContextMenu(listView);
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,

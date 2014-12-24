@@ -167,6 +167,7 @@ public class CinequestActivity extends Activity {
 			time.setText("Time: " + startTime + " - " + endTime);
 			venue.setText("Venue: " + result.getVenue());
 			formatContents(v, title, time, venue, du, result);
+			v.setTag(result);
 			button.setTag(result);
 			button.setText("-");
 			populateCalendarID();
@@ -181,7 +182,7 @@ public class CinequestActivity extends Activity {
 
 					Intent intent = new Intent(
 							android.content.Intent.ACTION_VIEW, Uri
-									.parse(result.getDirectionsURL()));
+							.parse(result.getDirectionsURL()));
 					startActivity(intent);
 				}
 
@@ -265,7 +266,161 @@ public class CinequestActivity extends Activity {
 				button.setBackgroundResource(R.drawable.notincalendar);
 				button.setHint("notexist");
 			}
+			v.setOnClickListener(new OnClickListener() {
 
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+
+					Schedule s = (Schedule) v.getTag();
+					SimpleDateFormat formatter;
+					if (s.getStartTime().charAt(10) == 'T')
+						formatter = new SimpleDateFormat(
+								"yyyy-MM-dd'T'hh:mm:ss");
+					else
+						formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+					Date startDate = null;
+					Date endDate = null;
+
+					try {
+						startDate = (Date) formatter.parse(s.getStartTime());
+						endDate = (Date) formatter.parse(s.getEndTime());
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					long begin = startDate.getTime();
+					long end = endDate.getTime();
+
+					if (button.getHint().toString() == "exists") {
+						String[] proj = new String[] { "_id", "title",
+								"dtstart", "dtend" };
+
+						String calSelection = "((calendar_id= ?) " + "AND ("
+								+ "((dtstart= ?) " + "AND (dtend= ?) "
+								+ "AND (title= ?) " + ") " + ")" + ")";
+						String[] calSelectionArgs = new String[] {
+								m_selectedCalendarId, begin + "", end + "",
+								s.getTitle() };
+
+						Uri event = null;
+						Cursor l_managedCursor = null;
+						if (Build.VERSION.SDK_INT >= 8) {
+							event = Uri
+									.parse("content://com.android.calendar/events");
+						} else {
+							// Calendar code for API level < 8, needs lot of
+							// testing.
+							// May be some of the paramters (that we are
+							// populating above), have different naming
+							// conventions in different API Levels
+							event = Uri.parse("content://calendar/events");
+						}
+						try {
+							l_managedCursor = getContentResolver().query(event,
+									proj, calSelection, calSelectionArgs,
+									"dtstart DESC, dtend DESC");
+						} catch (Exception e) {
+							Log.i("CinequestActivity:configureCalendarIcon",
+									"Error while retrieving Event details from Calendar");
+						}
+
+						int e_id = 0;
+						if (l_managedCursor.moveToFirst()) {
+							int l_colid = l_managedCursor
+									.getColumnIndex(proj[0]);
+							do {
+								e_id = l_managedCursor.getInt(l_colid);
+							} while (l_managedCursor.moveToNext());
+						}
+						Uri eventUri;
+						if (Build.VERSION.SDK_INT >= 8) {
+							eventUri = Uri
+									.parse("content://com.android.calendar/events");
+						} else {
+							// Calendar code for API level < 8, needs lot of
+							// testing.
+							// May be some of the paramters (that we are
+							// populating above), have different naming
+							// conventions in different API Levels
+							eventUri = Uri.parse("content://calendar/events");
+						}
+						Uri deleteUri = ContentUris.withAppendedId(eventUri,
+								e_id);
+						try {
+							int rows = getContentResolver().delete(deleteUri,
+									null, null);
+							if (rows == 1) {
+								button.setBackgroundResource(R.drawable.notincalendar);
+								button.setHint("notexist");
+								Toast toast = Toast.makeText(getContext(),
+										"Event removed from calendar",
+										Toast.LENGTH_SHORT);
+								toast.show();
+							}
+						} catch (Exception e) {
+							Log.i("CinequestActivity:configureCalendarIcon",
+									"Error while removing Events from Calendar");
+						}
+						l_managedCursor.close();
+						l_managedCursor = null;
+					}
+
+					else {
+						ContentValues l_event = new ContentValues();
+						l_event.put("calendar_id", m_selectedCalendarId);
+						l_event.put("title", s.getTitle());
+						l_event.put("description", s.getTitle());
+						l_event.put("eventLocation", s.getVenue());
+						// l_event.put("dtstart", System.currentTimeMillis());
+						// l_event.put("dtend", System.currentTimeMillis() +
+						// 1800*1000);
+						l_event.put("dtstart", begin);
+						l_event.put("dtend", end);
+						l_event.put("allDay", 0);
+						// status: 0~ tentative; 1~ confirmed; 2~ canceled
+						l_event.put("eventStatus", 1);
+						// 0~ default; 1~ confidential; 2~ private; 3~ public
+						// l_event.put("visibility", 1);
+						// 0~ opaque, no timing conflict is allowed; 1~
+						// transparency, allow overlap of scheduling
+						// l_event.put("transparency", 0);
+						// 0~ false; 1~ true
+						l_event.put("hasAlarm", 1);
+						l_event.put("eventTimezone", TimeZone.getDefault()
+								.getID());
+						Uri l_eventUri;
+						if (Build.VERSION.SDK_INT >= 8) {
+							l_eventUri = Uri
+									.parse("content://com.android.calendar/events");
+						} else {
+							// Calendar code for API level < 8, needs lot of
+							// testing.
+							// May be some of the paramters (that we are
+							// populating above), have different naming
+							// conventions in different API Levels
+							l_eventUri = Uri.parse("content://calendar/events");
+						}
+						try {
+							Uri l_uri = getContentResolver().insert(l_eventUri,
+									l_event);
+							Toast toast = Toast.makeText(getContext(),
+									"Event added to calendar",
+									Toast.LENGTH_SHORT);
+							toast.show();
+							button.setBackgroundResource(R.drawable.incalendar);
+							button.setHint("exists");
+						} catch (Exception e) {
+							Log.i("CinequestActivity:configureCalendarIcon",
+									"Error while adding Events in Calendar");
+						}
+					}
+
+				}
+
+			});
 			button.setOnClickListener(new OnClickListener() {
 
 				@Override
