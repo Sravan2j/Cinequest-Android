@@ -12,6 +12,7 @@
     <string name="password_hint">Password</string>
     <string name="loginscreen_sync_button_label">Sync</string>
     <string name="loginscreen_cancel_button_label">Cancel</string>
+    <string name="heading"></string>
     <string name="signup_button_label">Sign up</string>
     <string name="schedule_conflict_dialogmsg">Conflicting schedule on server. Which one to keep?</string>
     <string name="myschedule_saved_msg">Schedule Successfully Saved!</string>
@@ -21,6 +22,7 @@
     <string name="myschedule_loggedin_synced_msg">Logged in. Schedule Successfully Synced!</string>
     <string name="myschedule_loggedin_saved_msg">Logged in. Schedule Successfully Saved!</string>
     <string name="myschedule_loggedin_loaded_msg">Logged in. Schedule Successfully Retrieved!!</string>
+    <string name="currentDate"></string>
     <!-- TODO -->
     <string name="no_network_prompt">No network connection available. Please connect to Internet first!</string>
     <string name="no_network_msg">Network connection is unavailable!</string>

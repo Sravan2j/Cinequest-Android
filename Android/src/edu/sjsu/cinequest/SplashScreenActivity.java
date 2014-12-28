@@ -159,13 +159,6 @@ public class SplashScreenActivity extends Activity {
 				@Override public void starting() {}			
 				@Override public void failure(Throwable t) {
 					Platform.getInstance().log(t);
-					/* launch the main tab activity anyways, but it will contain nothing
-					showProgress(false);
-					Intent i = new Intent(SplashScreenActivity.this,MainTab.class);
-					i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					startActivity(i);
-					finish();
-					*/
 					
 					// display server down instead		
 					progressBar.setVisibility(View.GONE);

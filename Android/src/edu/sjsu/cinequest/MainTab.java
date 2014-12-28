@@ -88,7 +88,6 @@ public class MainTab extends TabActivity {
             
         }
     	tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.RED); //selected, active tabs
-    	
     	int k = tabHost.getTabWidget().getChildCount() - 1;
     	TextView tv = (TextView) tabHost.getTabWidget().getChildAt(k).findViewById(android.R.id.title);
         tv.setTextSize(12);

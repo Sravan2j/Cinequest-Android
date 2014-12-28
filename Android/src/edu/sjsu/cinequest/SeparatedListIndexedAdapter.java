@@ -150,12 +150,6 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 		else
 			listview.setId(0);
 	}
-	
-	@Override
-	public int getPositionForSection(int section) {
-		String letter = sectionKeys[section];			 
-        return alphaIndexer.get(letter);
-	}
 
 	@Override
 	public int getSectionForPosition(int position) {
@@ -193,5 +187,22 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 			sections.remove(section);
 			sections.put(section, adapter);
 		}
+	}
+	/**
+	 * This function resturns the index of section to display the appropriate header
+	 * */
+	@Override
+	public int getPositionForSection(int position) {
+		int sectionnum = 0;
+		for(Object section : this.sections.keySet()) {  
+            Adapter adapter = sections.get(section);  
+            int size = adapter.getCount() + 1;
+  
+            // check if position inside this section  
+            if(position < size){ return sectionnum; }
+            position -= size;
+            sectionnum++;
+        }
+		return 0;
 	}
 }

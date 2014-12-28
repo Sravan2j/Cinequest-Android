@@ -14,8 +14,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,6 +39,7 @@ public class FilmsActivity1 extends CinequestActivity{
 	private TreeSet<String> eventsOnly;
 	private TreeSet<String> filmsOnly;
 	private TreeSet<String> forumsOnly;
+	private TextView header;
 	private TreeMap<String, List<CommonItem>> mSchedule_byDate;
 	private SeparatedListIndexedAdapter eventsAdapter;
 	private DateUtils du;
@@ -50,19 +54,39 @@ public class FilmsActivity1 extends CinequestActivity{
 		hasForums = false;
 		nothingToday = (TextView)FilmsActivity1.this.findViewById(R.id.msg_for_empty_schedyle);
 		listview = (ListView) FilmsActivity1.this.findViewById(R.id.cinequest_tabactivity_listview);
+		header = (TextView) FilmsActivity1.this.findViewById(R.id.textView1);
+		header.setVisibility(View.GONE);
+		eventsAdapter = new SeparatedListIndexedAdapter(FilmsActivity1.this, true);
+		listview.setOnScrollListener(new OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+			}
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				if(firstVisibleItem > 0)
+				{
+					header.setVisibility(View.VISIBLE);
+					header.setText(eventsAdapter.headers.getItem(eventsAdapter.getPositionForSection(firstVisibleItem)));
+				}
+				else
+				{
+					header.setVisibility(View.GONE);
+				}
+			}
+		});
 		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
-						Object result = getListview().getItemAtPosition( position );
-						launchFilmDetail(result);
-					}
+				Object result = getListview().getItemAtPosition( position );
+				launchFilmDetail(result);
+			}
 		});
 		registerForContextMenu(listview);
-		eventsAdapter = new SeparatedListIndexedAdapter(FilmsActivity1.this, true);
 		fetchServerData();
 	}
-		
+
 	/**
 	 * Gets called when user returns to this tab. Also gets called once after the 
 	 * onCreate() method too.
@@ -74,7 +98,7 @@ public class FilmsActivity1 extends CinequestActivity{
 		//We do not want to refresh, otherwise, user has to scroll all the way up,
 		//maybe the user wants to keep checking the list.
 	}
-	
+
 	protected void fetchServerData() {
 		HomeActivity.getQueryManager().getEventDates (new ProgressMonitorCallback(this) {           		 
 			public void invoke(Object result) {
@@ -92,11 +116,11 @@ public class FilmsActivity1 extends CinequestActivity{
 			public void invoke(Object result) {
 				super.invoke(result);
 				forumsOnly = (TreeSet<String>) result;
-				
+
 				if(eventsOnly != null) { hasEvents = true; }
 				if(filmsOnly != null) { hasFilms = true; }
 				if(forumsOnly != null) { hasForums = true; }
-				
+
 				if(hasEvents)
 				{
 					for(final String date: eventsOnly)
@@ -106,7 +130,7 @@ public class FilmsActivity1 extends CinequestActivity{
 							public void invoke(Object result) {
 								super.invoke(result);
 								mSchedule_byDate = (TreeMap<String, List<CommonItem>>) result;
-								eventsAdapter.addSection(localizeHumanFormat(date), date, refreshListContents(mSchedule_byDate));
+								eventsAdapter.addSection(localizeHumanFormat(date), "", refreshListContents(mSchedule_byDate));
 								if(hasEvents && !hasFilms && !hasForums)
 								{
 									//Then show it
@@ -142,7 +166,7 @@ public class FilmsActivity1 extends CinequestActivity{
 								}
 								else
 								{
-									eventsAdapter.addSection(localizeHumanFormat(date), date, refreshListContents(mSchedule_byDate));
+									eventsAdapter.addSection(localizeHumanFormat(date), "", refreshListContents(mSchedule_byDate));
 								}
 								if(hasFilms && hasEvents && !hasForums || hasFilms && !hasEvents && !hasForums)
 								{
@@ -179,35 +203,35 @@ public class FilmsActivity1 extends CinequestActivity{
 								}
 								else
 								{
-									eventsAdapter.addSection(localizeHumanFormat(date), date, refreshListContents(mSchedule_byDate));
+									eventsAdapter.addSection(localizeHumanFormat(date), "", refreshListContents(mSchedule_byDate));
 								}
 								if(hasForums && !hasFilms && !hasEvents ||
-									hasForums && hasEvents &&!hasFilms ||
-									hasForums && hasFilms &&!hasEvents ||
-									hasEvents && hasFilms && hasForums)
-									{
-										//Then show it once everything has been added!
-										eventsAdapter.setAsAdapterFor(listview);
-										if(eventsAdapter.getCount() == 0){
-					   	 					listview.setVisibility(View.GONE);
-					   	 					nothingToday.setVisibility(View.VISIBLE);
-										}else{
-					   	 					listview.setVisibility(View.VISIBLE);
-					   	 					nothingToday.setVisibility(View.GONE);
-										}
+										hasForums && hasEvents &&!hasFilms ||
+										hasForums && hasFilms &&!hasEvents ||
+										hasEvents && hasFilms && hasForums)
+								{
+									//Then show it once everything has been added!
+									eventsAdapter.setAsAdapterFor(listview);
+									if(eventsAdapter.getCount() == 0){
+										listview.setVisibility(View.GONE);
+										nothingToday.setVisibility(View.VISIBLE);
+									}else{
+										listview.setVisibility(View.VISIBLE);
+										nothingToday.setVisibility(View.GONE);
 									}
+								}
 							}
 						});
 					}
 				}
-		 }
-	   });
+			}
+		});
 	}
-	
+
 	@SuppressLint("NewApi")
 	protected FilmletListAdapter refreshListContents(TreeMap<String, List<CommonItem>> listItems) {
 		if (listItems == null) return null;
-		
+
 		FilmletListAdapter adapter = null;
 		for (String titleInit : listItems.keySet()) //Each titleInit is time! This gathers all films.
 		{
@@ -223,30 +247,30 @@ public class FilmsActivity1 extends CinequestActivity{
 		return adapter;
 	}
 
-    /**
-     * Sets the message to show to user when listview is empty
-     * @param message String
-     */
-    protected final void setEmptyListviewMessage(String message){
-    	nothingToday.setText(message);
-    }
-    
-    /**
-     * Sets the message to show to user when listview is empty
-     * @param resourceId Integer
-     */
-    protected final void setEmptyListviewMessage(int resourceId){
-   	 this.setEmptyListviewMessage( this.getString(resourceId) );
-    }
-		
+	/**
+	 * Sets the message to show to user when listview is empty
+	 * @param message String
+	 */
+	protected final void setEmptyListviewMessage(String message){
+		nothingToday.setText(message);
+	}
+
+	/**
+	 * Sets the message to show to user when listview is empty
+	 * @param resourceId Integer
+	 */
+	protected final void setEmptyListviewMessage(int resourceId){
+		this.setEmptyListviewMessage( this.getString(resourceId) );
+	}
+
 	/**
 	 * @return the ListView for this activity
 	 */
 	protected ListView getListview() {
 		return listview;
 	}
-    
-   /**
+
+	/**
 	 * This method returns date in Verbal Format
 	 * */
 	private String localizeHumanFormat(String inputDate)
@@ -263,7 +287,7 @@ public class FilmsActivity1 extends CinequestActivity{
 		int dayOfMonth = Integer.parseInt(temp[2]);
 		return temp[0] + " " + temp[1] + " " + dayOfMonth;
 	}
-	
+
 	/**
 	 * This method will localize the given date according the device locale.
 	 * 

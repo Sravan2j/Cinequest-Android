@@ -4,9 +4,11 @@ package edu.sjsu.cinequest;
 // http://jsharkey.org/blog/2008/08/18/separating-lists-with-headers-in-android-09/
 // just added the second link that has the same content as the first link, but it shows the image of separating lists with headers.
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -25,14 +27,15 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
  * A separating list adapter with headers that can be used in listview.
  */
 public class SeparatedListAdapter extends BaseAdapter {
-    public final Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();  
-    public final ArrayAdapter<String> headers;
+    public Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();  
+    public ArrayAdapter<String> headers;
     public Vector<Schedule> list;
     public final static int TYPE_SECTION_HEADER = 0;  
     public boolean SortKeys;
+    
     public SeparatedListAdapter(Context context) {
     	SortKeys = false;
-        headers = new ArrayAdapter<String>(context, R.layout.list_header);  
+        headers = new ArrayAdapter<String>(context, R.layout.list_header);
     }
     
     public void setList(Vector<Schedule> list)
@@ -44,7 +47,7 @@ public class SeparatedListAdapter extends BaseAdapter {
         this.headers.add(section);
         this.sections.put(section, adapter);
     }
-    
+   
     /*
      * Get the number of items in the data set represented by this adapter.
      * @return the number of all sections in listview.
@@ -92,13 +95,14 @@ public class SeparatedListAdapter extends BaseAdapter {
         for(Adapter adapter : this.sections.values())  
             total += adapter.getViewTypeCount();  
         return total;  
-    }  
+    }
 	
 	/*
 	 * Get the type of View that will be created by getView().
 	 */
-	public int getItemViewType(int position) {
-        int type = 1;  
+	public int getItemViewType(int position)
+	{
+        int type = 1;
         for(Object section : this.sections.keySet()) {  
             Adapter adapter = sections.get(section);  
             int size = adapter.getCount() + 1;  
@@ -134,29 +138,25 @@ public class SeparatedListAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		return position; 
 	}
-
-	/* public void bindView( View view, Context context, Cursor cursor){
-	        CheckBox checker = (CheckBox)view.findViewById(R.id.CheckBox);
-
-	       // checker.setOnCheckedChangeListener(context);
-	        checker.setTag(Long.valueOf(cursor.getLong(cursor.getColumnIndex(BaseColumns._ID))));
-	        // call super class for default binding
-	        super.getView(view,context,cursor);
-	    }
-*/
+	
+	/**
+	 * This function lets BaseAdapter know when to redraw itself if changes
+	 * are made to its contends, in this case, when elements are being removed.
+	 * */
+	public void updateSections(String section, EventData object) {
+        ArrayAdapter<EventData> temp = ((ArrayAdapter<EventData>)this.sections.get(section));
+        temp.remove(object);
+        this.sections.remove(section);
+        this.sections.put(section, temp);
+        this.headers.remove(section);
+        notifyDataSetChanged();
+    }
 	
 	/*
 	 * Get a view that displays the data at the specified position in the data set.
 	 */
 	@SuppressLint("NewApi")
-	public View getView(int position, View convertView, ViewGroup parent) {
-		/* CheckBox checker = (CheckBox)convertView.findViewById(R.id.CheckBox);
-
-	       // checker.setOnCheckedChangeListener(context);
-	        checker.setTag(position);
-	        // call super class for default binding
-	     //   super.getView(view,context,cursor);
-	      * */
+	public View getView(int position, View convertView, ViewGroup parent){
 		int sectionnum = 0;
 		if(SortKeys)
 		{
@@ -203,7 +203,7 @@ public class SeparatedListAdapter extends BaseAdapter {
 		}
 		for(Object section : this.sections.keySet()) {  
             Adapter adapter = sections.get(section);  
-            int size = adapter.getCount() + 1;  
+            int size = adapter.getCount() + 1;
   
             // check if position inside this section  
             if(position == 0) return headers.getView(sectionnum, convertView, parent);  
@@ -211,9 +211,8 @@ public class SeparatedListAdapter extends BaseAdapter {
   
             // otherwise jump into next section  
             position -= size;
-            sectionnum++;  
+            sectionnum++;
         }
 		return null;
 	}
-
 }

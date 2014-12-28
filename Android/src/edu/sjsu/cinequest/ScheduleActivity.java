@@ -267,6 +267,7 @@ public class ScheduleActivity extends Activity {
 	}
 
 
+	@SuppressWarnings("deprecation")
 	public static String getDateTimeStr(int p_delay_min) {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
