@@ -587,12 +587,19 @@ public class CinequestActivity extends Activity {
 	 */
 	protected static class FilmletListAdapter extends ArrayAdapter<CommonItem> {
 		private static final int RESOURCE_ID = R.layout.listitem_title_only;
-
+		private static List<CommonItem> referenceToList;
 		public FilmletListAdapter(Context context,
-				List<? extends CommonItem> list) {
-			super(context, RESOURCE_ID, (List<CommonItem>) list);
+				List<CommonItem> accumulate) {
+			super(context, RESOURCE_ID, referenceToList = (List<CommonItem>) accumulate);
 		}
-
+		
+		/**
+		 * Returns the list that was passed
+		 * */
+		public List<CommonItem> getList()
+		{
+			return referenceToList;
+		}
 		/*
 		 * (non-Javadoc)
 		 * 

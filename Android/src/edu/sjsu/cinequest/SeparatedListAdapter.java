@@ -3,35 +3,47 @@ package edu.sjsu.cinequest;
 // http://blogingtutorials.blogspot.com/2010/09/separating-lists-with-headers-in.html
 // http://jsharkey.org/blog/2008/08/18/separating-lists-with-headers-in-android-09/
 // just added the second link that has the same content as the first link, but it shows the image of separating lists with headers.
-
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 /*
  * A separating list adapter with headers that can be used in listview.
  */
-public class SeparatedListAdapter extends BaseAdapter {
-	public Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();  
-	public ArrayAdapter<String> headers;
+public class SeparatedListAdapter extends BaseAdapter
+{
+	public TreeMap<String, Adapter> sections = new TreeMap<String,Adapter>(new Comparator<String>() {
+		public int compare(String a, String b) {
+			String[] temp1 = a.split(" ");
+			String[] temp2 = b.split(" ");
+			if(temp1.length > 1 && temp2.length > 1 && temp1[2].matches("\\d+(\\.\\d+)?") && temp2[2].matches("\\d+(\\.\\d+)?"))
+			{
+				if(Integer.parseInt(temp1[2]) > Integer.parseInt(temp2[2]))
+				{ return 1; }
+				else if(Integer.parseInt(temp1[2]) == Integer.parseInt(temp2[2])) 
+				{ return 0; }
+				else { return -1; }
+			}
+			else{
+				return a.compareTo(b);
+			}
+		}
+	});
 	public Vector<Schedule> list;
 	public final static int TYPE_SECTION_HEADER = 0;
-	public boolean SortKeys;
-
+	public Context adapterContext;
 	public SeparatedListAdapter(Context context) {
-		SortKeys = false;
-		headers = new ArrayAdapter<String>(context, R.layout.list_header);
+		adapterContext = context;
 	}
 
 	public void setList(Vector<Schedule> list)
@@ -39,20 +51,10 @@ public class SeparatedListAdapter extends BaseAdapter {
 		this.list = list;
 	}
 
-	public void addSection(String section, Adapter adapter) {  
-		addSectionName(section);
+	public void addSection(String section, Adapter adapter) {
 		this.sections.put(section, adapter);
 	}
 
-	/**
-	 * Adds a section name to headers
-	 **/
-	public void addSectionName(String section)
-	{
-		if(!section.equals("") && headers.getPosition(section) == -1)
-			headers.add(section);
-	}
-	
 	/**
 	 * Removes a section from sections including headers
 	 * */
@@ -61,10 +63,9 @@ public class SeparatedListAdapter extends BaseAdapter {
 		if(section.contains(section))
 		{
 			sections.remove(section);
-			headers.remove(section); //remove section
 		}
 	}
-	
+
 	/*
 	 * Get the number of items in the data set represented by this adapter.
 	 * @return the number of all sections in listview.
@@ -131,7 +132,7 @@ public class SeparatedListAdapter extends BaseAdapter {
 			position -= size;  
 			type += adapter.getViewTypeCount();  
 		}
-		return -1;  
+		return -1;
 	}
 
 	/*
@@ -161,55 +162,18 @@ public class SeparatedListAdapter extends BaseAdapter {
 	@SuppressLint("NewApi")
 	public View getView(int position, View convertView, ViewGroup parent){
 		int sectionnum = 0;
-		if(SortKeys)
-		{
-			Comparator cmp = new Comparator<String>() { //This sorts the headers in ascending order based on day
-				@Override
-				public int compare(String lhs, String rhs) {
-					String[] temp1 = lhs.split(" ");
-					String[] temp2 = rhs.split(" ");
-					if(Integer.parseInt(temp1[2]) > Integer.parseInt(temp2[2]))
-					{ return 1; }
-					else if(Integer.parseInt(temp1[2]) == Integer.parseInt(temp2[2])) 
-					{ return 0; }
-					else { return -1; }
-				}
-			};
-			Comparator cmp2 = new Comparator<Map.Entry<String, Adapter>>(){
-				@Override
-				public int compare(Entry<String, Adapter> lhs,
-						Entry<String, Adapter> rhs) {
-					String[] temp1 = lhs.getKey().split(" ");
-					String[] temp2 = rhs.getKey().split(" ");
-					if(Integer.parseInt(temp1[2]) > Integer.parseInt(temp2[2]))
-					{ return 1; }
-					else if(Integer.parseInt(temp1[2]) == Integer.parseInt(temp2[2])) 
-					{ return 0; }
-					else { return -1; }
-				}
-			};
-			Vector<String> sheaders = new Vector<String>();
-			for(int i = 0; i < headers.getCount(); i++)
-			{
-				sheaders.add(headers.getItem(i));
-			}
-			Collections.sort(sheaders, cmp);
-			headers.clear();
-			headers.addAll(sheaders);
-			Vector<Map.Entry<String, Adapter>> ssections = new Vector<Map.Entry<String, Adapter>>(sections.entrySet());
-			sections.clear();
-			Collections.sort(ssections, cmp2);
-			for(Map.Entry<String, Adapter> sentry: ssections)
-			{
-				sections.put(sentry.getKey(), sentry.getValue());
-			}
-		}
+		Object[] temp = sections.keySet().toArray();
 		for(Object section : this.sections.keySet()) {  
 			Adapter adapter = sections.get(section);  
 			int size = adapter.getCount() + 1;
 
-			// check if position inside this section  
-			if(position == 0) return headers.getView(sectionnum, convertView, parent);  
+			if(position == 0)
+			{
+				View v = View.inflate(adapterContext, R.layout.list_header, null);
+				TextView t = (TextView) v.findViewById(R.id.list_header_title);
+				t.setText((String)temp[sectionnum]);
+				return v;
+			}
 			else if(position < size) return adapter.getView(position - 1, convertView, parent);  
 
 			// otherwise jump into next section  

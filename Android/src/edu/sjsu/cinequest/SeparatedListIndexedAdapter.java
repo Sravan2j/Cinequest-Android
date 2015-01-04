@@ -1,13 +1,17 @@
 package edu.sjsu.cinequest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import android.content.Context;
 import android.widget.Adapter;
 import android.widget.LinearLayout;
@@ -50,17 +54,10 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
     private boolean currWidthFillParent = true;
     private ListView listview;
     private boolean SortKeysFirst = false;
-
+    //SeparatedListAdapter now sorts by default
 	public SeparatedListIndexedAdapter(Context context) {
 		super(context);
 		alphaIndexer = new HashMap<String, Integer>();
-	}
-	
-	//if you want keys sorted first, use this constructor, and set sortkeys=true
-	public SeparatedListIndexedAdapter(Context context, boolean sortkeys) {
-		this(context);
-		SortKeysFirst = sortkeys;
-		SortKeys = sortkeys;
 	}
 	
 	public void setAsAdapterFor(ListView listview){
@@ -80,75 +77,9 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 	
 	public void addSection(String section, String sectionKey, Adapter adapter) {
 		super.addSection(section, adapter);
-		
 		keyList.add(sectionKey);
 		alphaIndexer.put(sectionKey, currPosition);
 		currPosition += adapter.getCount() + 1;
-	}
-	
-	/**
-	 * build the sectionKeys array, which will hold the values of keys to 
-	 * display on screen
-	 */
-	public void buildIndex(){
-		if(SortKeysFirst == true){
-			Set<String> keys = alphaIndexer.keySet(); 
-			keyList = new ArrayList<String>();
-			Iterator<String> it = keys.iterator();
-			while (it.hasNext()) {
-	            String key = it.next();
-	            keyList.add(key);
-			}
-			Collections.sort(keyList);
-		}
-		
-		//now create the array containing keys which will be returned next
-		sectionKeys = new String[keyList.size()]; 
-		keyList.toArray(sectionKeys);
-		
-		//fix key's screen placement bug
-		fixScreenKeyPlacement();
-	}
-	
-	/**
-	 * Using such SectionIndexer with changing data sections does not refresh the
-	 * sections cache and it keeps reusing the first set of sections. In order
-	 * to make it recreate sections, we can do listview.setFastScrollEnabled(false)
-	 * and then listview.setFastScrollEnabled(true), but this will start creating
-	 * the sections keys to appear in top left corner half-hidden. Using the method
-	 * below is a hard-wired fix for such issue. Any better and optimal fix is 
-	 * yet not known.
-	 * The solution is - every time the data set changes, change the listview
-	 * width by 1pixel at least. So if it is filling screen, reduce it one pixel
-	 * else make it fill screen again. We are using "currWidthFillParent" boolean to 
-	 * keep track of screen width.
-	 * 
-	 * problem:
-	 * http://stackoverflow.com/questions/3898749/re-index-refresh-a-sectionindexer
-	 * 
-	 * solution:
-	 * http://groups.google.com/group/android-developers/browse_thread/thread/
-	 * 2c24970bf355c556/a47dd42737dd5ce4?show_docid=a47dd42737dd5ce4
-	 */
-	private void fixScreenKeyPlacement(){
-		
-		//this method needs to alter listview width, so if listview is null, return
-		if(listview == null)
-			return;
-		
-		int newWidth = currWidthFillParent ? 
-				LinearLayout.LayoutParams.FILL_PARENT : listview.getWidth() - 1; 
-		LinearLayout.LayoutParams l = new LinearLayout.LayoutParams(newWidth, 
-		                               LinearLayout.LayoutParams.FILL_PARENT); 
-		listview.setLayoutParams( l );
-		//toggle our boolean
-		currWidthFillParent = currWidthFillParent ? false : true;
-		
-		//save the current state of currWidthFillParent inside listview
-		if(currWidthFillParent)
-			listview.setId(1);
-		else
-			listview.setId(0);
 	}
 
 	@Override
@@ -156,11 +87,6 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 		return 0;
 	}
 	
-	@Override
-	public Object[] getSections() {
-		buildIndex();
-		return sectionKeys;
-	}
 	/**
 	 * Verifies, if this sections already exists
 	 * */
@@ -189,7 +115,7 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 		}
 	}
 	/**
-	 * This function resturns the index of section to display the appropriate header
+	 * This function returns the index of section to display the appropriate header
 	 * */
 	@Override
 	public int getPositionForSection(int position) {
@@ -202,7 +128,12 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
             if(position < size){ return sectionnum; }
             position -= size;
             sectionnum++;
-        }
-		return 0;
+		}
+		return sectionnum;
+	}
+	
+	@Override
+	public Object[] getSections() {
+		return null;
 	}
 }

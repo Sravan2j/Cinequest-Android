@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map.Entry;
+
 import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.database.Cursor;
@@ -21,11 +23,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AbsListView.OnScrollListener;
 
 /**
  * The Schedule Tab of the app 
@@ -105,11 +109,15 @@ public class ScheduleActivity extends CinequestActivity {
 	private static final String DATE_TIME_FORMAT = "MMM dd, yyyy'T'HH:mm";
 	private List<EventData> events = new ArrayList<EventData>();
 	private TextView nothingToday;	//Shows an empty list when the list is empty
+	private TextView header;
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedulelayout);
 		sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
 		du = new DateUtils();
+		header = (TextView) this.findViewById(R.id.textView1);
+		header.setVisibility(View.GONE);
 		nothingToday = (TextView) this.findViewById(R.id.msg_for_empty_schedyle);
 		listView = (ListView) findViewById(R.id.schedule_listview);
 		registerForContextMenu(listView);
@@ -202,16 +210,23 @@ public class ScheduleActivity extends CinequestActivity {
 		//Collections.sort(events, new EventData.CompName());
 
 		Collections.sort(events, new EventData.CompDate());
-		SeparatedListIndexedAdapter separatedSchedule = new SeparatedListIndexedAdapter(this){
+		final SeparatedListIndexedAdapter separatedSchedule = new SeparatedListIndexedAdapter(this){
 			@Override
 			public View getView(int position, View v, ViewGroup parent){
 				int sectionnum = 0;
+				Object[] temp = sections.keySet().toArray();
 				for(Object section : this.sections.keySet()) {  
 					Adapter adapter = sections.get(section);  
 					int size = adapter.getCount() + 1;
 
 					// check if position inside this section  
-					if(position == 0 && headers.getCount() > 0) return headers.getView(sectionnum, v, parent);
+					if(position == 0)
+					{
+						v = View.inflate(adapterContext, R.layout.list_header, null);
+						TextView t = (TextView) v.findViewById(R.id.list_header_title);
+						t.setText((String)temp[sectionnum]);
+						return v;
+					}
 					else if(position < size && size > 1)
 					{
 						LayoutInflater inflater = LayoutInflater.from(getBaseContext());
@@ -267,7 +282,6 @@ public class ScheduleActivity extends CinequestActivity {
 										if(sections.get(day).getCount() == 0)
 										{  //only if there is no more objects in adapter 
 											sections.remove(day);
-											headers.remove(day); //remove section
 										}
 										notifyDataSetChanged();
 									}
@@ -288,7 +302,26 @@ public class ScheduleActivity extends CinequestActivity {
 				return v;
 			}
 		};
-
+		listView.setOnScrollListener(new OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+			}
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				if(firstVisibleItem > 0)
+				{
+					Object[] temp = separatedSchedule.sections.keySet().toArray();
+					header.setVisibility(View.VISIBLE);
+					header.setText((String)temp[separatedSchedule.getPositionForSection(firstVisibleItem)]);
+				}
+				else
+				{
+					header.setVisibility(View.GONE);
+				}
+			}
+		});
+		
 		for(EventData ev: events) //populates separated list indexed adapters
 		{
 			String day = localizeHumanFormat(ev.getStime());

@@ -3,15 +3,22 @@ package edu.sjsu.cinequest;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Vector;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
@@ -19,6 +26,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -44,7 +52,7 @@ public class FilmsActivity1 extends CinequestActivity{
 	private SeparatedListIndexedAdapter eventsAdapter;
 	private DateUtils du;
 	private ListView listview;
-	
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.cinequest_tab_activity_layout);
@@ -56,7 +64,7 @@ public class FilmsActivity1 extends CinequestActivity{
 		listview = (ListView) FilmsActivity1.this.findViewById(R.id.cinequest_tabactivity_listview);
 		header = (TextView) FilmsActivity1.this.findViewById(R.id.textView1);
 		header.setVisibility(View.GONE);
-		eventsAdapter = new SeparatedListIndexedAdapter(FilmsActivity1.this, true);
+		eventsAdapter = new SeparatedListIndexedAdapter(FilmsActivity1.this);
 		listview.setOnScrollListener(new OnScrollListener() {
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -66,8 +74,9 @@ public class FilmsActivity1 extends CinequestActivity{
 					int visibleItemCount, int totalItemCount) {
 				if(firstVisibleItem > 0)
 				{
+					Object[] temp = eventsAdapter.sections.keySet().toArray();
 					header.setVisibility(View.VISIBLE);
-					header.setText(eventsAdapter.headers.getItem(eventsAdapter.getPositionForSection(firstVisibleItem)));
+					header.setText((String)temp[eventsAdapter.getPositionForSection(firstVisibleItem)]);
 				}
 				else
 				{
@@ -126,7 +135,7 @@ public class FilmsActivity1 extends CinequestActivity{
 					for(final String date: eventsOnly)
 					{
 						HomeActivity.getQueryManager().getEventsByDate(date,new ProgressMonitorCallback(FilmsActivity1.this) {
-							@Override
+							@SuppressLint("NewApi") @Override
 							public void invoke(Object result) {
 								super.invoke(result);
 								mSchedule_byDate = (TreeMap<String, List<CommonItem>>) result;
@@ -152,16 +161,14 @@ public class FilmsActivity1 extends CinequestActivity{
 					for(final String date: filmsOnly) //final ensures that every date will get passed to refreshListContents
 					{
 						HomeActivity.getQueryManager().getFilmsByDate(date,new ProgressMonitorCallback(FilmsActivity1.this) {
-							@Override
+							@SuppressLint("NewApi") @Override
 							public void invoke(Object result) {
 								super.invoke(result);
 								mSchedule_byDate = (TreeMap<String, List<CommonItem>>) result;
 								if(eventsAdapter.haveSection(localizeHumanFormat(date))) //Ensures that new content under same day
 								{ //falls under same sections
 									FilmletListAdapter a = (FilmletListAdapter) eventsAdapter.getAdapterForSection(localizeHumanFormat(date));
-									FilmletListAdapter b = refreshListContents(mSchedule_byDate);
-									for(int i = 0; i < b.getCount(); i++)
-									{ a.add(b.getItem(i)); }
+									a.addAll(refreshListContents(mSchedule_byDate).getList());
 									eventsAdapter.appendAdapter(localizeHumanFormat(date), a);
 								}
 								else
@@ -189,16 +196,14 @@ public class FilmsActivity1 extends CinequestActivity{
 					for(final String date: forumsOnly)
 					{
 						HomeActivity.getQueryManager().getForumsByDate(date,new ProgressMonitorCallback(FilmsActivity1.this) {
-							@Override
+							@SuppressLint("NewApi") @Override
 							public void invoke(Object result) {
 								super.invoke(result);
 								mSchedule_byDate = (TreeMap<String, List<CommonItem>>) result;
 								if(eventsAdapter.haveSection(localizeHumanFormat(date))) //Ensures that new content under same day
 								{ //falls under same sections
 									FilmletListAdapter a = (FilmletListAdapter) eventsAdapter.getAdapterForSection(localizeHumanFormat(date));
-									FilmletListAdapter b = refreshListContents(mSchedule_byDate);
-									for(int i = 0; i < b.getCount(); i++)
-									{ a.add(b.getItem(i)); }
+									a.addAll((Collection<? extends CommonItem>)refreshListContents(mSchedule_byDate).getList());
 									eventsAdapter.appendAdapter(localizeHumanFormat(date), a);
 								}
 								else
@@ -231,20 +236,12 @@ public class FilmsActivity1 extends CinequestActivity{
 	@SuppressLint("NewApi")
 	protected FilmletListAdapter refreshListContents(TreeMap<String, List<CommonItem>> listItems) {
 		if (listItems == null) return null;
-
-		FilmletListAdapter adapter = null;
-		for (String titleInit : listItems.keySet()) //Each titleInit is time! This gathers all films.
+		List<CommonItem> accumulate = new ArrayList<CommonItem>();
+		for(Entry<String, List<CommonItem>> item : listItems.entrySet())
 		{
-			if(adapter == null) //Each FilmletListAdapter in this case represents and event
-			{
-				adapter = new FilmletListAdapter(this,listItems.get(titleInit));
-			}
-			else
-			{
-				adapter.addAll(listItems.get(titleInit));
-			}
+			accumulate.addAll(item.getValue());
 		}
-		return adapter;
+		return new FilmletListAdapter(this,accumulate);
 	}
 
 	/**
@@ -294,17 +291,14 @@ public class FilmsActivity1 extends CinequestActivity{
 	 * @param inputDate The input date.
 	 * @return The equivalent date in device locale
 	 */
-	private String localizeDate( String inputDate ) {
-
+	private String localizeDate( String inputDate ){
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-
 		Date date = null;
 		try {
 			date = fmt.parse(inputDate);
 		} catch (ParseException e) {
 			return inputDate;
 		}
-
 		DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
 		return dateFormat.format(date);	
 	}
