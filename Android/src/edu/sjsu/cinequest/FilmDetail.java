@@ -401,17 +401,17 @@ public class FilmDetail extends CinequestActivity {
 		Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
 	}
 	public void sendEmail(){
-		Intent i = new Intent(Intent.ACTION_SEND);
+		String email="";
+		Intent i = new Intent(Intent.ACTION_SEND, Uri.parse("mailto:"));
 		i.setType("message/rfc822");
-		i.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
+		i.putExtra(Intent.EXTRA_EMAIL  , new String[] { email });
 		i.putExtra(Intent.EXTRA_SUBJECT, "Cinequest Film Festival : " + fbTitle);
 		i.putExtra(Intent.EXTRA_TEXT   , "You should check this movie out : " + fbUrl);
 		try  {
-			startActivity(Intent.createChooser(i, "Send mail..."));
+			startActivity(Intent.createChooser(i, "Email"));
 		} catch (android.content.ActivityNotFoundException ex) {
 			Toast.makeText(this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
 		}
-
 	}
 	public void openWebPage(){
 		Intent intent = new Intent(Intent.ACTION_VIEW);

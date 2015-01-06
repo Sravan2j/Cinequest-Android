@@ -4,18 +4,12 @@
 
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-    <uses-permission android:name="android.permission.INTERNET" >
-    </uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CALL_PHONE" >
-    </uses-permission>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <uses-sdk android:minSdkVersion="7" /> <!-- Android 2.1 -->
- <!--
-<uses-sdk    android:targetSdkVersion="21"/> This is what I used to set the target to API 21 to test in android lolipop, while making an
-emulator running on Android version 5 instead of line #14
-          -->
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-sdk android:minSdkVersion="7" />
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
@@ -62,8 +56,9 @@ emulator running on Android version 5 instead of line #14
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
+				<action android:name="android.net.wifi.STATE_CHANGE"/>
             </intent-filter>
         </activity>
         <activity
