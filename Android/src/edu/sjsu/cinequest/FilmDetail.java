@@ -3,7 +3,6 @@ package edu.sjsu.cinequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -93,8 +92,8 @@ public class FilmDetail extends CinequestActivity {
 			}
 		});
         
-        Button youtubeButton = (Button) findViewById(R.id.twitter);
-        youtubeButton.setOnClickListener(new OnClickListener() {			
+        Button twitterButton = (Button) findViewById(R.id.twitter);
+        twitterButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
 				checkOnTwitter();
@@ -241,8 +240,6 @@ public class FilmDetail extends CinequestActivity {
 		return spstr;
 	}
 
-
-
 	public void showFilm(CommonItem in) {
 		fbTitle = in.getTitle();
 		fbImage = in.getImageURL();
@@ -386,7 +383,6 @@ public class FilmDetail extends CinequestActivity {
 			// TODO Auto-generated catch block
 			Log.e("MyFunc", e.toString());
 		}
-
 	}
 	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
 		if (state.isOpened()) {
