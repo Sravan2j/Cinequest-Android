@@ -69,10 +69,10 @@ public class FilmDetail extends CinequestActivity {
 		fbButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
-				//Check if a facebook session is available from existing app if not open one. // tanuvir-12Nov13
-				loginToFacebook();
-				//call the graph api to post to Users wall //tanuvir-12Nov13
-				postToWall();	
+				// tanuvir-12Nov13
+				//Check if a facebook session is available from existing app if not open one.
+				//call the graph api to post to Users wall
+				loginAndPostToFacebook();
 			}
 		});
 
@@ -145,9 +145,7 @@ public class FilmDetail extends CinequestActivity {
 		myMergeAdapter.addAdapter(adapter);
 		includescnt=adapter.getCount();
 	}
-
-
-
+	
 	private void showFilms(ArrayList<? extends CommonItem> films)
 	{
 		FilmletListAdapter section = new FilmletListAdapter(this, (List<CommonItem>) films);
@@ -167,7 +165,6 @@ public class FilmDetail extends CinequestActivity {
 		});
 		scheduleList.setAdapter(adapter);
 	}
-
 
 	private static void addEntry(SpannableStringBuilder ssb, String tag, String s) {
 		if (s == null || s.equals("")) return;
@@ -287,8 +284,8 @@ public class FilmDetail extends CinequestActivity {
 		});
 	}
 
-	//New function to login to facebook // tanuvir-12Nov13
-	void loginToFacebook(){
+	//New function to login to facebook and to post a status on facebook // tanuvir-12Nov13
+	void loginAndPostToFacebook(){
 		try {
 			Log.d("MyFunc", "Before Login");
 			Session.openActiveSession(this, true, new Session.StatusCallback() {
@@ -321,16 +318,7 @@ public class FilmDetail extends CinequestActivity {
 					}
 				}
 			});
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			Log.e("MyFunc", e.toString());
-		}
-	}
-
-	//new function to post a status on facebook //tanuvir 12Nov13
-	void postToWall(){
-		try{
+			
 			if(fbImage == null || fbImage == "")
 				fbImage = "http://www.cinequest.org/sites/default/files/styles/highlights/public/cqff24hero_970x360.jpg";
 			if(fbUrl == null || fbUrl == "")
@@ -378,12 +366,12 @@ public class FilmDetail extends CinequestActivity {
 
 							}).build();
 			feedDialog.show();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			Log.e("MyFunc", e.toString());
 		}
 	}
+	
 	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
 		if (state.isOpened()) {
 			Log.d("Myfunc", "Logged in...");
