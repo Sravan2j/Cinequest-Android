@@ -420,5 +420,4 @@ public class FilmDetail extends CinequestActivity {
 		intent.setData(Uri.parse("https://www.twitter.com/search?q=" + fbTitle));
 		startActivity(intent);
 	}
-
 }
