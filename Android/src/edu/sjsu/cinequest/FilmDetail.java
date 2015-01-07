@@ -1,9 +1,20 @@
 package edu.sjsu.cinequest;
-
+//creadit goes to:http://stackoverflow.com/questions/2077008/android-intent-for-twitter-application
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
+
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -42,6 +53,7 @@ import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 public class FilmDetail extends CinequestActivity {
+	private static final String TAG = "Twitter Page!";
 	public static enum ItemType {FILM, PROGRAM_ITEM, DVD}
 	private ListView scheduleList;
 	private ListView includeList;
@@ -83,23 +95,23 @@ public class FilmDetail extends CinequestActivity {
 				sendEmail();		
 			}
 		});
-		   
-        Button infoButton = (Button) findViewById(R.id.moreinfo);
-        infoButton.setOnClickListener(new OnClickListener() {			
+
+		Button infoButton = (Button) findViewById(R.id.moreinfo);
+		infoButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
 				openWebPage();
 			}
 		});
-        
-        Button twitterButton = (Button) findViewById(R.id.twitter);
-        twitterButton.setOnClickListener(new OnClickListener() {			
+
+		Button twitterButton = (Button) findViewById(R.id.twitter);
+		twitterButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
 				checkOnTwitter();
 			}
 		});
-	
+
 		fetchServerData(getIntent().getExtras());	
 	}
 
@@ -145,7 +157,7 @@ public class FilmDetail extends CinequestActivity {
 		myMergeAdapter.addAdapter(adapter);
 		includescnt=adapter.getCount();
 	}
-	
+
 	private void showFilms(ArrayList<? extends CommonItem> films)
 	{
 		FilmletListAdapter section = new FilmletListAdapter(this, (List<CommonItem>) films);
@@ -318,7 +330,7 @@ public class FilmDetail extends CinequestActivity {
 					}
 				}
 			});
-			
+
 			if(fbImage == null || fbImage == "")
 				fbImage = "http://www.cinequest.org/sites/default/files/styles/highlights/public/cqff24hero_970x360.jpg";
 			if(fbUrl == null || fbUrl == "")
@@ -371,7 +383,7 @@ public class FilmDetail extends CinequestActivity {
 			Log.e("MyFunc", e.toString());
 		}
 	}
-	
+
 	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
 		if (state.isOpened()) {
 			Log.d("Myfunc", "Logged in...");
@@ -402,10 +414,29 @@ public class FilmDetail extends CinequestActivity {
 		intent.setData(Uri.parse(fbUrl));
 		startActivity(intent);
 	}
-	public void checkOnTwitter(){
-		// Launch the Youtube view with the relevant film name searched for 
-		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setData(Uri.parse("https://www.twitter.com/search?q=" + fbTitle));
-		startActivity(intent);
+
+	public static String urlEncode(String s) {
+	    try {
+	        return URLEncoder.encode(s, "UTF-8");
+	    }
+	    catch (UnsupportedEncodingException e) {
+	        Log.i(TAG, "UTF-8 should always be supported", e);
+	        throw new RuntimeException("URLEncoder.encode() failed for " + s);
+	    }
 	}
+	
+	public void checkOnTwitter(){
+		if(fbUrl == null || fbUrl == "")
+			fbUrl = "http://www.cinequest.org/film-festival";
+
+		String message = '"' + fbTitle + '"';
+		message += "at the Cinequest film festival";
+		message += "\n" + fbUrl + "\n";
+		
+		String tweetUrl = 
+			    String.format("https://twitter.com/intent/tweet?text=%s&url=%s",
+			        urlEncode(message), urlEncode("https://www.google.com/"));
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(tweetUrl));
+		startActivity(intent);
+	 }
 }
