@@ -7,6 +7,4 @@
 	android:id="@+id/ScheduleList"
 	android:clickable="true"
 	android:listSelector="#FF0000"
-	
 />
-	
