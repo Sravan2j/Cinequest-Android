@@ -42,7 +42,7 @@ public class FilmDetail extends CinequestActivity {
 	private String fbImage;
 	private String fbUrl;
 	private MergeAdapter myMergeAdapter;
-
+	
 	private int includescnt;
 	public void onCreate(Bundle savedInstanceState) {    	
 		super.onCreate(savedInstanceState);

@@ -20,7 +20,7 @@ public class PostOnFacebook extends Activity
 			return (false); }
 		});
 		WebSettings webSettings = postOnFacebook.getSettings();
-		webSettings.setBuiltInZoomControls(true);
+		webSettings.setBuiltInZoomControls(false);
 		postOnFacebook.loadUrl(facebookURL);
 		postOnFacebook.goBackOrForward(1);
 	}
