@@ -1,5 +1,5 @@
 package edu.sjsu.cinequest;
-
+//credit goes to Android Application Development Cookbook, Wei-Meng Lee
 import android.app.Activity;
 import android.os.Bundle;
 import android.webkit.WebSettings;
