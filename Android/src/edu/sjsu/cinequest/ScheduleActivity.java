@@ -138,7 +138,7 @@ public class ScheduleActivity extends CinequestActivity {
 				"(calendar_displayName= ?) ";
 		String[] calSelectionArgs = new String[] {
 				calendarName                                        
-		}; 
+		};
 
 		Uri event=null;
 		if (Build.VERSION.SDK_INT >= 8) {
@@ -276,9 +276,10 @@ public class ScheduleActivity extends CinequestActivity {
 								Uri deleteUri = ContentUris.withAppendedId(eventUri, q.getEId());
 								try{
 									int rows = getContentResolver().delete(deleteUri, null, null);
-									if (rows==1){
+									if (rows == 1){
 										//remove object from adapter
 										((ArrayAdapter<EventData>)sections.get(day)).remove(q);
+										events.remove(q);
 										if(sections.get(day).getCount() == 0)
 										{  //only if there is no more objects in adapter 
 											sections.remove(day);
