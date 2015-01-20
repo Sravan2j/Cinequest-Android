@@ -279,6 +279,7 @@ public class ScheduleActivity extends CinequestActivity {
 									if (rows == 1){
 										//remove object from adapter
 										((ArrayAdapter<EventData>)sections.get(day)).remove(q);
+										//
 										events.remove(q);
 										if(sections.get(day).getCount() == 0)
 										{  //only if there is no more objects in adapter 
