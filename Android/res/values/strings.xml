@@ -32,7 +32,8 @@
       Rohit Vobbilisetty\n
       Tanuvir Singh\n
       Lou Bash\n
-      Matt Opsal\n</string>
+      Matt Opsal\n
+      Dmitri Dimov\n</string>
     <string name="schedule_filmID"></string>
     <string name="schedule_filmTitle"></string>
     <string name="title_activity_get_schedule">GetSchedule</string>

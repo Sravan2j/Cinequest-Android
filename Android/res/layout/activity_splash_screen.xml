@@ -8,7 +8,7 @@
         android:id="@+id/login_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/splash" >
+        android:background="@drawable/cine-large-fin-lockup" >
 <TextView
             android:id="@+id/login_status_message"
             android:layout_width="wrap_content"

@@ -14,7 +14,7 @@
     android:layout_height="wrap_content"
     android:background="#6D7B8D"
     android:visibility="visible"
-    >    
+    >
     
     <Button
 		android:id="@+id/goto_festival_button"
