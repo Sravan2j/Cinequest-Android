@@ -45,7 +45,7 @@
   	android:layout_height="70dp"
   	android:id="@+id/homescreen_title_image"
   	android:maxHeight="50dip"  	
-  	android:background="@drawable/filmreel3"
+  	android:background="@drawable/filmreel"
   	/>
   	<View
     android:layout_width="fill_parent"
