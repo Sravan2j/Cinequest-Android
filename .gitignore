@@ -1,3 +1,4 @@
+.DS_Store
 # built application files
 *.apk
 *.ap_
@@ -19,3 +20,7 @@ local.properties
 .classpath
 .project
 *.~
+ant.properties
+cinequest.keystore
+abc.txt
+
