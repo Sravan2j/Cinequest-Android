@@ -39,7 +39,7 @@ public class QueryManager {
 	private static final String imageBase = "http://mobile.cinequest.org/";
 	private static final String mainImageURL = "imgs/mobile/creative.gif";
 	
-	public static final String showsFeedURL = "http://payments.cinequest.org/websales/feed.ashx?guid=70d8e056-fa45-4221-9cc7-b6dc88f62c98&showslist=true";
+	public static final String showsFeedURL = "http://payments.cinequest.org/websales/feed.ashx?guid=d52499c1-3164-429f-b057-384dd7ec4b23&showslist=true";
 	public static final String newsFeedURL = "http://www.cinequest.org/news.php";
 	public static final String venuesFeedURL = "http://www.cinequest.org/venuelist.php";
 	
