@@ -1,9 +1,11 @@
 package edu.sjsu.cinequest;
+//credit goes to:http://stackoverflow.com/questions/2077008/android-intent-for-twitter-application
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -24,18 +26,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.commonsware.cwac.merge.MergeAdapter;
-import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.model.GraphUser;
-import com.facebook.widget.WebDialog;
-import com.facebook.widget.WebDialog.OnCompleteListener;
-
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.HParser;
 import edu.sjsu.cinequest.comm.Platform;
@@ -43,6 +34,7 @@ import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 public class FilmDetail extends CinequestActivity {
+	private static final String TAG = "Twitter Page!";
 	public static enum ItemType {FILM, PROGRAM_ITEM, DVD}
 	private ListView scheduleList;
 	private ListView includeList;
@@ -50,6 +42,7 @@ public class FilmDetail extends CinequestActivity {
 	private String fbImage;
 	private String fbUrl;
 	private MergeAdapter myMergeAdapter;
+	
 	private int includescnt;
 	public void onCreate(Bundle savedInstanceState) {    	
 		super.onCreate(savedInstanceState);
@@ -59,7 +52,7 @@ public class FilmDetail extends CinequestActivity {
 
 		ListView listView = (ListView) findViewById(R.id.ScheduleList);
 		View headerView = getLayoutInflater().inflate(
-				R.layout.detail_layout, null);        
+				R.layout.detail_layout, null);    
 		listView.addHeaderView(headerView, null, false);
 
 		View footerView = getLayoutInflater().inflate(
@@ -70,10 +63,8 @@ public class FilmDetail extends CinequestActivity {
 		fbButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
-				//Check if a facebook session is available from existing app if not open one. // tanuvir-12Nov13
-				loginToFacebook();
-				//call the graph api to post to Users wall //tanuvir-12Nov13
-				postToWall();	
+				//This function posts to facebook
+				postOnFacebook();
 			}
 		});
 
@@ -84,23 +75,22 @@ public class FilmDetail extends CinequestActivity {
 				sendEmail();		
 			}
 		});
-		   
-        Button infoButton = (Button) findViewById(R.id.moreinfo);
-        infoButton.setOnClickListener(new OnClickListener() {			
+
+		Button infoButton = (Button) findViewById(R.id.moreinfo);
+		infoButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
 				openWebPage();
 			}
 		});
-        
-        Button youtubeButton = (Button) findViewById(R.id.youtube);
-        youtubeButton.setOnClickListener(new OnClickListener() {			
+
+		Button twitterButton = (Button) findViewById(R.id.twitter);
+		twitterButton.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
-				checkOnYoutube();
+				checkOnTwitter();
 			}
 		});
-	
 		fetchServerData(getIntent().getExtras());	
 	}
 
@@ -110,8 +100,7 @@ public class FilmDetail extends CinequestActivity {
 		if (target instanceof CommonItem) {
 			// This happens when showing a film inside a program item
 			showFilm((CommonItem) target);
-		} 
-
+		}
 	}	
 
 	private void showSchedules(Vector<Schedule> schedules)
@@ -129,7 +118,6 @@ public class FilmDetail extends CinequestActivity {
 				title.setTypeface(null, Typeface.NORMAL);
 			}
 		});
-
 		myMergeAdapter.addAdapter(adapter);
 	}
 
@@ -139,15 +127,12 @@ public class FilmDetail extends CinequestActivity {
 		if (includes.size() == 0) {
 			return;
 		}
-
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 		adapter.addSection("Includes",
 				new FilmletListAdapter(this, includes));
 		myMergeAdapter.addAdapter(adapter);
 		includescnt=adapter.getCount();
 	}
-
-
 
 	private void showFilms(ArrayList<? extends CommonItem> films)
 	{
@@ -168,7 +153,6 @@ public class FilmDetail extends CinequestActivity {
 		});
 		scheduleList.setAdapter(adapter);
 	}
-
 
 	private static void addEntry(SpannableStringBuilder ssb, String tag, String s) {
 		if (s == null || s.equals("")) return;
@@ -241,8 +225,6 @@ public class FilmDetail extends CinequestActivity {
 		return spstr;
 	}
 
-
-
 	public void showFilm(CommonItem in) {
 		fbTitle = in.getTitle();
 		fbImage = in.getImageURL();
@@ -282,7 +264,7 @@ public class FilmDetail extends CinequestActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
-				if (position>0 && position <=includescnt){					
+				if (position>0 && position <=includescnt){
 					Object result = scheduleList.getItemAtPosition( position );
 					launchFilmDetail(result);				
 				}
@@ -290,140 +272,62 @@ public class FilmDetail extends CinequestActivity {
 		});
 	}
 
-	//New function to login to facebook // tanuvir-12Nov13
-	void loginToFacebook(){
-		try {
-			Log.d("MyFunc", "Before Login");
-			Session.openActiveSession(this, true, new Session.StatusCallback() {
-
-				// callback when session changes state
-				@Override
-				public void call(Session session, SessionState state,
-						Exception exception) {
-
-					Log.d("MyFunc", "Session Token=" + session.getAccessToken());
-					Log.d("MyFunc", "Session Open or not =" + session.isOpened());
-
-					if (session.isOpened()) {
-
-						// make request to the /me API
-						Request.executeMeRequestAsync(session,
-								new Request.GraphUserCallback() {
-
-							// callback after Graph API response with user
-							// object
-							@Override
-							public void onCompleted(GraphUser user,
-									Response response) {
-								Log.d("MyFunc", "Request");
-								if (user != null) {
-									Log.d("MyFunc", "User: "+ user.getName());
-								}
-							}
-						});
-					}
-				}
-			});
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			Log.e("MyFunc", e.toString());
-		}
+	//New function to to post a status on facebook
+	public void postOnFacebook()
+	{
+		if(fbUrl == null || fbUrl == "")
+			fbUrl = "http://www.cinequest.org/film-festival";
+		String message = '"' + fbTitle + '"';
+		message += "\nAt the Cinequest film festival";
+		String facebookURL = "https://facebook.com/dialog/feed?%20app_id=145634995501895%20&display=popup&caption="+ message +
+				"&link="+ fbUrl + "/dialog/feed%2Fdocs%2F%20&redirect_uri=https://www.facebook.com/";
+		Intent postToFacebook = new Intent(this,PostOnFacebook.class);
+		postToFacebook.putExtra("facebookURL", facebookURL);
+		startActivity(postToFacebook);
 	}
 
-	//new function to post a status on facebook //tanuvir 12Nov13
-	void postToWall(){
-		try{
-			if(fbImage == null || fbImage == "")
-				fbImage = "http://www.cinequest.org/sites/default/files/styles/highlights/public/cqff24hero_970x360.jpg";
-			if(fbUrl == null || fbUrl == "")
-				fbUrl = "http://www.cinequest.org/film-festival";
-			Log.d("MyFunc", "Before posting");
-			Bundle params = new Bundle();
-			params.putString("name","Is going to " + '"' + fbTitle + '"' );
-			params.putString("caption", "at the Cinequest film festival");
-			params.putString("description", "Cinequest provides the finest discovery bastion of international film premieres, technology, and more.");
-			params.putString("link", fbUrl);
-			params.putString("picture", fbImage);
-			params.putString("message", "Is going to this movie");
-
-			Log.d("Myfunc", "Params Created");
-
-			WebDialog feedDialog =  (
-					new WebDialog.FeedDialogBuilder(FilmDetail.this,
-							Session.getActiveSession(),
-							params))
-							.setOnCompleteListener(new OnCompleteListener() {
-
-								public void onComplete(Bundle values,
-										FacebookException error) {
-									if (error == null) {
-										// When the story is posted, echo the success
-										// and the post Id.
-										final String postId = values.getString("post_id");
-										if (postId != null) {
-											Toast.makeText(FilmDetail.this,"Successfully posted to your wall." ,Toast.LENGTH_SHORT).show();
-											Log.d("Myfunc", "Post Id= " + postId);
-										} else {
-											// User clicked the Cancel button
-											Toast.makeText(FilmDetail.this,"Share cancelled",Toast.LENGTH_SHORT).show();
-											Log.d("Myfunc", "Post Cancelled");
-										}
-									} else if (error instanceof FacebookOperationCanceledException) {
-										// User clicked the "x" button
-										Toast.makeText(FilmDetail.this, "Share cancelled",Toast.LENGTH_SHORT).show();
-										Log.d("Myfunc", "User Closed the Dialog");
-									} else {
-										// Generic, ex: network error
-										Toast.makeText(FilmDetail.this,"Share failed.",Toast.LENGTH_SHORT).show();
-									}
-								}
-
-							}).build();
-			feedDialog.show();
-		}
-		catch (Exception e) {
-			// TODO Auto-generated catch block
-			Log.e("MyFunc", e.toString());
-		}
-
-	}
-	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-		if (state.isOpened()) {
-			Log.d("Myfunc", "Logged in...");
-		} else if (state.isClosed()) {
-			Log.d("MyFunc", "Logged out...");
-		}
-	}
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		Log.d("MyFunc", "onActivityResult");
-		Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
-	}
 	public void sendEmail(){
-		Intent i = new Intent(Intent.ACTION_SEND);
+		String email="";
+		Intent i = new Intent(Intent.ACTION_SEND, Uri.parse("mailto:"));
 		i.setType("message/rfc822");
-		i.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
+		i.putExtra(Intent.EXTRA_EMAIL  , new String[] { email });
 		i.putExtra(Intent.EXTRA_SUBJECT, "Cinequest Film Festival : " + fbTitle);
 		i.putExtra(Intent.EXTRA_TEXT   , "You should check this movie out : " + fbUrl);
 		try  {
-			startActivity(Intent.createChooser(i, "Send mail..."));
+			startActivity(Intent.createChooser(i, "Email"));
 		} catch (android.content.ActivityNotFoundException ex) {
 			Toast.makeText(this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
 		}
-
 	}
+
 	public void openWebPage(){
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setData(Uri.parse(fbUrl));
 		startActivity(intent);
 	}
-	public void checkOnYoutube(){
-		// Launch the Youtube view with the relevant film name searched for 
-		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setData(Uri.parse("https://www.youtube.com/results?search_query=" + fbTitle));
-		startActivity(intent);
 
+	public static String urlEncode(String s) {
+		try {
+			return URLEncoder.encode(s, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			Log.i(TAG, "UTF-8 should always be supported", e);
+			throw new RuntimeException("URLEncoder.encode() failed for " + s);
+		}
 	}
 
+	public void checkOnTwitter(){
+		if(fbUrl == null || fbUrl == "")
+			fbUrl = "http://www.cinequest.org/film-festival";
+
+		String message = '"' + fbTitle + '"';
+		message += "at the Cinequest film festival";
+		message += "\n" + fbUrl + "\n";
+
+		String tweetUrl = 
+				String.format("https://twitter.com/intent/tweet?text=%s&url=%s",
+						urlEncode(message), urlEncode("https://www.google.com/"));
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(tweetUrl));
+		startActivity(intent);
+	}
 }

@@ -14,7 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * The class with static methods to show varios classes of dialogs  
+ * The class with static methods to show various classes of dialogs  
  * @author Prabhjeet Ghuman
  *
  */

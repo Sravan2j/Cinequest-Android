@@ -14,7 +14,7 @@
     android:layout_height="wrap_content"
     android:background="#6D7B8D"
     android:visibility="visible"
-    >    
+    >
     
     <Button
 		android:id="@+id/goto_festival_button"
@@ -50,7 +50,7 @@
   	<View
     android:layout_width="fill_parent"
     android:layout_height="1dp"
-    android:background="@android:color/darker_gray"/>
+    android:background="#ff0000"/>
   	<View
     android:layout_width="fill_parent"
     android:layout_height="2dp"
@@ -60,7 +60,8 @@
 		  android:layout_width="fill_parent"
 		  android:layout_height="wrap_content"
 		  android:background="@android:color/transparent" 
-		  android:drawSelectorOnTop="false"		  
+		  android:drawSelectorOnTop="false"	
+		  android:listSelector="#FF0000"	  
 	  />
   
 </LinearLayout>
