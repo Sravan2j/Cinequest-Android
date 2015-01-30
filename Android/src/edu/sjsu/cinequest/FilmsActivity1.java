@@ -118,7 +118,7 @@ public class FilmsActivity1 extends CinequestActivity
 							super.invoke(result);
 							mSchedule_byDate = (TreeMap<String, List<CommonItem>>) result;
 							eventsAdapter.addSection(localizeHumanFormat(date), "", refreshListContents(mSchedule_byDate));
-							if(filmsOnly == forumsOnly)
+							if(eventsOnly != null && filmsOnly == null && forumsOnly == null)
 							{
 								//Then show it
 								eventsAdapter.setAsAdapterFor(listview);
@@ -150,7 +150,7 @@ public class FilmsActivity1 extends CinequestActivity
 							{
 								eventsAdapter.addSection(localizeHumanFormat(date), "", refreshListContents(mSchedule_byDate));
 							}
-							if(forumsOnly == null || forumsOnly == eventsOnly)
+							if(filmsOnly != null || forumsOnly == null || eventsOnly == null)
 							{
 								//Then show it once everything has been added!
 								eventsAdapter.setAsAdapterFor(listview);
@@ -182,7 +182,7 @@ public class FilmsActivity1 extends CinequestActivity
 							{
 								eventsAdapter.addSection(localizeHumanFormat(date), "", refreshListContents(mSchedule_byDate));
 							}
-							if(filmsOnly != null || eventsOnly != null || forumsOnly != null)
+							if(forumsOnly != null || eventsOnly == null || filmsOnly == null)
 							{
 								//Then show it once everything has been added!
 								eventsAdapter.setAsAdapterFor(listview);
