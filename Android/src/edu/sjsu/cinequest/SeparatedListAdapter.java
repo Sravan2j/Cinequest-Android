@@ -28,7 +28,8 @@ public class SeparatedListAdapter extends BaseAdapter
 			String[] temp2 = b.split(" ");
 			if(temp1.length > 1 && temp2.length > 1 && temp1[2].matches("\\d+(\\.\\d+)?") && temp2[2].matches("\\d+(\\.\\d+)?"))
 			{
-				if(Integer.parseInt(temp1[2]) > Integer.parseInt(temp2[2]))
+				if(temp1[1].compareTo(temp2[1]) == 0 && Integer.parseInt(temp1[2]) > Integer.parseInt(temp2[2]) ||
+				   temp1[1].compareTo(temp2[1]) > 0)
 				{ return 1; }
 				else if(Integer.parseInt(temp1[2]) == Integer.parseInt(temp2[2])) 
 				{ return 0; }
