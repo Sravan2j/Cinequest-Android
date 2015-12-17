@@ -24,3 +24,8 @@ ant.properties
 cinequest.keystore
 abc.txt
 
+build/
+.gradle
+.idea
+gradle/
+gradlew*
