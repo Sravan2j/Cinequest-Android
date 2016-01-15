@@ -31,7 +31,7 @@ import java.util.Vector;
 import android.util.Log;
 
 /**
- * Copy of ProgramItem. Represents a Film/Event/Forum
+ * Represents a Film/Event/Forum
  * 
  * @author Rohit Vobbilisetty
  *

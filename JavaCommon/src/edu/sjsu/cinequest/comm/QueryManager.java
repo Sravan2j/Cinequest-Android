@@ -20,12 +20,16 @@
 package edu.sjsu.cinequest.comm;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 import org.xml.sax.SAXException;
 
 import android.util.Log;
+
+import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
+import edu.sjsu.cinequest.comm.cinequestitem.Show;
 import edu.sjsu.cinequest.comm.xmlparser.FestivalParser;
 import edu.sjsu.cinequest.comm.xmlparser.NewsFeedParser;
 
@@ -42,7 +46,8 @@ public class QueryManager {
 	public static final String showsFeedURL = "http://payments.cinequest.org/websales/feed.ashx?guid=d52499c1-3164-429f-b057-384dd7ec4b23&showslist=true";
 	public static final String newsFeedURL = "http://www.cinequest.org/news.php";
 	public static final String venuesFeedURL = "http://www.cinequest.org/venuelist.php";
-	
+
+	public static final String trendingFeedURL = "http://www.cinequest.org/mobileCQ.php?type=xml&name=trending";
 	private Festival festival = new Festival();
 	private Object festivalLock = new Object();
 	private boolean festivalQueryInProgress = false;
@@ -131,6 +136,14 @@ public class QueryManager {
 		});
 	}
 
+	public void getVideos(final Callback callback) {
+		getWebData(callback, new Callable() {
+			public Object run() throws Throwable {
+				return getFestival(callback).getVideos();
+			}
+		});
+	}
+
 	public void getFilmDates(final Callback callback) {
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
@@ -187,6 +200,8 @@ public class QueryManager {
 					
 	}
 
+    // TODO: Obsolete
+
 	/**
 	 * Gets a special screen as a vector of Section objects
 	 * 
@@ -204,6 +219,17 @@ public class QueryManager {
 			}
 		});
 	}
+
+    public void getTrending(final Callback callback) {
+        getWebData(callback, new Callable() {
+            public Object run() throws Throwable {
+                List<Show> trendingShows = FestivalParser.parseShows(trendingFeedURL, callback);
+                int[] ids = new int[trendingShows.size()];
+                for (int i = 0; i < ids.length; i++) ids[i] = Integer.parseInt(trendingShows.get(i).id);
+                return getFestival(callback).setTrending(ids);
+            }
+        });
+    }
 
 
 	/**
@@ -248,25 +274,24 @@ public class QueryManager {
 			Platform.getInstance().starting(callback);
 		}
 		synchronized (festivalLock) {
-			
+			//TODO: Resurrect update checking with trending feed?
+            /*
 			String updatedDate = NewsFeedParser.getLastpdated(newsFeedURL, callback);			
-			Log.i("QueryManager:getFestival-Date Check:","UpdatedDate from News Feed:"+updatedDate+" lastUpdated:"+lastUpdated);
+			Log.i("QueryManager:getFestiva","UpdatedDate from News Feed:"+updatedDate+" lastUpdated:"+lastUpdated);
 			
 			if (updatedDate.equalsIgnoreCase(lastUpdated) && (!festival.isEmpty()))
 				return festival;
+	        */
 			synchronized (progressLock) {
 				festivalQueryInProgress = true;
 			}
 			try {
-				
-				// Using the new Xml feed.
-				// FIXME - Should the URL be hardcoded over here.
 				Festival result = FestivalParser.parseFestival(showsFeedURL, callback);
 				if (!result.isEmpty()) {
 					festival = result;
-					lastUpdated=updatedDate;					
+					/* lastUpdated=updatedDate; */ // TODO: Resurrect?
 				} else {
-					Log.i("QueryManager:getFestival","Festival Object is Empty");
+					Log.i("QueryManager:getFestiva","Festival Object is Empty");
 				}
 
 			} finally {

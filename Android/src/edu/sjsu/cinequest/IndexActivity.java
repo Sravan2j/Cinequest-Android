@@ -117,7 +117,7 @@ public class IndexActivity extends CinequestActivity {
 
 	private void fetchServerData(IndexType indexType) {
 		if (indexType == IndexType.FILMS) {
-			HomeActivity.getQueryManager().getAllFilms(
+			SplashScreenActivity.getQueryManager().getAllFilms(
 					new ProgressMonitorCallback(this) {
 						public void invoke(Object result) {
 							super.invoke(result);
@@ -126,7 +126,7 @@ public class IndexActivity extends CinequestActivity {
 						}
 					});
 		} else {
-			HomeActivity.getQueryManager().getAllEventsAndForums(
+			SplashScreenActivity.getQueryManager().getAllEventsAndForums(
 					new ProgressMonitorCallback(this) {
 						public void invoke(Object result) {
 							super.invoke(result);

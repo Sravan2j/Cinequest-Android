@@ -199,6 +199,9 @@ public class AndroidPlatform extends Platform {
 							+ t.getClass().toString();
 					if (t.getMessage() != null)
 						error += ", Message=" + t.getMessage();
+					StringWriter out = new StringWriter();
+					t.printStackTrace(new PrintWriter(out));
+					error += ", Stack trace=" + out.toString();
 
 					log("AndroidPlatform.invoke: " + error);
 				}

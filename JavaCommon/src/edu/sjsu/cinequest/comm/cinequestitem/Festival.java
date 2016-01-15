@@ -43,24 +43,27 @@ import android.util.Log;
 
 public class Festival implements Serializable {
 
-	private Vector schedules;
-	private Vector venueLocations;
+	private Vector<Schedule> schedules;
+	private Vector venueLocations;// TODO: Who uses that??? Seems legacy
 	private String lastChanged;
 	
-	private Vector commonItems;
+	private ArrayList<Integer> idSequence; // Needed for trending only
 	
-	private Vector films;
-	private Vector events;
-	private Vector forums;
+	private Vector<CommonItem> films;
+	private Vector<CommonItem> events;
+	private Vector<CommonItem> forums;
+    private Vector<CommonItem> videos;
+    private Vector<CommonItem> trending;
 
 	private SortedSet<String> filmDates;
 	private SortedSet<String> eventDates;
 	private SortedSet<String> forumDates;
-	
-	private HashMap<String, List<CommonItem>> filmsByDateMap;
+
+    private Map<Integer, CommonItem> commonItemsMap;
+    private HashMap<String, List<CommonItem>> filmsByDateMap;
 	private HashMap<String, List<CommonItem>> eventsByDateMap;
 	private HashMap<String, List<CommonItem>> forumsByDateMap;
-	
+
 	public HashMap<String, List<CommonItem>> getFilmsByDateMap() {
 		return filmsByDateMap;
 	}
@@ -73,53 +76,31 @@ public class Festival implements Serializable {
 		return forumsByDateMap;
 	}
 
-	private Map<Integer, CommonItem> commonItemsMap;
-	
-	public Map<Integer, CommonItem> getCommonItemsMap() {
-		return commonItemsMap;
-	}
+	public Map<Integer, CommonItem> getCommonItemsMap() { return commonItemsMap; }
+	public SortedSet<String> getFilmDates() { return filmDates;	}
+	public SortedSet<String> getEventDates() { return eventDates; }
+	public SortedSet<String> getForumDates() { return forumDates; }
+	public Vector<CommonItem> getFilms() { return films; }
+	public Vector<CommonItem> getEvents() {	return events; }
+	public Vector<CommonItem> getForums() {	return forums; }
+	public Vector<CommonItem> getVideos() { return videos; }
+    public Vector<CommonItem> getTrending() { return trending; }
 
-	public Vector getCommonItems() {
-		return commonItems;
-	}
-	
-	public SortedSet<String> getFilmDates() {
-		
-		return filmDates;
-	}
-
-	public SortedSet<String> getEventDates() {
-		return eventDates;
-	}
-
-	public SortedSet<String> getForumDates() {
-		return forumDates;
-	}
-	
-	public Vector getFilms() {
-		return films;
-	}
-
-	public Vector getEvents() {
-		return events;
-	}
-
-	public Vector getForums() {
-		return forums;
-	}
-	
-	public Festival()
+    public Festival()
 	{
-		schedules = new Vector();
+		schedules = new Vector<Schedule>();
 		venueLocations = new Vector();
 		lastChanged = "";
-		
-		commonItems = new Vector();
+
+        idSequence = new ArrayList<Integer>();
 		commonItemsMap = new HashMap<Integer, CommonItem>();
-		films = new Vector();
-		events = new Vector();
-		forums = new Vector();
-		
+		films = new Vector<CommonItem>();
+		events = new Vector<CommonItem>();
+		forums = new Vector<CommonItem>();
+        videos = new Vector<CommonItem>();
+        trending = new Vector<CommonItem>();
+
+
 		filmDates = new TreeSet<String>();
 		eventDates = new TreeSet<String>();
 		forumDates = new TreeSet<String>();
@@ -130,12 +111,24 @@ public class Festival implements Serializable {
 	}
 	
 	public boolean isEmpty() { return schedules.size() == 0; }
-	
+
+    /**
+     * Sets the trending items for this festival.
+     * @param trendingIds the ids of the trending items.
+     * @return the trending items
+     */
+    public Vector<CommonItem> setTrending(int[] ids) {
+        trending.clear();
+        for (Integer id : ids) {
+            trending.add(commonItemsMap.get(id));
+        }
+        return trending;
+    }
 
 	/**
 	 * @return vector of Schedules
 	 */
-	public Vector getSchedules() {
+	public Vector<Schedule> getSchedules() {
 		return schedules;
 	}
 
@@ -153,16 +146,16 @@ public class Festival implements Serializable {
 		return lastChanged;
 	}
 	
-	public Vector getFilmsByDate(String date) {
-		return new Vector(getCommonItemsForDate("Film", date));
+	public Vector<CommonItem> getFilmsByDate(String date) {
+		return new Vector<CommonItem>(getCommonItemsForDate("Film", date));
 	}
 	
 	public Vector getEventsByDate(String date) {
-		return new Vector(getCommonItemsForDate("Event", date));
+		return new Vector<CommonItem>(getCommonItemsForDate("Event", date));
 	}
 	
 	public Vector getForumsByDate(String date) {
-		return new Vector(getCommonItemsForDate("Forum", date));
+		return new Vector<CommonItem>(getCommonItemsForDate("Forum", date));
 	}
 	
 	

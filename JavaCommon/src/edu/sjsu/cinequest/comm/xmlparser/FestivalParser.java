@@ -21,6 +21,7 @@ package edu.sjsu.cinequest.comm.xmlparser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -277,7 +278,7 @@ public class FestivalParser extends BasicHandler {
             
             // Populate the Shows Map. Would be useful later.
             for(Show show : shows) {
-            	
+
             	showsMap.put(show.id, show);       	
             }
             
@@ -304,9 +305,23 @@ public class FestivalParser extends BasicHandler {
         		loc.setDirectionsURL(venue.location);
         		
         	} else {
-        		
+                // Try to find venue in list from name
+                boolean found = false;
+                int i = 0;
+                Iterator<Venue> iter = venues.values().iterator();
+                while (!found && iter.hasNext()) {
+                    Venue v = iter.next();
+                    if (v.name.equals(venue.name)) {
+                        found = true;
+                        venue.id = v.id;
+                        venue.shortName = v.shortName;
+                        venue.address = v.address;
+                        venue.location = v.location;
+                    }
+                }
+        		// TODO: Remove?
         		// Else set the Venue abbreviation using older logic.
-        		loc.setVenueAbbreviation(venueAbbr(venue.name));
+        		if (!found) loc.setVenueAbbreviation(venueAbbr(venue.name));
         	}
             
             loc.setId(Integer.parseInt(venue.id));
@@ -350,7 +365,8 @@ public class FestivalParser extends BasicHandler {
             commonItem.setId(Integer.parseInt(show.id));
             commonItem.setTitle(show.name);
             commonItem.setDescription(show.shortDescription);
-            commonItem.setImageURL(show.thumbImageURL);
+            commonItem.setImageURL(show.thumbImageURL); // TODO: Use larger event image?
+            commonItem.setVideoURL(get(show.customProperties, "Videofeed"));
             commonItem.setDirector(get(show.customProperties, "Director"));
             commonItem.setProducer(get(show.customProperties, "Producer"));
             commonItem.setCinematographer(get(show.customProperties, "Cinematographer"));
@@ -617,6 +633,8 @@ public class FestivalParser extends BasicHandler {
                     // FIXME - Add the schedule to the main item
                     item.getSchedules().add(schedule);
                 }
+
+                if (item.getVideoURL() != null) festival.getVideos().add(item);
             }  	
             
             

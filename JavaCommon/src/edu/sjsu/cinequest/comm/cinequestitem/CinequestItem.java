@@ -33,7 +33,7 @@ import java.io.Serializable;
 public abstract class CinequestItem implements Serializable
 {
 	private int id;
-	private String title, imageURL, description, infoLink;
+	private String title, imageURL, description, infoLink, videoURL;
 
 	/**
 	 * @return id
@@ -68,6 +68,23 @@ public abstract class CinequestItem implements Serializable
 	}
 
 	/**
+	 * @return videoURL
+	 */
+	public String getVideoURL()
+	{
+		return videoURL;
+	}
+
+	/**
+	 * @param videoURL the URL to set
+	 */
+	public void setVideoURL(String videoURL)
+	{
+		if (videoURL != null && videoURL.length() > 0)
+		    this.videoURL = videoURL;
+	}
+
+	/**
 	 * @return imageURL
 	 */
 	public String getImageURL()
@@ -82,7 +99,6 @@ public abstract class CinequestItem implements Serializable
 	{
 		this.imageURL = imageURL;
 	}
-
 	/**
 	 * @return description
 	 */

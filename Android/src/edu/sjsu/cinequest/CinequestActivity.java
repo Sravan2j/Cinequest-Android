@@ -93,6 +93,18 @@ public class CinequestActivity extends Activity {
 		return adapter;
 	}
 
+    protected ListAdapter createListWithIcons(List<? extends CommonItem> listItems) {
+        int size = listItems.size();
+        String[] imageURLs = new String[size];
+        String[] titles = new String[size];
+        for (int i = 0; i < size; i++) {
+            CommonItem item = listItems.get(i);
+            imageURLs[i] = item.getImageURL(); // TODO: Difference between image and thumbnail?
+            titles[i] = item.getTitle();
+        }
+        return new LazyAdapter(this, imageURLs, titles);
+    }
+
 	/**
 	 * A method to get the first (relevant) letter of a title
 	 * 

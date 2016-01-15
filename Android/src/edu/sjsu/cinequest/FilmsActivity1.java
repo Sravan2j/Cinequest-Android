@@ -93,26 +93,26 @@ public class FilmsActivity1 extends CinequestActivity
 	}
 
 	protected void fetchServerData() {
-		HomeActivity.getQueryManager().getEventDates (new ProgressMonitorCallback(this) {           		 
+		SplashScreenActivity.getQueryManager().getEventDates (new ProgressMonitorCallback(this) {
 			public void invoke(Object result) {
 				super.invoke(result);
 				eventsOnly = (TreeSet<String>) result;
 			}
 		});
-		HomeActivity.getQueryManager().getFilmDates (new ProgressMonitorCallback(this) {           		 
+		SplashScreenActivity.getQueryManager().getFilmDates (new ProgressMonitorCallback(this) {
 			public void invoke(Object result) {
 				super.invoke(result);
 				filmsOnly = (TreeSet<String>) result;
 			}
 		});
-		HomeActivity.getQueryManager().getForumDates (new ProgressMonitorCallback(this) {           		 
+		SplashScreenActivity.getQueryManager().getForumDates (new ProgressMonitorCallback(this) {
 			public void invoke(Object result) {
 				super.invoke(result);
 				forumsOnly = (TreeSet<String>) result;
 
 				for(final String date: eventsOnly)
 				{
-					HomeActivity.getQueryManager().getEventsByDate(date,new ProgressMonitorCallback(FilmsActivity1.this) {
+					SplashScreenActivity.getQueryManager().getEventsByDate(date,new ProgressMonitorCallback(FilmsActivity1.this) {
 						@SuppressLint("NewApi") @Override
 						public void invoke(Object result) {
 							super.invoke(result);
@@ -135,7 +135,7 @@ public class FilmsActivity1 extends CinequestActivity
 				}
 				for(final String date: filmsOnly) //final ensures that every date will get passed to refreshListContents
 				{
-					HomeActivity.getQueryManager().getFilmsByDate(date,new ProgressMonitorCallback(FilmsActivity1.this) {
+					SplashScreenActivity.getQueryManager().getFilmsByDate(date,new ProgressMonitorCallback(FilmsActivity1.this) {
 						@SuppressLint("NewApi") @Override
 						public void invoke(Object result) {
 							super.invoke(result);
@@ -167,7 +167,7 @@ public class FilmsActivity1 extends CinequestActivity
 				}
 				for(final String date: forumsOnly)
 				{
-					HomeActivity.getQueryManager().getForumsByDate(date,new ProgressMonitorCallback(FilmsActivity1.this) {
+					SplashScreenActivity.getQueryManager().getForumsByDate(date,new ProgressMonitorCallback(FilmsActivity1.this) {
 						@SuppressLint("NewApi") @Override
 						public void invoke(Object result) {
 							super.invoke(result);

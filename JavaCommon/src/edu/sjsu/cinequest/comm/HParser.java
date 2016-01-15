@@ -54,9 +54,9 @@ public class HParser
      */
     public void parse(String input)
     {
-    	Vector offs = new Vector();
+        if (input == null) input = "";
+        Vector offs = new Vector();
     	Vector attrs = new Vector();
-    	
         images = new Vector();
         byte font = (byte) 0;
     	

@@ -167,7 +167,7 @@ public class FilmDetail extends CinequestActivity {
 
 	private void showImage(final String imageURL, Vector urls) {
 		if (imageURL == null) return;
-		Bitmap bmp = (Bitmap) HomeActivity.getImageManager().getImage(imageURL, new Callback() {
+		Bitmap bmp = (Bitmap) SplashScreenActivity.getImageManager().getImage(imageURL, new Callback() {
 			@Override
 			public void invoke(Object result) {
 				Bitmap bmp = (Bitmap) result;
@@ -182,7 +182,7 @@ public class FilmDetail extends CinequestActivity {
 			public void failure(Throwable t) {	
 				Platform.getInstance().log(t);
 				// Try once more
-				HomeActivity.getImageManager().getImage(imageURL, new Callback() {
+				SplashScreenActivity.getImageManager().getImage(imageURL, new Callback() {
 					@Override
 					public void invoke(Object result) {
 						Bitmap bmp = (Bitmap) result;

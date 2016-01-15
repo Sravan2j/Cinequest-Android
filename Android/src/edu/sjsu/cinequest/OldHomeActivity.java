@@ -25,7 +25,6 @@ import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.News;
 import edu.sjsu.cinequest.comm.cinequestitem.NewsFeed;
-import edu.sjsu.cinequest.comm.cinequestitem.User;
 
 // TODO: Add click for each item; show the section info
 
@@ -35,7 +34,7 @@ import edu.sjsu.cinequest.comm.cinequestitem.User;
  * @author Prabhjeet Ghuman
  *
  */
-public class HomeActivity extends Activity {	
+public class OldHomeActivity extends Activity {
 	private ListView list;
 	private String target;
 	ImageView title_image;
@@ -105,14 +104,18 @@ public class HomeActivity extends Activity {
 	private void populateNewsEventsList(NewsFeed newsSections)
 	{				
 		final List<News> news=newsSections.getNewsList();
-		ArrayList<String> imgURL = new ArrayList<String>();
-		for (int i=0;i<news.size();i++)
+		int size = news.size();
+		String[] imageURLs = new String[size];
+		String[] labels = new String[size];
+		for (int i = 0; i < size; i++)
 		{
-			imgURL.add(news.get(i).getThumbImage());			
+			News newsItem = news.get(i);
+			imageURLs[i] = newsItem.getThumbImage();
+			labels[i] = newsItem.getName();
 		}
-		String[] imageURL=imgURL.toArray(new String[imgURL.size()]);
 
-		adapter=new LazyAdapter(this, imageURL, news);
+
+		adapter=new LazyAdapter(this, imageURLs, labels);
 		list.setAdapter(adapter);		
 		list.setOnItemClickListener(new OnItemClickListener() {
 
@@ -132,9 +135,9 @@ public class HomeActivity extends Activity {
 				{
 					int itemId= Integer.parseInt(news.get(position).getInfoLink());
 					intent = new Intent();
-					intent.setClass(HomeActivity.this, FilmDetail.class);
+					intent.setClass(OldHomeActivity.this, FilmDetail.class);
 
-					HomeActivity.getQueryManager().getCommonItem(new ProgressMonitorCallback(HomeActivity.this) {
+					OldHomeActivity.getQueryManager().getCommonItem(new ProgressMonitorCallback(OldHomeActivity.this) {
 						@Override
 						public void invoke(Object result) {
 							super.invoke(result);							
