@@ -190,8 +190,6 @@ public class CinequestActivity extends Activity {
 
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
-
 					Intent intent = new Intent(
 							android.content.Intent.ACTION_VIEW, Uri
 							.parse(result.getDirectionsURL()));
@@ -282,8 +280,6 @@ public class CinequestActivity extends Activity {
 
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
-
 					Schedule s = (Schedule) v.getTag();
 					SimpleDateFormat formatter;
 					if (s.getStartTime().charAt(10) == 'T')
@@ -425,7 +421,7 @@ public class CinequestActivity extends Activity {
 							button.setBackgroundResource(R.drawable.incalendar);
 							button.setHint("exists");
 						} catch (Exception e) {
-							Log.i("CinequestActivity:configureCalendarIcon",
+							Log.i("CinAct:configureCalIcon",
 									"Error while adding Events in Calendar");
 						}
 					}

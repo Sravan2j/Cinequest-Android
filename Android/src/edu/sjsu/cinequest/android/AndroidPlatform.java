@@ -254,7 +254,6 @@ public class AndroidPlatform extends Platform {
 
 	@Override
 	public MessageDigest getMessageDigestInstance(String name) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -340,8 +340,6 @@ public class FestivalParser extends BasicHandler {
             schedule.setStartTime(showing.startDate);
             schedule.setEndTime(showing.endDate);
             
-            //schedule.setVenue(venueAbbr(showing.venue.name)); // TODO: Why not the Venue object?
-            
             // If 'venues' contains showing.venue,
             // set the Schedule's Venue as the 'this.venues' shortName
             // set the Schedule's directionsURL, using this.venue's Location

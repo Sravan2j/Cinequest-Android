@@ -36,9 +36,6 @@ public class HotPicksActivity extends CinequestActivity {
 	private Button videosButton;
 	private ListView listview;
 	private TextView mEmptyListViewMessage;
-	private ListAdapter adp;
-	// private ClearableEditText searchText;
-	private boolean searchable = true;
 	private IndexType currentType;
 
 
@@ -48,7 +45,6 @@ public class HotPicksActivity extends CinequestActivity {
 		setContentView(R.layout.hotpicks_activity_layout);
 		listview = (ListView) findViewById(R.id.hotpicks_activity_listview);
 		mEmptyListViewMessage  = (TextView)this.findViewById(R.id.msg_for_empty_schedule);
-		adp = new SeparatedListIndexedAdapter(this); //Creating the separatedListIndexedAdapter now
 		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
@@ -80,36 +76,6 @@ public class HotPicksActivity extends CinequestActivity {
 		registerForContextMenu(listview);
 
 		fetchServerData(currentType);
-
-		listview.setTextFilterEnabled(searchable);
-    /*
-		if (searchable) {
-
-			searchText = (ClearableEditText) findViewById(R.id.searchText);
-
-			searchText.setVisibility(View.VISIBLE);
-
-			searchText.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void afterTextChanged(Editable s) {}
-
-				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count,
-						int after) {}
-
-				@Override
-				public void onTextChanged(CharSequence s, int start, int before,
-						int count) {
-					if (s.length() > 0) {
-						SeparatedListAdapter filterAdp = createFilterAdapter(s.toString());
-						listview.setAdapter(filterAdp);
-					} else {
-						adp.setAsAdapterFor(listview);
-					}
-				}
-			});
-		}
-		*/
 	}
 
 	/**
@@ -159,7 +125,7 @@ public class HotPicksActivity extends CinequestActivity {
 	private void refreshListContents(List<?> listItems) {
 		if (listItems == null)
 			return;
-		adp = createListWithIcons((List<CommonItem>) listItems);
+		ListAdapter adp = createListWithIcons((List<CommonItem>) listItems);
 		listview.setAdapter(adp);
 		// if there are no items in the list, hide the listview,
 		// and show the emptytextmsg, and vice versa

@@ -80,6 +80,13 @@ public class SplashScreenActivity extends Activity {
 		loadData.execute((Void) null);
 		showProgress(true); //progress bar shows but nothing is shown
 	}
+
+	protected void onStop(){ // TODO: Is this really called when the app stops?
+		imageManager.close();
+		Platform.getInstance().close();
+		super.onStop();
+	}
+
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private void showProgress(final boolean show) {
 		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
@@ -165,10 +172,10 @@ public class SplashScreenActivity extends Activity {
 				try{
 					Uri uri = getContentResolver().insert(builder.build(), l_event);
 					if (uri == null)
-						Log.i("SplashScreenActivity:LoadData","IllegalArgumentException");
+						Log.i("SplScrActivity:LoadData","IllegalArgumentException");
 				}
 				catch (Exception e){
-					Log.i("SplashScreenActivity:LoadData","Error while creating Cinequest Calendar in Device Calendar");
+					Log.i("SplScrActivity:LoadData","Error while creating Cinequest Calendar in Device Calendar");
 				}
 			}
 			l_managedCursor.close();

@@ -19,12 +19,8 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".OldHomeActivity"
-            android:configChanges="orientation" /> <!-- TODO: Remove -->
-        <activity
             android:name=".HotPicksActivity"
             android:configChanges="orientation" />
-
         <activity
             android:name=".FilmsActivity1"
             android:screenOrientation="portrait"

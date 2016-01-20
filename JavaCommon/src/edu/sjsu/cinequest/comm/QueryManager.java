@@ -44,7 +44,7 @@ public class QueryManager {
 	private static final String mainImageURL = "imgs/mobile/creative.gif";
 	
 	public static final String showsFeedURL = "http://payments.cinequest.org/websales/feed.ashx?guid=d52499c1-3164-429f-b057-384dd7ec4b23&showslist=true";
-	public static final String newsFeedURL = "http://www.cinequest.org/news.php";
+	public static final String newsFeedURL = "http://www.cinequest.org/news.php"; // TODO: News no longer used. Move LastUpdated to venues or trending feed
 	public static final String venuesFeedURL = "http://www.cinequest.org/venuelist.php";
 
 	public static final String trendingFeedURL = "http://www.cinequest.org/mobileCQ.php?type=xml&name=trending";
@@ -200,26 +200,6 @@ public class QueryManager {
 					
 	}
 
-    // TODO: Obsolete
-
-	/**
-	 * Gets a special screen as a vector of Section objects
-	 * 
-	 * @param type
-	 *            one of "home", "info", "offseason", "offseasoninfo",
-	 *            "release", "pick"
-	 * @param callback
-	 *            returns the result
-	 */
-	public void getSpecialScreen(final String type, final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				
-				return NewsFeedParser.parseNewsFeed(newsFeedURL, callback);								
-			}
-		});
-	}
-
     public void getTrending(final Callback callback) {
         getWebData(callback, new Callable() {
             public Object run() throws Throwable {
@@ -274,14 +254,12 @@ public class QueryManager {
 			Platform.getInstance().starting(callback);
 		}
 		synchronized (festivalLock) {
-			//TODO: Resurrect update checking with trending feed?
-            /*
-			String updatedDate = NewsFeedParser.getLastpdated(newsFeedURL, callback);			
-			Log.i("QueryManager:getFestiva","UpdatedDate from News Feed:"+updatedDate+" lastUpdated:"+lastUpdated);
+			String updatedDate = NewsFeedParser.getLastpdated(newsFeedURL, callback);
+			Log.i("QueryManager:getFestiva","LastUpdated from news feed: " + updatedDate + ", lastUpdated: " + lastUpdated);
 			
 			if (updatedDate.equalsIgnoreCase(lastUpdated) && (!festival.isEmpty()))
 				return festival;
-	        */
+
 			synchronized (progressLock) {
 				festivalQueryInProgress = true;
 			}
@@ -289,9 +267,9 @@ public class QueryManager {
 				Festival result = FestivalParser.parseFestival(showsFeedURL, callback);
 				if (!result.isEmpty()) {
 					festival = result;
-					/* lastUpdated=updatedDate; */ // TODO: Resurrect?
+					lastUpdated = updatedDate;
 				} else {
-					Log.i("QueryManager:getFestiva","Festival Object is Empty");
+					Log.i("QueryManager:getFestiva","Festival object is empty");
 				}
 
 			} finally {
