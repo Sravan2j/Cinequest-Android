@@ -363,7 +363,8 @@ public class FestivalParser extends BasicHandler {
             commonItem.setId(Integer.parseInt(show.id));
             commonItem.setTitle(show.name);
             commonItem.setDescription(show.shortDescription);
-            commonItem.setImageURL(show.thumbImageURL); // TODO: Use larger event image?
+            commonItem.setThumbImageURL(show.thumbImageURL);
+            commonItem.setImageURL(show.eventImageURL);
             commonItem.setVideoURL(get(show.customProperties, "Videofeed"));
             commonItem.setDirector(get(show.customProperties, "Director"));
             commonItem.setProducer(get(show.customProperties, "Producer"));

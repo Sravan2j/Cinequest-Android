@@ -99,7 +99,7 @@ public class CinequestActivity extends Activity {
         String[] titles = new String[size];
         for (int i = 0; i < size; i++) {
             CommonItem item = listItems.get(i);
-            imageURLs[i] = item.getImageURL(); // TODO: Difference between image and thumbnail?
+            imageURLs[i] = item.getThumbImageURL();
             titles[i] = item.getTitle();
         }
         return new LazyAdapter(this, imageURLs, titles);

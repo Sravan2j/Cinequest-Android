@@ -33,7 +33,7 @@ import java.io.Serializable;
 public abstract class CinequestItem implements Serializable
 {
 	private int id;
-	private String title, imageURL, description, infoLink, videoURL;
+	private String title, imageURL, thumbImageURL, description, infoLink, videoURL;
 
 	/**
 	 * @return id
@@ -99,6 +99,15 @@ public abstract class CinequestItem implements Serializable
 	{
 		this.imageURL = imageURL;
 	}
+
+	public String getThumbImageURL() {
+		return thumbImageURL;
+	}
+
+	public void setThumbImageURL(String thumbImageURL) {
+		this.thumbImageURL = thumbImageURL;
+	}
+
 	/**
 	 * @return description
 	 */
