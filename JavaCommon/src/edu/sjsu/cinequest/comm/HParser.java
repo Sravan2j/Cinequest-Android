@@ -18,7 +18,8 @@
  */
 package edu.sjsu.cinequest.comm;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * HParser converts plain strings into RichText. This follows the BlackBerry API but is also usable 
@@ -40,7 +41,7 @@ public class HParser
     private int[] offsets = null;
     // Tracks the font by the reference byte
     
-    private Vector images;
+    private List<String> images;
     
     public static final int RED = 8;
     public static final int LARGE = 4;
@@ -55,16 +56,16 @@ public class HParser
     public void parse(String input)
     {
         if (input == null) input = "";
-        Vector offs = new Vector();
-    	Vector attrs = new Vector();
-        images = new Vector();
+        List<Integer> offs = new ArrayList<Integer>();
+    	List<Byte> attrs = new ArrayList<Byte>();
+        images = new ArrayList<String>();
         byte font = (byte) 0;
     	
     	boolean inTag = false;
     	int start = 0; // The start of the last tag
     	int end = -1; // The end of the last tag
-    	StringBuffer result = new StringBuffer();
-    	offs.addElement(new Integer(0));
+    	StringBuilder result = new StringBuilder();
+    	offs.add(0);
     	for (int i = 0; i < input.length(); i++)
     	{	
     		char ch = input.charAt(i);
@@ -94,8 +95,8 @@ public class HParser
 					{
 						if (result.length() > 0)
 						{
-			    			offs.addElement(new Integer(result.length()));
-			    			attrs.addElement(new Byte(font));
+			    			offs.add(result.length());
+			    			attrs.add(font);
 						}
 		    			font = newFont;
 					}
@@ -105,20 +106,20 @@ public class HParser
     	if (end < input.length() - 1)
     	{
 			result.append(input.substring(end + 1, input.length()));
-			offs.addElement(new Integer(result.length()));
-			attrs.addElement(new Byte(font));
+			offs.add(result.length());
+			attrs.add(font);
     	}
 		
     	attributes = new byte[attrs.size()];
     	for (int i = 0; i < attrs.size(); i++)
     	{
-    		attributes[i] = ((Byte) attrs.elementAt(i)).byteValue();
+    		attributes[i] = attrs.get(i);
     	}
 
     	offsets = new int[offs.size()];
     	for (int i = 0; i < offs.size(); i++)
     	{
-    		offsets[i] = ((Integer) offs.elementAt(i)).intValue();
+    		offsets[i] = offs.get(i);
     	}
 
     	resultString = result.toString();
@@ -153,9 +154,9 @@ public class HParser
 
     /**
      * Returns the image URLs found in the input
-     * @return a vector of image URL strings
+     * @return a list of image URL strings
      */
-    public Vector getImageURLs()
+    public List<String> getImageURLs()
     {
         return images;
     }
@@ -224,12 +225,12 @@ public class HParser
 
 
     /**
-     * Scans a string for img tags and deposits the src attributes in a vector
+     * Scans a string for img tags and deposits the src attributes in a list
      * @param images the vector to which the src attributes are added
      * @param tagString the string to be scanned
      * @return true if an image has been found
      */
-    private static boolean checkForImage(Vector images, String tagString)
+    private static boolean checkForImage(List<String> images, String tagString)
     {
         if (!tagString.startsWith("img"))
             return false;
@@ -242,7 +243,7 @@ public class HParser
         int j = tagString.indexOf("\"", i + 1);
         if (j == -1)
             return false;
-        images.addElement(tagString.substring(i + 1, j));
+        images.add(tagString.substring(i + 1, j));
         return true;
     }
 

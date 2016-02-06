@@ -20,15 +20,7 @@
 package edu.sjsu.cinequest.comm.cinequestitem;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Vector;
-
-import android.util.Log;
 
 /**
  * Represents a Film/Event/Forum
@@ -47,10 +39,10 @@ public class CommonItem extends CinequestItem {
 		this.type = type;
 	}
 
-	private ArrayList<CommonItem> commonItems;
+	private List<CommonItem> commonItems;
 	
 	// Picked from Film
-	private Vector schedules;    
+	private List<Schedule> schedules;
 	private String tagline;
 	private String genre;
 	private String director;
@@ -73,9 +65,9 @@ public class CommonItem extends CinequestItem {
 	}
 
 	/**
-	 * @return the vector of films
+	 * @return the list of films
 	 */
-	public ArrayList<CommonItem> getCommonItems() {
+	public List<CommonItem> getCommonItems() {
 		return commonItems;
 	}
 	
@@ -232,16 +224,11 @@ public class CommonItem extends CinequestItem {
 		this.filmInfo = filmInfo;
 	}
 	
-	public Vector getSchedules()
+	public List<Schedule> getSchedules()
 	{
-	    if (schedules == null) schedules = new Vector();
+	    if (schedules == null) schedules = new ArrayList<Schedule>();
 		return schedules;
 	}
-	
-	public void setSchedules(Vector schedules)
-    {
-        this.schedules = schedules;
-    }
 	
     /**
      * Constructs a <code>String</code> with all attributes
@@ -253,65 +240,5 @@ public class CommonItem extends CinequestItem {
     public String toString()
     {
         return super.toString() + "[items=" + commonItems + "]";
-    }
-    
-    /**
-     * Returns the startTime of the earliest Schedule for a given date
-     * 
-     * @param date The given date
-     * @return The earliest time
-     */
-    public String getEarliestTime( String date ) {
-    	
-    	String earliestTime = null;
-    	
-    	Iterator it = schedules.iterator();
-    	
-    	while(it.hasNext()) {
-    		
-    		Schedule schedule = (Schedule)it.next();
-    		
-    		String startTime = schedule.getStartTime().split("T")[1];
-    		
-    		if(earliestTime == null) {
-    			earliestTime = startTime;
-    		} else if(earliestTime.compareTo(startTime) > 0) {
-    			earliestTime = startTime;
-    		}
-    		
-    	}
-    	
-    	return earliestTime;  	
-    }
-    
-    /**
-     *  Returns the list of StartTimes for the given Date.
-     * 
-     * @param date The date on which this item has a schedule
-     * @return The associated list of StartTimes
-     */
-    public SortedSet<String> getStartTimes(String date) {
-    	
-    	SortedSet<String> startTimes = new TreeSet<String>();
-    	
-    	Iterator it = schedules.iterator();
-    	
-    	while(it.hasNext()) {
-    	
-    		Schedule schedule = (Schedule) it.next();
-    		
-    		String[] values = schedule.getStartTime().split("T");
-    		String startDate = values[0];
-    		
-    		// Consider the StartTime only if their Dates match.
-    		if(date.equals(startDate)) {
-    		
-    			String startTime = values[1];	
-    			startTimes.add(startTime);
-    		}
-    		
-    	}
-    	
-    	return startTimes;
     }
 }

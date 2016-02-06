@@ -32,7 +32,7 @@ import android.util.Log;
  * @version 0.1
  */
 
-public class Schedule implements Serializable {
+public class Schedule implements Serializable, Comparable<Schedule> {
 	/**
 	 * @return the venue
 	 */
@@ -56,6 +56,8 @@ public class Schedule implements Serializable {
 		return startTime;
 	}
 
+	public String getDate() { return startTime.substring(0, 10); } // yyyy-MM-dd
+
 	/**
 	 * @param showingTime
 	 *            the showingTime to set
@@ -74,12 +76,12 @@ public class Schedule implements Serializable {
 		return endTime;
 	}
 
-	public int getItemId() {
-		return itemId;
+	public CommonItem getItem() {
+		return item;
 	}
 
-	public void setItemId(int programItemId) {
-		this.itemId = programItemId;
+	public void setItem(CommonItem item) {
+		this.item = item;
 	}
 
 	/**
@@ -137,11 +139,18 @@ public class Schedule implements Serializable {
 		return maxStart.compareTo(minEnd) < 0;
 	}
 
+    public int compareTo(Schedule other) {
+        int d = startTime.compareTo(other.startTime);
+        if (d != 0) return 0;
+        else return title.compareTo(other.title);
+    }
+
 	private int id;
 	private String title;
 	private boolean mobileItem;
 	private boolean specialItem;
 	private int itemId;
+    private CommonItem item;
 	private String venue;
 	private String startTime;
 	private String endTime;

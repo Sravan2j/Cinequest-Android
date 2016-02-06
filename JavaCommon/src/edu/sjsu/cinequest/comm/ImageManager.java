@@ -21,8 +21,9 @@ package edu.sjsu.cinequest.comm;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Set's up a HTTP connection, retrives the image from the specified URL,and
@@ -139,23 +140,23 @@ public class ImageManager
      * Fetches multiple images in one thread. Called from UI thread. 
      * @param imageUrls the image URLs
      * @param callback the callback for reporting progress. Each progress call delivers one image.
-     * Final callback delivers vector of all images
+     * Final callback delivers list of all images
      */
-    public void getImages(final Vector imageUrls, final Callback callback)
+    public void getImages(final List<String> imageUrls, final Callback callback)
     {
     	callback.starting();
         Thread t = new Thread(new Runnable()
         {
             public void run()
             {
-            	Vector images = new Vector();
+            	List<Object> images = new ArrayList<Object>();
                 for (int i = 0; i < imageUrls.size(); i++)
                 {
-                    String imageUrl = (String) imageUrls.elementAt(i);
+                    String imageUrl = imageUrls.get(i);
                     try
                     {
                         Object result = fetchImage(imageUrl, true);
-                        images.addElement(result);
+                        images.add(result);
                     }
                     catch (Throwable e)
                     {

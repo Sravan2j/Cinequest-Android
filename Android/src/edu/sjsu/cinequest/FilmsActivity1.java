@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -20,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
+import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 /**
  * Films tab of the app, showing the films for a given date.
@@ -31,11 +34,8 @@ import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 public class FilmsActivity1 extends CinequestActivity
 {
 	private TextView nothingToday;
-	private TreeSet<String> eventsOnly;
-	private TreeSet<String> filmsOnly;
-	private TreeSet<String> forumsOnly;
 	private TextView header;
-	private TreeMap<String, List<CommonItem>> mSchedule_byDate;
+	private SortedMap<String, SortedSet<Schedule>> mSchedule_byDate;
 	private SeparatedListIndexedAdapter eventsAdapter;
 	private DateUtils du;
 	private ListView listview;
@@ -93,18 +93,33 @@ public class FilmsActivity1 extends CinequestActivity
 	}
 
 	protected void fetchServerData() {
-		SplashScreenActivity.getQueryManager().getEventDates (new ProgressMonitorCallback(this) {
-			public void invoke(Object result) {
-				super.invoke(result);
-				eventsOnly = (TreeSet<String>) result;
-			}
-		});
-		SplashScreenActivity.getQueryManager().getFilmDates (new ProgressMonitorCallback(this) {
-			public void invoke(Object result) {
-				super.invoke(result);
-				filmsOnly = (TreeSet<String>) result;
-			}
-		});
+		SplashScreenActivity.getQueryManager().getSchedulesByDate(new ProgressMonitorCallback(this) {
+            public void invoke(Object result) {
+                super.invoke(result);
+                mSchedule_byDate = (SortedMap<String, SortedSet<Schedule>>) result;
+
+                for (final String date : mSchedule_byDate.keySet())
+                {
+                    List<CommonItem> items = new ArrayList<CommonItem>();
+                    for (Schedule s : mSchedule_byDate.get(date))
+                        items.add(s.getItem());
+                    FilmletListAdapter a = new FilmletListAdapter(FilmsActivity1.this, items);
+                    eventsAdapter.addSection(localizeHumanFormat(date), "", a);
+                    //Then show it once everything has been added!
+                    eventsAdapter.setAsAdapterFor(listview);
+                    if(eventsAdapter.getCount() == 0){
+                        listview.setVisibility(View.GONE);
+                        nothingToday.setVisibility(View.VISIBLE);
+                    }else{
+                         listview.setVisibility(View.VISIBLE);
+                         nothingToday.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+    }
+
+		/*
 		SplashScreenActivity.getQueryManager().getForumDates (new ProgressMonitorCallback(this) {
 			public void invoke(Object result) {
 				super.invoke(result);
@@ -199,6 +214,7 @@ public class FilmsActivity1 extends CinequestActivity
 				}
 			}
 		});
+
 	}
 
 	@SuppressLint("NewApi")
@@ -211,6 +227,7 @@ public class FilmsActivity1 extends CinequestActivity
 		}
 		return new FilmletListAdapter(this,accumulate);
 	}
+	*/
 
 	/**
 	 * Sets the message to show to user when listview is empty
@@ -255,7 +272,7 @@ public class FilmsActivity1 extends CinequestActivity
 
 	/**
 	 * This method will localize the given date according the device locale.
-	 * 
+	 *
 	 * @param inputDate The input date.
 	 * @return The equivalent date in device locale
 	 */
@@ -268,6 +285,6 @@ public class FilmsActivity1 extends CinequestActivity
 			return inputDate;
 		}
 		DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
-		return dateFormat.format(date);	
+		return dateFormat.format(date);
 	}
 }

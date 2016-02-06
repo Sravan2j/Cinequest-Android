@@ -14,8 +14,6 @@ import android.widget.TextView;
 
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
-import edu.sjsu.cinequest.comm.cinequestitem.News;
-import edu.sjsu.cinequest.imageutils.ImageLoader;
 
 
 public class LazyAdapter extends BaseAdapter {

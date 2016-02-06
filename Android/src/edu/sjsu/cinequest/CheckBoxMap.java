@@ -1,6 +1,7 @@
 package edu.sjsu.cinequest;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.widget.CheckBox;
@@ -18,9 +19,9 @@ import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
  */
 public class CheckBoxMap {
 	//ArrayLists for holding the data 
-	private ArrayList<Schedule> schdList = new ArrayList<Schedule>();
-	private ArrayList<Integer> idList = new ArrayList<Integer>();	//key list
-	private ArrayList<CheckBox> cboxList = new ArrayList<CheckBox>();	//value list
+	private List<Schedule> schdList = new ArrayList<Schedule>();
+	private List<Integer> idList = new ArrayList<Integer>();	//key list
+	private List<CheckBox> cboxList = new ArrayList<CheckBox>();	//value list
 	
 	CompoundButton.OnCheckedChangeListener mCheckboxClickListener;
 	Context context;
@@ -101,7 +102,7 @@ public class CheckBoxMap {
 	 * Returns an ArrayList containing all the keys for the collection
 	 * @return the arraylist containing all the keys
 	 */
-	public ArrayList<Integer> keySet(){
+	public List<Integer> keySet(){
 		return new ArrayList<Integer>(idList);
 	}
 	
@@ -109,7 +110,7 @@ public class CheckBoxMap {
 	 * Returns an ArrayList containing all the values for the collection
 	 * @return the arraylist containing all the values
 	 */
-	public ArrayList<CheckBox> values(){
+	public List<CheckBox> values(){
 		return new ArrayList<CheckBox>(cboxList);
 	}
 	
@@ -117,7 +118,7 @@ public class CheckBoxMap {
 	 * Returns an ArrayList containing all the values of tags that came with checkboxes
 	 * @return the arraylist containing all the tags
 	 */
-	public ArrayList<Schedule> allTags(){
+	public List<Schedule> allTags(){
 		return new ArrayList<Schedule>(schdList);
 	}
 	

@@ -3,11 +3,7 @@ package edu.sjsu.cinequest;
 // http://blogingtutorials.blogspot.com/2010/09/separating-lists-with-headers-in.html
 // http://jsharkey.org/blog/2008/08/18/separating-lists-with-headers-in-android-09/
 // just added the second link that has the same content as the first link, but it shows the image of separating lists with headers.
-import java.util.Comparator;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.Vector;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
@@ -15,6 +11,11 @@ import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.TreeMap;
+
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
 
 /*
@@ -40,14 +41,14 @@ public class SeparatedListAdapter extends BaseAdapter
 			}
 		}
 	});
-	public Vector<Schedule> list;
+	public List<Schedule> list;
 	public final static int TYPE_SECTION_HEADER = 0;
 	public Context adapterContext;
 	public SeparatedListAdapter(Context context) {
 		adapterContext = context;
 	}
 
-	public void setList(Vector<Schedule> list)
+	public void setList(List<Schedule> list)
 	{
 		this.list = list;
 	}

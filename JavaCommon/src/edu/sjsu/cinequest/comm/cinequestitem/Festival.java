@@ -20,15 +20,13 @@
 package edu.sjsu.cinequest.comm.cinequestitem;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import android.util.Log;
 
@@ -43,290 +41,66 @@ import android.util.Log;
 
 public class Festival implements Serializable {
 
-	private Vector<Schedule> schedules;
-	private Vector venueLocations;// TODO: Who uses that??? Seems legacy
-	private String lastChanged;
-	
-	private ArrayList<Integer> idSequence; // Needed for trending only
-	
-	private Vector<CommonItem> films;
-	private Vector<CommonItem> events;
-	private Vector<CommonItem> forums;
-    private Vector<CommonItem> videos;
-    private Vector<CommonItem> trending;
-
-	private SortedSet<String> filmDates;
-	private SortedSet<String> eventDates;
-	private SortedSet<String> forumDates;
+	private List<CommonItem> films;
+	private List<CommonItem> events;
+    private List<CommonItem> videos;
+    private List<CommonItem> trending;
+    private SortedMap<String, SortedSet<Schedule>> schedulesByDateMap = new TreeMap<String, SortedSet<Schedule>>();
 
     private Map<Integer, CommonItem> commonItemsMap;
-    private HashMap<String, List<CommonItem>> filmsByDateMap;
-	private HashMap<String, List<CommonItem>> eventsByDateMap;
-	private HashMap<String, List<CommonItem>> forumsByDateMap;
-
-	public HashMap<String, List<CommonItem>> getFilmsByDateMap() {
-		return filmsByDateMap;
-	}
-	
-	public HashMap<String, List<CommonItem>> getEventsByDateMap() {
-		return eventsByDateMap;
-	}
-
-	public HashMap<String, List<CommonItem>> getForumsByDateMap() {
-		return forumsByDateMap;
-	}
-
 	public Map<Integer, CommonItem> getCommonItemsMap() { return commonItemsMap; }
-	public SortedSet<String> getFilmDates() { return filmDates;	}
-	public SortedSet<String> getEventDates() { return eventDates; }
-	public SortedSet<String> getForumDates() { return forumDates; }
-	public Vector<CommonItem> getFilms() { return films; }
-	public Vector<CommonItem> getEvents() {	return events; }
-	public Vector<CommonItem> getForums() {	return forums; }
-	public Vector<CommonItem> getVideos() { return videos; }
-    public Vector<CommonItem> getTrending() { return trending; }
+
+    /**
+     * Gets all items grouped by date
+     * @return all items, grouped by date, and sorted by time and then title
+     */
+	public SortedMap<String, SortedSet<Schedule>> getSchedulesByDate() {
+        return schedulesByDateMap;
+	}
+
+	public List<CommonItem> getFilms() { return films; }
+	public List<CommonItem> getEvents() { return events; }
+	public List<CommonItem> getVideos() { return videos; }
+    public List<CommonItem> getTrending() { return trending; }
 
     public Festival()
 	{
-		schedules = new Vector<Schedule>();
-		venueLocations = new Vector();
-		lastChanged = "";
-
-        idSequence = new ArrayList<Integer>();
 		commonItemsMap = new HashMap<Integer, CommonItem>();
-		films = new Vector<CommonItem>();
-		events = new Vector<CommonItem>();
-		forums = new Vector<CommonItem>();
-        videos = new Vector<CommonItem>();
-        trending = new Vector<CommonItem>();
-
-
-		filmDates = new TreeSet<String>();
-		eventDates = new TreeSet<String>();
-		forumDates = new TreeSet<String>();
-		
-		filmsByDateMap = new HashMap<String, List<CommonItem>>();
-		eventsByDateMap = new HashMap<String, List<CommonItem>>();
-		forumsByDateMap = new HashMap<String, List<CommonItem>>();
-	}
+		films = new ArrayList<CommonItem>();
+		events = new ArrayList<CommonItem>();
+        videos = new ArrayList<CommonItem>();
+        trending = new ArrayList<CommonItem>();
+        schedulesByDateMap = new TreeMap<String, SortedSet<Schedule>>();
+    }
 	
-	public boolean isEmpty() { return schedules.size() == 0; }
+	public boolean isEmpty() { return schedulesByDateMap.size() == 0; }
 
     /**
      * Sets the trending items for this festival.
-     * @param trendingIds the ids of the trending items.
-     * @return the trending items
+     * @param ids the ids of the trending items.
      */
-    public Vector<CommonItem> setTrending(int[] ids) {
+    public void setTrendingIds(int[] ids) {
         trending.clear();
         for (Integer id : ids) {
             trending.add(commonItemsMap.get(id));
         }
-        return trending;
     }
 
-	/**
-	 * @return vector of Schedules
-	 */
-	public Vector<Schedule> getSchedules() {
-		return schedules;
-	}
+    public void addItem(CommonItem item, String type)
+    {
+        if ("Film".equals(type)) films.add(item);
+        if ("Event".equals(type)) events.add(item);
+        commonItemsMap.put(item.getId(), item);
+    }
 
-	/**
-	 * @return vector of VenueLocations
-	 */
-	public Vector getVenueLocations() {
-		return venueLocations;
-	}
-	
-	/**
-	 * @return lastChanged timestamp
-	 */
-	public String getLastChanged() {
-		return lastChanged;
-	}
-	
-	public Vector<CommonItem> getFilmsByDate(String date) {
-		return new Vector<CommonItem>(getCommonItemsForDate("Film", date));
-	}
-	
-	public Vector getEventsByDate(String date) {
-		return new Vector<CommonItem>(getCommonItemsForDate("Event", date));
-	}
-	
-	public Vector getForumsByDate(String date) {
-		return new Vector<CommonItem>(getCommonItemsForDate("Forum", date));
-	}
-	
-	
-	/**
-	 * This method returns the list of CommonItems associated with the given date. The resulting list items are sorted based on the time.
-	 * 
-	 * @param type Film/Event/Forum
-	 * @param date The given date
-	 * @return List of CommonItems
-	 */
-	private List<CommonItem> getCommonItemsForDate(String type, String date) {
-		
-		List<CommonItem> itemsByDate = null;
-		
-		if(type.equals("Film")) {
-			
-			itemsByDate = filmsByDateMap.get(date);
-			
-		} else if(type.equals("Event")) {
-			
-			itemsByDate = eventsByDateMap.get(date);
-			
-			
-		} else if(type.equals("Forum")) {
-			itemsByDate = forumsByDateMap.get(date);
-					
-		}
-		
-		if(itemsByDate != null) {
-			Collections.sort(itemsByDate, new CommonItemComparator(date));
-		}
-		
-		return itemsByDate;	
-	}
-	
-	public TreeMap<String, List<CommonItem>> getFilmsByDateGroupedByTime(String date) {
-		return getCommonItemsForDateGroupedByTime("Film", date);
-	}
-	
-	public TreeMap<String, List<CommonItem>> getEventsByDateGroupedByTime(String date) {
-		return getCommonItemsForDateGroupedByTime("Event", date);
-	}
-	
-	public TreeMap<String, List<CommonItem>> getForumsByDateGroupedByTime(String date) {
-		return getCommonItemsForDateGroupedByTime("Forum", date);
-	}
-	
-	/**
-	 * This method returns the list of CommonItems associated with the given date. The resulting list items are sorted based on the time.
-	 * 
-	 * @param type Film/Event/Forum
-	 * @param date The given date
-	 * @return List of CommonItems
-	 */
-	private TreeMap<String, List<CommonItem>> getCommonItemsForDateGroupedByTime(String type, String date) {
-		
-		List<CommonItem> itemsByDate = null;
-		
-		if(type.equals("Film")) {
-			
-			itemsByDate = filmsByDateMap.get(date);
-			
-		} else if(type.equals("Event")) {
-			
-			itemsByDate = eventsByDateMap.get(date);
-			
-			
-		} else if(type.equals("Forum")) {
-			itemsByDate = forumsByDateMap.get(date);
-					
-		}
-		
-		/*if(itemsByDate != null) {
-			Collections.sort(itemsByDate, new CommonItemComparator(date));
-		}*/
-		
-		// The List of CommonItems will be converted into a HashMap (Key:Time; Value: List of CommonItems)
-		
-		TreeMap<String, List<CommonItem>> categorizedItems = new TreeMap<String, List<CommonItem>>();
-		// Collect the List of StartTimes. This will act as the key to the Map.
-		
-		
-		for(CommonItem item : itemsByDate) {
-			SortedSet<String> startTimes = item.getStartTimes(date);
-			
-			for(String startTime : startTimes) {
-				
-				List<CommonItem> itemsByTime = null;
-				boolean found = true;
-				
-				if(categorizedItems.containsKey(startTime)) {
-					itemsByTime = categorizedItems.get(startTime);
-				} else {
-					itemsByTime = new ArrayList<CommonItem>();
-					found = false;
-				}
-				
-				itemsByTime.add(item);
-				
-				// Also sort the list based on the Title of the CommonItem
-				Collections.sort(itemsByTime, new CommonItemComparator(date));
-				
-				if(!found) {
-					categorizedItems.put(startTime, itemsByTime);
-				}			
-			}
-		}
-		
-		return categorizedItems;	
-	}
-
-	
-	public CommonItem getCommonItemUsingId(int id) {
-		
-		return commonItemsMap.get(id);
-	}
-
-	/**
-	 * Cleans up after parsing.
-	 * @return this cleaned-up Festival
-	 */
-	/*public Festival cleanup() {
-		for (int i = 0; i < programItems.size(); i++) {
-			ProgramItem item = (ProgramItem) programItems.elementAt(i);
-			ArrayList<Film> films = item.getFilms(); 
-			for (int j = 0; j < films.size(); j++) {
-				Film film = films.get(j);
-				Film replacement = getFilmForId(film.getId());
-				if (replacement == null) // TODO: That should never happen
-				{
-					films.remove(j);
-					j--;
-				}
-				else
-					films.set(j, replacement);
-			}
-		}
-		for (int i = 0; i < schedules.size(); i++) {
-			Schedule schedule = (Schedule) schedules.elementAt(i);
-			ProgramItem item = getProgramItemForId(schedule.getItemId());
-			if (item != null) { // TODO: Could it be a mobile item otherwise?
-				schedule.setTitle(item.getTitle());
-				ArrayList<Film> films = item.getFilms(); 
-				for (int j = 0; j < films.size(); j++) {
-					Film film = films.get(j);
-					film.getSchedules().addElement(schedule);
-				}
-			}
-		}
-					
-		return this;
-	}*/	
-	
-	/**
-	 * This Comparator will first compare the Earliest Time associated with the CommonItem. 
-	 * If they are equal, their respective titles will be compared.
-	 *
-	 */
-	class CommonItemComparator implements Comparator<CommonItem> {
-		String date = null;
-		public CommonItemComparator(String date) {
-			this.date = date;
-		}
-		
-	    public int compare(CommonItem item1, CommonItem item2) {
-	    	
-	    	/*if(item1.getEarliestTime(date).equals(item2.getEarliestTime(date))) {
-	    		return item1.getTitle().compareTo(item2.getTitle());
-	    	}*/
-	    	
-	        return item1.getEarliestTime(date).compareTo(item2.getEarliestTime(date));
-	    }
-	}
+    public void addSchedule(Schedule schedule)
+    {
+        String date = schedule.getDate();
+        SortedSet<Schedule> schedulesOnDate = schedulesByDateMap.get(date);
+        if (schedulesOnDate == null) {
+            schedulesOnDate = new TreeSet<Schedule>();
+            schedulesByDateMap.put(date, schedulesOnDate);
+        }
+        schedulesOnDate.add(schedule);
+    }
 }

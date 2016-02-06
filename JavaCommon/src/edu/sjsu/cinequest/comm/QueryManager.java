@@ -20,16 +20,12 @@
 package edu.sjsu.cinequest.comm;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Vector;
 
 import org.xml.sax.SAXException;
 
 import android.util.Log;
 
-import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
-import edu.sjsu.cinequest.comm.cinequestitem.Show;
 import edu.sjsu.cinequest.comm.xmlparser.FestivalParser;
 import edu.sjsu.cinequest.comm.xmlparser.NewsFeedParser;
 
@@ -109,29 +105,11 @@ public class QueryManager {
 			}
 		});
 	}
-	public void getAllEvents(final Callback callback) {
+
+	public void getAllEvents(final Callback callback){
 		getWebData(callback, new Callable() {
 			public Object run() throws Throwable {
-				return getFestival(callback).getEvents();
-			}
-		});
-	}
-	
-	public void getAllForums(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return getFestival(callback).getForums();
-			}
-		});
-	}
-	
-	public void getAllEventsAndForums(final Callback callback){
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				Festival festival = getFestival(callback);
-				Vector vt = new Vector(festival.getEvents());
-				vt.addAll(festival.getForums());
-				return vt;
+                return getFestival(callback).getEvents();
 			}
 		});
 	}
@@ -144,69 +122,21 @@ public class QueryManager {
 		});
 	}
 
-	public void getFilmDates(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return getFestival(callback).getFilmDates();
-			}
-		});
-	}
-	
-	public void getEventDates(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return getFestival(callback).getEventDates();
-			}
-		});
-	}
-	
-	public void getForumDates(final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return getFestival(callback).getForumDates();
-			}
-		});
-	}
-	public void getFilmsByDate(final String date, final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return getFestival(callback).getFilmsByDateGroupedByTime(date);
-			}
-		});
-	}
-	
-	public void getEventsByDate(final String date, final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return getFestival(callback).getEventsByDateGroupedByTime(date);
-			}
-		});
-	}
-	
-	public void getForumsByDate(final String date, final Callback callback) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {
-				return getFestival(callback).getForumsByDateGroupedByTime(date);
-			}
-		});
-	}
-	
-	public void getCommonItem(final Callback callback, final int id) {
-		getWebData(callback, new Callable() {
-			public Object run() throws Throwable {				
-				return getFestival(callback).getCommonItemUsingId(id);
-			}
-		});
-					
-	}
+	public void getSchedulesByDate(final Callback callback) {
+        getWebData(callback, new Callable() {
+            public Object run() throws Throwable {
+                return getFestival(callback).getSchedulesByDate();
+            }
+        });
+    }
 
     public void getTrending(final Callback callback) {
         getWebData(callback, new Callable() {
             public Object run() throws Throwable {
-                List<Show> trendingShows = FestivalParser.parseShows(trendingFeedURL, callback);
-                int[] ids = new int[trendingShows.size()];
-                for (int i = 0; i < ids.length; i++) ids[i] = Integer.parseInt(trendingShows.get(i).id);
-                return getFestival(callback).setTrending(ids);
+                int[] ids = FestivalParser.parseShowIds(trendingFeedURL, callback);
+                Festival festival = getFestival(callback);
+                festival.setTrendingIds(ids);
+                return festival.getTrending();
             }
         });
     }

@@ -22,7 +22,6 @@ package edu.sjsu.cinequest.comm.xmlparser;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -42,14 +41,13 @@ public class VenuesParser extends BasicHandler
 {
 	//private VenueLocation venueLocation = new VenueLocation();
 	private Venue venue;
-	private Vector result = new Vector();
 	private Map<String, Venue> venues = new HashMap<String, Venue>();
 
 	/**
      * Parses a list of venue locations
      * @param url the URL to parse
      * @param callback the callback for progress reporting
-     * @return a vector of VenueLocation items
+     * @return a map of venue names to venues
      * @throws IOException 
      * @throws SAXException  
 	 */

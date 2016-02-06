@@ -1,37 +1,26 @@
 package edu.sjsu.cinequest;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
-import edu.sjsu.cinequest.comm.ImageManager;
-import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 
 public class HotPicksActivity extends CinequestActivity {
 
 	private enum IndexType {TRENDING, VIDEOS}
 
-	private static Vector<CommonItem> mTrending_byTitle;
-	private static Vector<CommonItem> mVideos_byTitle;
+	private static List<CommonItem> mTrending_byTitle;
+	private static List<CommonItem> mVideos_byTitle;
 	private Button trendingButton;
 	private Button videosButton;
 	private ListView listview;
@@ -106,7 +95,7 @@ public class HotPicksActivity extends CinequestActivity {
 					new ProgressMonitorCallback(this) {
 						public void invoke(Object result) {
 							super.invoke(result);
-							mTrending_byTitle = (Vector<CommonItem>) result;
+							mTrending_byTitle = (List<CommonItem>) result;
 							refreshListContents(mTrending_byTitle);
 						}
 					});
@@ -115,7 +104,7 @@ public class HotPicksActivity extends CinequestActivity {
 					new ProgressMonitorCallback(this) {
 						public void invoke(Object result) {
 							super.invoke(result);
-							mVideos_byTitle = (Vector<CommonItem>) result;
+							mVideos_byTitle = (List<CommonItem>) result;
 							refreshListContents(mVideos_byTitle);
 						}
 					});
