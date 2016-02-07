@@ -255,9 +255,9 @@ public class FestivalParser extends BasicHandler {
     	
     	// Some collections used to populate the required information within a Festival.
         private List<Show> shows;
-        private List<Show> actualShows;
         private Map<String, Venue> venues;
         private Festival festival = new Festival();
+        private Map<String, Show> showsMap = new HashMap<String, Show>();
         
         private Map<String, Show> showsWithNoEventType = new HashMap<String, Show>();
 		private Map<String, Show> invalidShorts = new HashMap<String, Show>();
@@ -278,25 +278,16 @@ public class FestivalParser extends BasicHandler {
         public FestivalConverter(List<Show> shows, Map<String, Venue> venues) {
             this.shows = shows;
             this.venues = venues;
-            
-            actualShows = new ArrayList<Show>(this.shows);
-            
-            Collections.copy(actualShows, this.shows);
+            for(Show show : shows) {
+                showsMap.put(show.id, show);
+            }
         }
 
         public Festival convert() {
-        	
-            // This contains the actual list of Shows in a map.
-            Map<String, Show> showsMap = new HashMap<String, Show>();
-            
-            // Populate the Shows Map. Would be useful later.
-            for(Show show : shows) {
 
-            	showsMap.put(show.id, show);       	
-            }
-            
-            this.populateFestivalItems("Film", showsMap);
-            this.populateFestivalItems("Event", showsMap);
+
+            populateFestivalItems("Film");
+            populateFestivalItems("Event");
 
             return festival;
         }
@@ -327,7 +318,7 @@ public class FestivalParser extends BasicHandler {
             return schedule;
         }
         
-        private CommonItem getCommonItem(String type, Show show) {
+        private CommonItem createItem(String type, Show show) {
         	
         	CommonItem commonItem = new CommonItem();
             /* TODO: tagline and filmInfo seem unused
@@ -394,18 +385,13 @@ public class FestivalParser extends BasicHandler {
          * 
          * @param type The type of entity (Film/Event)
          * @param filteredShows The filtered list if Shows
-         * @param showsMap Map containing the Show Id and the associated Show Object.
          * @return Map containing the Shorts
          */
-        private Map<Integer, CommonItem> collectShortsAndValidate( String type, List<Show> filteredShows, Map<String, Show> showsMap) {
+        private Map<Integer, CommonItem> collectShortsAndValidate( String type, List<Show> filteredShows) {
 
         	Map<Integer, CommonItem> shortsMap = new HashMap<Integer, CommonItem>();
         	
-        	Iterator it = filteredShows.iterator();
-
-        	while(it.hasNext()) {
-
-        		Show show = (Show)it.next();
+        	for (Show show : filteredShows) {
 
         		// This is a Film. Does this Film have Short Films ? 
         		// If yes, validate that each ShortFilm does not have any current Showing.        		
@@ -423,12 +409,10 @@ public class FestivalParser extends BasicHandler {
         						// This is a valid ShortFilm
         						// Add to shortsMap
         						
-        						CommonItem shortsItem = this.getCommonItem(type, shortFilmToBeChecked);
+        						CommonItem shortsItem = createItem(type, shortFilmToBeChecked);
 
-        						if(!shortsMap.containsKey(shortsItem.getId())){
-        							shortsMap.put(shortsItem.getId(), shortsItem);
-        						}
-        						
+        						shortsMap.put(shortsItem.getId(), shortsItem);
+
         					} else {
         						// A ShortFilm should not have any CurrentShowing
         						// FIXME - Log this an error
@@ -459,12 +443,12 @@ public class FestivalParser extends BasicHandler {
          */
         private void removeShorts(List<Show> filteredShows, Map<Integer, CommonItem> shortsMap) {
         	
-        	Iterator iter = filteredShows.iterator();
+        	Iterator<Show> iter = filteredShows.iterator();
             
             // Remove all ShortFilms from the list of Shows.
             while( iter.hasNext() ) {
             	
-            	Show show = (Show)iter.next();
+            	Show show = iter.next();
             	
             	if(shortsMap.containsKey(Integer.parseInt(show.id))) {
             		iter.remove();
@@ -485,19 +469,18 @@ public class FestivalParser extends BasicHandler {
          * This method populates the Films/Events using the given type and list of Shows.
          * 
          * @param type The entity type (Film/Event)
-         * @param showsMap Contains the Shows parsed from the XML feed.
          */
-        private void populateFestivalItems(String type, Map<String, Show> showsMap) {
+        private void populateFestivalItems(String type) {
         	
             List<Show> filteredShows = filterShows(type);
             
-            Map<Integer, CommonItem> shortsMap = collectShortsAndValidate(type, filteredShows, showsMap);
+            Map<Integer, CommonItem> shortsMap = collectShortsAndValidate(type, filteredShows);
 
             removeShorts(filteredShows, shortsMap);
 
             for (Show show : filteredShows) {
             	
-                CommonItem item = getCommonItem(type, show);
+                CommonItem item = createItem(type, show);
                 festival.addItem(item, type);
 
                 // Now, find out if this ProgramItem has a list of ShortFilms associated with it.
@@ -513,7 +496,7 @@ public class FestivalParser extends BasicHandler {
                 		if(shortsMap.containsKey(Integer.parseInt(shortID))) {
 
                 			CommonItem shortsItem = shortsMap.get(Integer.parseInt(shortID));                			
-                			item.getCommonItems().add(shortsItem);
+                			item.getChildItems().add(shortsItem);
                 		}		
                 	}       	
                 }
@@ -522,7 +505,7 @@ public class FestivalParser extends BasicHandler {
                     Schedule schedule = getSchedule(showing, item);
                     festival.addSchedule(schedule);
                     
-                    for (CommonItem children : item.getCommonItems()) {
+                    for (CommonItem children : item.getChildItems()) {
                     	children.getSchedules().add(schedule);
 
                     }

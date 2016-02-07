@@ -251,11 +251,10 @@ public class FilmDetail extends CinequestActivity {
 		addEntry(ssb, "Country", in.getCountry());
 		addEntry(ssb, "Language", in.getLanguage());
 		addEntry(ssb, "Genre", in.getGenre());
-		addEntry(ssb, "Film Info", in.getFilmInfo());
 
 		((TextView) findViewById(R.id.Properties)).setText(ssb);
 
-		showIncludes(in.getCommonItems());
+		showIncludes(in.getChildItems());
 		showSchedules(in.getSchedules());
 		scheduleList.setAdapter(myMergeAdapter);
 		scheduleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {

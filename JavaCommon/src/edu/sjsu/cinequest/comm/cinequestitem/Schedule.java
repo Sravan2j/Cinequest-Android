@@ -141,7 +141,7 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 
     public int compareTo(Schedule other) {
         int d = startTime.compareTo(other.startTime);
-        if (d != 0) return 0;
+        if (d != 0) return d;
         else return title.compareTo(other.title);
     }
 
