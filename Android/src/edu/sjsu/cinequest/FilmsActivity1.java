@@ -74,8 +74,8 @@ public class FilmsActivity1 extends CinequestActivity
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
-				Object result = getListview().getItemAtPosition( position );
-				launchFilmDetail(result);
+				Schedule result = (Schedule) listview.getItemAtPosition( position );
+				launchFilmDetail(result.getItem());
 			}
 		});
 	}
@@ -98,136 +98,29 @@ public class FilmsActivity1 extends CinequestActivity
                 super.invoke(result);
                 mSchedule_byDate = (SortedMap<String, SortedSet<Schedule>>) result;
 
-                for (final String date : mSchedule_byDate.keySet())
-                {
-                    List<CommonItem> items = new ArrayList<CommonItem>();
-                    for (Schedule s : mSchedule_byDate.get(date))
-                        items.add(s.getItem());
-                    FilmletListAdapter a = new FilmletListAdapter(FilmsActivity1.this, items);
+                for (final String date : mSchedule_byDate.keySet()) {
+                    //List<CommonItem> items = new ArrayList<CommonItem>();
+                    //for (Schedule s : mSchedule_byDate.get(date))
+                    //    items.add(s.getItem());
+                    // FilmletListAdapter a = new FilmletListAdapter(FilmsActivity1.this, items);
+                    List<Schedule> items = new ArrayList<Schedule>(mSchedule_byDate.get(date));
+                    ScheduleListAdapter1 a = new ScheduleListAdapter1(FilmsActivity1.this, items);
                     eventsAdapter.addSection(localizeHumanFormat(date), "", a);
                     //Then show it once everything has been added!
                     eventsAdapter.setAsAdapterFor(listview);
-                    if(eventsAdapter.getCount() == 0){
+                    if (eventsAdapter.getCount() == 0) {
                         listview.setVisibility(View.GONE);
                         nothingToday.setVisibility(View.VISIBLE);
-                    }else{
-                         listview.setVisibility(View.VISIBLE);
-                         nothingToday.setVisibility(View.GONE);
+                    } else {
+                        listview.setVisibility(View.VISIBLE);
+                        nothingToday.setVisibility(View.GONE);
                     }
                 }
             }
         });
     }
 
-		/*
-		SplashScreenActivity.getQueryManager().getForumDates (new ProgressMonitorCallback(this) {
-			public void invoke(Object result) {
-				super.invoke(result);
-				forumsOnly = (TreeSet<String>) result;
 
-				for(final String date: eventsOnly)
-				{
-					SplashScreenActivity.getQueryManager().getEventsByDate(date,new ProgressMonitorCallback(FilmsActivity1.this) {
-						@SuppressLint("NewApi") @Override
-						public void invoke(Object result) {
-							super.invoke(result);
-							mSchedule_byDate = (TreeMap<String, List<CommonItem>>) result;
-							eventsAdapter.addSection(localizeHumanFormat(date), "", refreshListContents(mSchedule_byDate));
-							if(eventsOnly != null && filmsOnly == null && forumsOnly == null)
-							{
-								//Then show it
-								eventsAdapter.setAsAdapterFor(listview);
-								if(eventsAdapter.getCount() == 0){
-									listview.setVisibility(View.GONE);
-									nothingToday.setVisibility(View.VISIBLE);
-								}else{
-									listview.setVisibility(View.VISIBLE);
-									nothingToday.setVisibility(View.GONE);
-								}
-							}
-						}
-					});
-				}
-				for(final String date: filmsOnly) //final ensures that every date will get passed to refreshListContents
-				{
-					SplashScreenActivity.getQueryManager().getFilmsByDate(date,new ProgressMonitorCallback(FilmsActivity1.this) {
-						@SuppressLint("NewApi") @Override
-						public void invoke(Object result) {
-							super.invoke(result);
-							mSchedule_byDate = (TreeMap<String, List<CommonItem>>) result;
-							if(eventsAdapter.haveSection(localizeHumanFormat(date))) //Ensures that new content under same day
-							{ //falls under same sections
-								FilmletListAdapter a = (FilmletListAdapter) eventsAdapter.getAdapterForSection(localizeHumanFormat(date));
-								a.addAll(refreshListContents(mSchedule_byDate).getList());
-								eventsAdapter.appendAdapter(localizeHumanFormat(date), a);
-							}
-							else
-							{
-								eventsAdapter.addSection(localizeHumanFormat(date), "", refreshListContents(mSchedule_byDate));
-							}
-							if(filmsOnly != null || forumsOnly == null || eventsOnly == null)
-							{
-								//Then show it once everything has been added!
-								eventsAdapter.setAsAdapterFor(listview);
-								if(eventsAdapter.getCount() == 0){
-									listview.setVisibility(View.GONE);
-									nothingToday.setVisibility(View.VISIBLE);
-								}else{
-									listview.setVisibility(View.VISIBLE);
-									nothingToday.setVisibility(View.GONE);
-								}
-							}
-						}
-					});
-				}
-				for(final String date: forumsOnly)
-				{
-					SplashScreenActivity.getQueryManager().getForumsByDate(date,new ProgressMonitorCallback(FilmsActivity1.this) {
-						@SuppressLint("NewApi") @Override
-						public void invoke(Object result) {
-							super.invoke(result);
-							mSchedule_byDate = (TreeMap<String, List<CommonItem>>) result;
-							if(eventsAdapter.haveSection(localizeHumanFormat(date))) //Ensures that new content under same day
-							{ //falls under same sections
-								FilmletListAdapter a = (FilmletListAdapter) eventsAdapter.getAdapterForSection(localizeHumanFormat(date));
-								a.addAll((Collection<? extends CommonItem>)refreshListContents(mSchedule_byDate).getList());
-								eventsAdapter.appendAdapter(localizeHumanFormat(date), a);
-							}
-							else
-							{
-								eventsAdapter.addSection(localizeHumanFormat(date), "", refreshListContents(mSchedule_byDate));
-							}
-							if(forumsOnly != null || eventsOnly == null || filmsOnly == null)
-							{
-								//Then show it once everything has been added!
-								eventsAdapter.setAsAdapterFor(listview);
-								if(eventsAdapter.getCount() == 0){
-									listview.setVisibility(View.GONE);
-									nothingToday.setVisibility(View.VISIBLE);
-								}else{
-									listview.setVisibility(View.VISIBLE);
-									nothingToday.setVisibility(View.GONE);
-								}
-							}
-						}
-					});
-				}
-			}
-		});
-
-	}
-
-	@SuppressLint("NewApi")
-	protected FilmletListAdapter refreshListContents(TreeMap<String, List<CommonItem>> listItems) {
-		if (listItems == null) return null;
-		List<CommonItem> accumulate = new ArrayList<CommonItem>();
-		for(Entry<String, List<CommonItem>> item : listItems.entrySet())
-		{
-			accumulate.addAll(item.getValue());
-		}
-		return new FilmletListAdapter(this,accumulate);
-	}
-	*/
 
 	/**
 	 * Sets the message to show to user when listview is empty
@@ -235,21 +128,6 @@ public class FilmsActivity1 extends CinequestActivity
 	 */
 	protected final void setEmptyListviewMessage(String message){
 		nothingToday.setText(message);
-	}
-
-	/**
-	 * Sets the message to show to user when listview is empty
-	 * @param resourceId Integer
-	 */
-	protected final void setEmptyListviewMessage(int resourceId){
-		this.setEmptyListviewMessage( this.getString(resourceId) );
-	}
-
-	/**
-	 * @return the ListView for this activity
-	 */
-	protected ListView getListview() {
-		return listview;
 	}
 
 	/**
@@ -268,23 +146,5 @@ public class FilmsActivity1 extends CinequestActivity
 		String[] temp = dateInHumForm.split(" ");
 		int dayOfMonth = Integer.parseInt(temp[2]);
 		return temp[0] + " " + temp[1] + " " + dayOfMonth;
-	}
-
-	/**
-	 * This method will localize the given date according the device locale.
-	 *
-	 * @param inputDate The input date.
-	 * @return The equivalent date in device locale
-	 */
-	private String localizeDate( String inputDate ){
-		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-		Date date = null;
-		try {
-			date = fmt.parse(inputDate);
-		} catch (ParseException e) {
-			return inputDate;
-		}
-		DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
-		return dateFormat.format(date);
 	}
 }

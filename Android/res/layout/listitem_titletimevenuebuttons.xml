@@ -5,6 +5,15 @@
     android:padding="6dip"    
     >
     
+    <Button
+    	android:layout_height="50dp"
+    	android:layout_width="50dp"
+    	android:paddingRight="15dip"
+    	android:visibility="gone"
+    	android:id="@+id/myschedule_checkbox"
+    	android:focusable="false"    	
+    />
+    
     <RelativeLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
@@ -47,6 +56,15 @@
 
                
     </RelativeLayout>
+    <Button
+    	android:layout_height="50dp"
+    	android:layout_width="50dp"
+    	android:paddingRight="15dip"
+    	android:visibility="visible"
+    	android:id="@+id/directionsURL"
+    	android:focusable="false"
+    	android:background="@drawable/location_directions"
+    />
          
 </LinearLayout>
 
