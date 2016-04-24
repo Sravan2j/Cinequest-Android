@@ -23,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;

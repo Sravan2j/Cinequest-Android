@@ -7,12 +7,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TabHost;
-import android.widget.TabHost.OnTabChangeListener;
 
 /**
- * Main tab is a tab that displays contents of News,Films, Events, Forums,
+ * Main tab is a tab that displays contents of Hot Picks, Films, Events, Forums,
  * Schedule to the consumer. For easy navigation and information lookup. This
- * tab is th head tab from which consumer can navigate all necessary film
+ * tab is the head tab from which consumer can navigate all necessary film
  * related information.
  */
 public class MainTab extends TabActivity {
@@ -27,11 +26,11 @@ public class MainTab extends TabActivity {
 		TabHost.TabSpec spec;
 		Intent intent;
 
-		intent = new Intent().setClass(this, HomeActivity.class);
+		intent = new Intent().setClass(this, HotPicksActivity.class);
 		spec = tabHost
-				.newTabSpec("news")
-				.setIndicator("News",
-						getResources().getDrawable(R.drawable.ic_tab_news))
+				.newTabSpec("hotpicks")
+				.setIndicator("Hot Picks", // TODO: Localize
+						getResources().getDrawable(R.drawable.ic_tab_news)) // TODO: New image?
 				.setContent(intent);
 		tabHost.addTab(spec);
 

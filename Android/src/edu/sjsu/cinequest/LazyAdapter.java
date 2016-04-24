@@ -4,41 +4,37 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import edu.sjsu.cinequest.comm.cinequestitem.News;
-import edu.sjsu.cinequest.imageutils.ImageLoader;
+
+import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.Platform;
 
 
 public class LazyAdapter extends BaseAdapter {
-    
-    private Activity activity;
-    private String[] data;
-    private List<News> news;
+    private String[] imageURLs;
+    private String[] itemStrings;
+
     private static LayoutInflater inflater=null;
-    public ImageLoader imageLoader; 
+    // public ImageLoader imageLoader;
     
-    public LazyAdapter(Activity a, String[] d, List<News> news) {
-        activity = a;
-        data=d;
-        this.news=news;
+    public LazyAdapter(Activity activity, String[] imageURLs, String[] itemStrings) {
+        this.imageURLs = imageURLs;
+        this.itemStrings = itemStrings;
         inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        imageLoader=new ImageLoader(activity.getApplicationContext());
+        // imageLoader=new ImageLoader(activity.getApplicationContext());
     }
 
     /**
-     * @return the length of the String array data
+     * @return the length of the String array imageURLs
      */
     public int getCount() {
-        return data.length;
+        return imageURLs.length;
     }
 
     /**
@@ -66,10 +62,29 @@ public class LazyAdapter extends BaseAdapter {
 
         //Generate the correct Views for the activity
         TextView text=(TextView)vi.findViewById(R.id.text);;
-        ImageView image=(ImageView)vi.findViewById(R.id.image);
-        text.setText(news.get(position).getName());
+        final ImageView image=(ImageView)vi.findViewById(R.id.image);
+        text.setText(itemStrings[position]);
         //loads an image from the requested location
-        imageLoader.DisplayImage(data[position], image);
+
+        // TODO: Either go back to using ImageLoader and eliminate ImageManager, or the other way around
+
+        // imageLoader.displayImage(imageURLs[position], image);
+        SplashScreenActivity.getImageManager().getImage(imageURLs[position], new Callback() {
+            @Override
+            public void invoke(Object result) {
+                Bitmap bmp = (Bitmap) result;
+                image.setImageBitmap(bmp);
+            }
+
+            @Override
+            public void starting() {
+            }
+
+            @Override
+            public void failure(Throwable t) {
+                Platform.getInstance().log(t);
+            }
+        }, null, true);
         return vi;
     }
 }

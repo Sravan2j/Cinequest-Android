@@ -49,7 +49,7 @@ public class SeparatedListIndexedAdapter extends SeparatedListAdapter
 	
     private HashMap<String, Integer> alphaIndexer;
     private String[] sectionKeys;
-    ArrayList<String> keyList = new ArrayList<String>();
+    List<String> keyList = new ArrayList<String>();
     private int currPosition = 0;
     private boolean currWidthFillParent = true;
     private ListView listview;

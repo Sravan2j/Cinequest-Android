@@ -19,25 +19,19 @@
 
 package edu.sjsu.cinequest.comm.xmlparser;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import android.util.Log;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import android.util.Log;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.Platform;
@@ -45,15 +39,31 @@ import edu.sjsu.cinequest.comm.QueryManager;
 import edu.sjsu.cinequest.comm.cinequestitem.CommonItem;
 import edu.sjsu.cinequest.comm.cinequestitem.Festival;
 import edu.sjsu.cinequest.comm.cinequestitem.Schedule;
-import edu.sjsu.cinequest.comm.cinequestitem.Show;
-import edu.sjsu.cinequest.comm.cinequestitem.Showing;
 import edu.sjsu.cinequest.comm.cinequestitem.Venue;
-import edu.sjsu.cinequest.comm.cinequestitem.VenueLocation;
 
 /**
  * Parses the complete information of the Festival
  */
 public class FestivalParser extends BasicHandler {
+    private class Showing {
+        public String id;
+        public String startDate;
+        public String endDate;
+        public String shortDescription;
+        public Venue venue = new Venue();
+    }
+
+    private class Show {
+        public String id;
+        public String name;
+        public int duration;
+        public String shortDescription;
+        public String thumbImageURL;
+        public String eventImageURL;
+        public String infoLink;
+        public Map<String, List<String>> customProperties = new HashMap<String, List<String>>();
+        public List<Showing> currentShowings = new ArrayList<Showing>();
+    }
     
 	/**
      * Contains the List of Shows parsed from the XML feed. 
@@ -127,7 +137,7 @@ public class FestivalParser extends BasicHandler {
         	Log.e("FestivalParser.java", "Show with missing EventType: " + showWithNoEventType);
         }
    
-        ArrayList<String> shortsNotFound = festivalConverter.getShortsNotFound();
+        List<String> shortsNotFound = festivalConverter.getShortsNotFound();
         
         for(String shortNotFound: shortsNotFound) {
 
@@ -153,19 +163,23 @@ public class FestivalParser extends BasicHandler {
      * @throws SAXException
      * @throws IOException
      */
-    public static List<Show> parseShows(String url, Callback callback) throws SAXException, IOException {
+    private static List<Show> parseShows(String url, Callback callback) throws SAXException, IOException {
         FestivalParser handler = new FestivalParser();        
         Platform.getInstance().parse(url, handler, callback);
-        return handler.getShows();
+        return handler.shows;
     }
 
     /**
-     * Getter for list of Shows
-     * 
-     * @return List of Shows
+     * Parse just the show IDs. This is needed for the trending feed.
+     * @param url
+     * @param callback
+     * @return an array of all show IDs in the feed
      */
-    public List<Show> getShows() {
-        return shows;
+    public static int[] parseShowIds(String url, Callback callback) throws SAXException, IOException {
+        List<Show> shows = parseShows(url, callback);
+        int[] ids = new int[shows.size()];
+        for (int i = 0; i < ids.length; i++) ids[i] = Integer.parseInt(shows.get(i).id);
+        return ids;
     }
 
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -196,7 +210,7 @@ public class FestivalParser extends BasicHandler {
                 propName = lastString();
             }
         } else if (lastTagName().equals("Value")) {
-            ArrayList<String> values = show.customProperties.get(propName);
+            List<String> values = show.customProperties.get(propName);
             if (values == null) {
                 values = new ArrayList<String>();
                 show.customProperties.put(propName, values);
@@ -241,13 +255,13 @@ public class FestivalParser extends BasicHandler {
     	
     	// Some collections used to populate the required information within a Festival.
         private List<Show> shows;
-        private List<Show> actualShows;
         private Map<String, Venue> venues;
         private Festival festival = new Festival();
+        private Map<String, Show> showsMap = new HashMap<String, Show>();
         
         private Map<String, Show> showsWithNoEventType = new HashMap<String, Show>();
 		private Map<String, Show> invalidShorts = new HashMap<String, Show>();
-        private ArrayList<String> shortsNotFound = new ArrayList<String>();
+        private List<String> shortsNotFound = new ArrayList<String>();
         
         public Map<String, Show> getShowsWithNoEventType() {
 			return showsWithNoEventType;
@@ -257,33 +271,23 @@ public class FestivalParser extends BasicHandler {
 			return invalidShorts;
 		}
 
-		public ArrayList<String> getShortsNotFound() {
+		public List<String> getShortsNotFound() {
 			return shortsNotFound;
 		}
         
         public FestivalConverter(List<Show> shows, Map<String, Venue> venues) {
             this.shows = shows;
             this.venues = venues;
-            
-            actualShows = new ArrayList<Show>(this.shows);
-            
-            Collections.copy(actualShows, this.shows);
+            for(Show show : shows) {
+                showsMap.put(show.id, show);
+            }
         }
 
         public Festival convert() {
-        	
-            // This contains the actual list of Shows in a map.
-            Map<String, Show> showsMap = new HashMap<String, Show>();
-            
-            // Populate the Shows Map. Would be useful later.
-            for(Show show : shows) {
-            	
-            	showsMap.put(show.id, show);       	
-            }
-            
-            this.populateFestivalItems("Film", showsMap);
-            this.populateFestivalItems("Event", showsMap);
-            this.populateFestivalItems("Forum", showsMap);
+
+
+            populateFestivalItems("Film");
+            populateFestivalItems("Event");
 
             return festival;
         }
@@ -292,40 +296,13 @@ public class FestivalParser extends BasicHandler {
             return name.replaceAll("[^A-Z0-9]", "");
         }
 
-        private VenueLocation getVenueLocation(Venue venue) {
-        	
-        	VenueLocation loc = new VenueLocation();
-        	
-        	// Venues List contains the required Venue.  Set the VenueLocation's VenueAbbreviation and DirectionsURL.
-        	if( venues.containsKey(venue.id)) {
-        		venue = venues.get(venue.id);
-        		
-        		loc.setVenueAbbreviation(venue.shortName);
-        		loc.setDirectionsURL(venue.location);
-        		
-        	} else {
-        		
-        		// Else set the Venue abbreviation using older logic.
-        		loc.setVenueAbbreviation(venueAbbr(venue.name));
-        	}
-            
-            loc.setId(Integer.parseInt(venue.id));
-            
-            loc.setTitle(venue.name);
-            loc.setLocation(venue.address);
-            
-            return loc;
-        }
-        
         private Schedule getSchedule(Showing showing, CommonItem item) {
             Schedule schedule = new Schedule();
             schedule.setId(Integer.parseInt(showing.id));
-            schedule.setItemId(item.getId()); // TODO: Why not just set the item reference???
+            schedule.setItem(item);
             schedule.setTitle(item.getTitle());
             schedule.setStartTime(showing.startDate);
             schedule.setEndTime(showing.endDate);
-            
-            //schedule.setVenue(venueAbbr(showing.venue.name)); // TODO: Why not the Venue object?
             
             // If 'venues' contains showing.venue,
             // set the Schedule's Venue as the 'this.venues' shortName
@@ -341,7 +318,7 @@ public class FestivalParser extends BasicHandler {
             return schedule;
         }
         
-        private CommonItem getCommonItem(String type, Show show) {
+        private CommonItem createItem(String type, Show show) {
         	
         	CommonItem commonItem = new CommonItem();
             /* TODO: tagline and filmInfo seem unused
@@ -350,7 +327,9 @@ public class FestivalParser extends BasicHandler {
             commonItem.setId(Integer.parseInt(show.id));
             commonItem.setTitle(show.name);
             commonItem.setDescription(show.shortDescription);
-            commonItem.setImageURL(show.thumbImageURL);
+            commonItem.setThumbImageURL(show.thumbImageURL);
+            commonItem.setImageURL(show.eventImageURL);
+            commonItem.setVideoURL(get(show.customProperties, "Videofeed"));
             commonItem.setDirector(get(show.customProperties, "Director"));
             commonItem.setProducer(get(show.customProperties, "Producer"));
             commonItem.setCinematographer(get(show.customProperties, "Cinematographer"));
@@ -377,11 +356,7 @@ public class FestivalParser extends BasicHandler {
         	
         	List<Show> filteredShows = new ArrayList<Show>();
 
-        	Iterator<Show> iter = shows.iterator();
-
-        	while(iter.hasNext()) {
-
-        		Show show = iter.next();
+        	for (Show show : shows) {
         		
         		if(type.equals("Film") && 
         				( (show.customProperties.containsKey("EventType") && show.customProperties.get("EventType").contains("Film")) ||
@@ -396,11 +371,7 @@ public class FestivalParser extends BasicHandler {
         			
         		} else if(type.equals("Event") && 
         				(show.customProperties.containsKey("EventType") && 
-        						(show.customProperties.get("EventType").contains("Special") 
-        						|| show.customProperties.get("EventType").contains("Screening")))) {
-        			filteredShows.add(show);
-        		} else if(type.equals("Forum") &&
-        				(show.customProperties.containsKey("EventType") && show.customProperties.get("EventType").contains("Forum"))) {
+        						!(show.customProperties.get("EventType").contains("Film")))) {
         			filteredShows.add(show);
         		}
         	}
@@ -412,20 +383,15 @@ public class FestivalParser extends BasicHandler {
          * Collects the Short Films from the given List of Shows and also validates the Short Films 
          * (i.e. a Short Film should not contain a Showing)
          * 
-         * @param type The type of entity (Film/Event/Forum)
+         * @param type The type of entity (Film/Event)
          * @param filteredShows The filtered list if Shows
-         * @param showsMap Map containing the Show Id and the associated Show Object.
          * @return Map containing the Shorts
          */
-        private Map<Integer, CommonItem> collectShortsAndValidate( String type, List<Show> filteredShows, Map<String, Show> showsMap) {
+        private Map<Integer, CommonItem> collectShortsAndValidate( String type, List<Show> filteredShows) {
 
         	Map<Integer, CommonItem> shortsMap = new HashMap<Integer, CommonItem>();
         	
-        	Iterator it = filteredShows.iterator();
-
-        	while(it.hasNext()) {
-
-        		Show show = (Show)it.next();
+        	for (Show show : filteredShows) {
 
         		// This is a Film. Does this Film have Short Films ? 
         		// If yes, validate that each ShortFilm does not have any current Showing.        		
@@ -443,12 +409,10 @@ public class FestivalParser extends BasicHandler {
         						// This is a valid ShortFilm
         						// Add to shortsMap
         						
-        						CommonItem shortsItem = this.getCommonItem(type, shortFilmToBeChecked);
+        						CommonItem shortsItem = createItem(type, shortFilmToBeChecked);
 
-        						if(!shortsMap.containsKey(shortsItem.getId())){
-        							shortsMap.put(shortsItem.getId(), shortsItem);
-        						}
-        						
+        						shortsMap.put(shortsItem.getId(), shortsItem);
+
         					} else {
         						// A ShortFilm should not have any CurrentShowing
         						// FIXME - Log this an error
@@ -479,12 +443,12 @@ public class FestivalParser extends BasicHandler {
          */
         private void removeShorts(List<Show> filteredShows, Map<Integer, CommonItem> shortsMap) {
         	
-        	Iterator iter = filteredShows.iterator();
+        	Iterator<Show> iter = filteredShows.iterator();
             
             // Remove all ShortFilms from the list of Shows.
             while( iter.hasNext() ) {
             	
-            	Show show = (Show)iter.next();
+            	Show show = iter.next();
             	
             	if(shortsMap.containsKey(Integer.parseInt(show.id))) {
             		iter.remove();
@@ -493,8 +457,8 @@ public class FestivalParser extends BasicHandler {
         }
         
 
-        private static String get(Map<String, ArrayList<String>> custom, String key) {
-            ArrayList<String> value = custom.get(key);
+        private static String get(Map<String, List<String>> custom, String key) {
+            List<String> value = custom.get(key);
             if (value == null) return "";
             if (value.size() == 1) return value.get(0);
             String result = value.toString();
@@ -502,86 +466,22 @@ public class FestivalParser extends BasicHandler {
         }
         
         /**
-         * Returns a list of timestamps associated with the schedules within the CommonItem.
-         * NOTE: This method processes the schedule.getStartTime().
+         * This method populates the Films/Events using the given type and list of Shows.
          * 
-         * @param item The given ComonItem
-         * @return The list of timestamps.
+         * @param type The entity type (Film/Event)
          */
-        private SortedSet<String> getDatesFromCommonItem(CommonItem item) {
+        private void populateFestivalItems(String type) {
         	
-        	String isoDatePattern = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$";
-        	
-        	SortedSet<String> dates = new TreeSet<String>();
-        	
-        	List<Schedule> itemSchedules = item.getSchedules();
-        	
-        	for(Schedule schedule : itemSchedules) {
-        		
-        		String startTime = schedule.getStartTime();
-        		
-        		Matcher m = Pattern.compile(isoDatePattern).matcher(startTime);
-        		
-        		if(m.matches()) {
-        			// Time is in ISO format
-        			String date = startTime.split("T")[0];
-        			
-        			if( !dates.contains(date) ) {
-        				dates.add(date);
-        			}		
-        		}      		
-        	}
-        	
-        	return dates;
-        }
-        
-        /**
-         * This method populates the Films/Events/Forums using the given type and list of Shows.
-         * 
-         * @param type The entity type (Film/Event/Forum)
-         * @param showsMap Contains the Shows parsed from the XML feed.
-         */
-        private void populateFestivalItems(String type, Map<String, Show> showsMap) {
-        	
-            Set<String> uniqueVenues = new HashSet<String>();            
-
-            List<Show> filteredShows = this.filterShows(type);
+            List<Show> filteredShows = filterShows(type);
             
-            Map<Integer, CommonItem> shortsMap = this.collectShortsAndValidate(type, filteredShows, showsMap);
+            Map<Integer, CommonItem> shortsMap = collectShortsAndValidate(type, filteredShows);
 
-            this.removeShorts(filteredShows, shortsMap);
+            removeShorts(filteredShows, shortsMap);
 
             for (Show show : filteredShows) {
             	
-                CommonItem item = getCommonItem(type, show);
-                
-                // Before adding the 'item' to commonItems within the Festival object, a redundancy check need to be performed.
-                
-                if( !festival.getCommonItemsMap().containsKey(item.getId()) ) {
-                	
-                	festival.getCommonItemsMap().put(item.getId(), item);               	
-                	         	
-                }
-              
-                List<String> typeOfFilm = show.customProperties.get("Type of Film");
-                
-                // FIXME - The Xml feed has Shows with 'Type Of Film' as 'Shorts Program'. Not ignoring these entries for the moment.
-                //if (typeOfFilm == null || !typeOfFilm.contains("Shorts Program")) {
-                    
-                   // item.getCommonItems().add(item);   // FIXME - WHY ?????? why add to itself ??
-                    
-                    // Populate the individual lists
-                    if(type.equals("Film")) {
-                    	festival.getFilms().add(item);
-  	
-                    } else if(type.equals("Event")) {
-                    	festival.getEvents().add(item);
-                    	
-                    } else if(type.equals("Forum")) {
-                    	festival.getForums().add(item);
-
-                    }
-               // }
+                CommonItem item = createItem(type, show);
+                festival.addItem(item, type);
 
                 // Now, find out if this ProgramItem has a list of ShortFilms associated with it.
                 List<String> associatedShortIds = show.customProperties.get("ShortID");
@@ -596,105 +496,26 @@ public class FestivalParser extends BasicHandler {
                 		if(shortsMap.containsKey(Integer.parseInt(shortID))) {
 
                 			CommonItem shortsItem = shortsMap.get(Integer.parseInt(shortID));                			
-                			item.getCommonItems().add(shortsItem);
+                			item.getChildItems().add(shortsItem);
                 		}		
                 	}       	
                 }
 
                 for (Showing showing : show.currentShowings) {
                     Schedule schedule = getSchedule(showing, item);
-                    festival.getSchedules().add(schedule);
+                    festival.addSchedule(schedule);
                     
-                    if (uniqueVenues.add(schedule.getVenue())) { // Added for the first time
-                        festival.getVenueLocations().add(getVenueLocation(showing.venue));
-                    }
-                    
-                    for (CommonItem children : item.getCommonItems()) { 
+                    for (CommonItem children : item.getChildItems()) {
                     	children.getSchedules().add(schedule);
 
                     }
                    
-                    // FIXME - Add the schedule to the main item
+                    // Add the schedule to the main item
                     item.getSchedules().add(schedule);
                 }
+
+                if (item.getVideoURL() != null) festival.getVideos().add(item);
             }  	
-            
-            
-            // Populate the Films/Events/ Forums by Date depending on the Type
-            
-            Vector v = null;
-            
-            if(type.equals("Film")) {
-            	v = festival.getFilms();
-            } else if(type.equals("Event")) {
-            	v = festival.getEvents();
-            } else if(type.equals("Forum")) {
-            	v = festival.getForums();
-            }
-            
-            for(Object obj : v) {
-            	
-            	CommonItem item = (CommonItem) obj;
-            	
-            	// Populate the film dates
-            	SortedSet<String> filmDates = null;
-            	
-            	if(type.equals("Film")) {
-            		filmDates = festival.getFilmDates(); 
-            	} else if(type.equals("Event")) {
-            		filmDates = festival.getEventDates(); 
-            	} else if(type.equals("Forum")) {
-            		filmDates = festival.getForumDates(); 
-            	}
-            	
-            	 
-            	SortedSet<String> dates = getDatesFromCommonItem(item);
-            	filmDates.addAll(dates);
-            	
-            	this.populateItemsByDate(type, dates, item);    	
-            }
-            
-        }
-        
-        /**
-         * Populates the Film/Events/Forums by Date. Required by the layout.
-         * 
-         * @param type The entity type (Film/Event/Forum)
-         * @param dates The 
-         * @param item
-         */
-        private void populateItemsByDate(String type, SortedSet<String> dates, CommonItem item) {
-        	
-        	// Now populate the Map which stores CommonItems by Dates
-        	
-        	Map<String, List<CommonItem>> itemsByDateMap = null;
-        	
-        	if(type.equals("Film")) {
-        		itemsByDateMap = festival.getFilmsByDateMap();
-        	} else if(type.equals("Event")) {
-        		itemsByDateMap = festival.getEventsByDateMap();
-        	} else if(type.equals("Forum")) {
-        		itemsByDateMap = festival.getForumsByDateMap();
-        	}
-        	
-        	for(String date : dates) {
-        		
-        		List<CommonItem> itemsList;
-        		boolean found = false;
-        		
-        		if(itemsByDateMap.containsKey(date)) {
-        			itemsList = itemsByDateMap.get(date);
-        			found = true;
-        		} else {
-        			itemsList = new ArrayList<CommonItem>();
-        		}
-        		
-        		itemsList.add(item);
-        		
-        		if(!found) {
-        			itemsByDateMap.put(date, itemsList);
-        		}       		
-        	}     	
         }
     }
 }

@@ -20,38 +20,23 @@
 package edu.sjsu.cinequest.comm.cinequestitem;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Vector;
-
-import android.util.Log;
 
 /**
- * Copy of ProgramItem. Represents a Film/Event/Forum
+ * Represents a Film/Event
  * 
  * @author Rohit Vobbilisetty
  *
  */
-public class CommonItem extends CinequestItem {	
-	
-	private String type;	// Picked from Filmlet
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	private ArrayList<CommonItem> commonItems;
-	
+public class CommonItem implements java.io.Serializable {
 	// Picked from Film
-	private Vector schedules;    
-	private String tagline;
+	private int id;
+    private String type;
+	private String title;
+	private String imageURL;
+    private String thumbImageURL;
+    private String description;
+    private String videoURL;
 	private String genre;
 	private String director;
 	private String producer;
@@ -61,161 +46,173 @@ public class CommonItem extends CinequestItem {
 	private String cast;
 	private String country;
 	private String language;
-	private String filmInfo;	
 	private String infoLink;
-	
-	/**
-	 * Constructor initializes class with appropriate values.
+	private List<CommonItem> childItems;
+    private List<Schedule> schedules;
+
+    /**
+	 * @return id
 	 */
-	public CommonItem()
+	public int getId()
 	{
-		commonItems = new ArrayList<CommonItem>();
+		return id;
 	}
 
 	/**
-	 * @return the vector of films
+	 * @param id the id to set
 	 */
-	public ArrayList<CommonItem> getCommonItems() {
-		return commonItems;
+	public void setId(int id)
+	{
+		this.id = id;
 	}
-	
-	/**
-	 * @return the tagline
-	 */
-	public String getTagline() {
-		return tagline;
+
+	public String getType() {
+		return type;
 	}
-	/**
-	 * @param tagline the tagline to set
-	 */
-	public void setTagline(String tagline) {
-		this.tagline = tagline;
+
+	public void setType(String type) {
+		this.type = type;
 	}
+
 	/**
-	 * @return the genre
+	 * @return title
 	 */
+	public String getTitle()
+	{
+		return title;
+	}
+
+	/**
+	 * @param title the title to set
+	 */
+	public void setTitle(String title)
+	{
+		this.title = title;
+	}
+
+	/**
+	 * @return videoURL
+	 */
+	public String getVideoURL()
+	{
+		return videoURL;
+	}
+
+	/**
+	 * @param videoURL the URL to set
+	 */
+	public void setVideoURL(String videoURL)
+	{
+		if (videoURL != null && videoURL.length() > 0)
+			this.videoURL = videoURL;
+	}
+
+	/**
+	 * @return imageURL
+	 */
+	public String getImageURL()
+	{
+		return imageURL;
+	}
+
+	/**
+	 * @param imageURL the imageURL to set
+	 */
+	public void setImageURL(String imageURL)
+	{
+		this.imageURL = imageURL;
+	}
+
+	public String getThumbImageURL() {
+		return thumbImageURL;
+	}
+
+	public void setThumbImageURL(String thumbImageURL) {
+		this.thumbImageURL = thumbImageURL;
+	}
+
+	/**
+	 * @return description
+	 */
+	public String getDescription()
+	{
+		return description;
+	}
+
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
+
+
 	public String getGenre() {
 		return genre;
 	}
-	/**
-	 * @param genre the genre to set
-	 */
 	public void setGenre(String genre) {
 		this.genre = genre;
 	}
-	/**
-	 * @return the director
-	 */
 	public String getDirector() {
 		return director;
 	}
-	/**
-	 * @param director the director to set
-	 */
 	public void setDirector(String director) {
 		this.director = director;
 	}
-	/**
-	 * @return the producer
-	 */
 	public String getProducer() {
 		return producer;
 	}
-	/**
-	 * @param producer the producer to set
-	 */
 	public void setProducer(String producer) {
 		this.producer = producer;
 	}
-	/**
-	 * @return the writer
-	 */
 	public String getWriter() {
 		return writer;
 	}
-	/**
-	 * @param writer the writer to set
-	 */
 	public void setWriter(String writer) {
 		this.writer = writer;
 	}
-	/**
-	 * @return the cinematographer
-	 */
+
 	public String getCinematographer() {
 		return cinematographer;
 	}
 	
-	/**
-	 * @param cinematographer the cinematographer to set
-	 */
 	public void setCinematographer(String cinematographer) {
 		this.cinematographer = cinematographer;
 	}
 	
-	/**
-	 * @return the editor
-	 */
 	public String getEditor() {
 		return editor;
 	}
 	
-	/**
-	 * @param editor the editor to set
-	 */
 	public void setEditor(String editor) {
 		this.editor = editor;
 	}
 	
-	/**
-	 * @return the cast
-	 */
 	public String getCast() {
 		return cast;
 	}
 	
-	/**
-	 * @param cast the cast to set
-	 */
 	public void setCast(String cast) {
 		this.cast = cast;
 	}
 	
-	/**
-	 * @return the country
-	 */
 	public String getCountry() {
 		return country;
 	}
 	
-	/**
-	 * @param country the country to set
-	 */
 	public void setCountry(String country) {
 		this.country = country;
 	}
 	
-	/**
-	 * @return the language
-	 */
 	public String getLanguage() {
 		return language;
 	}
 	
-	/**
-	 * @param language the language to set
-	 */
 	public void setLanguage(String language) {
 		this.language = language;
 	}
 	
-	/**
-	 * @return filmInfo
-	 */
-	public String getFilmInfo()
-	{
-		return filmInfo;
-	}
 	public String getInfoLink()
 	{
 		return infoLink;
@@ -223,95 +220,20 @@ public class CommonItem extends CinequestItem {
 	public void setInfoLink(String infoLink) {
 		this.infoLink = infoLink;
 	}
-	
-	/**
-	 * @param filmInfo the filmInfo to set
-	 */
-	public void setFilmInfo(String filmInfo)
+
+    public List<CommonItem> getChildItems() {
+        if (childItems == null) childItems = new ArrayList<CommonItem>();
+        return childItems;
+    }
+
+	public List<Schedule> getSchedules()
 	{
-		this.filmInfo = filmInfo;
-	}
-	
-	public Vector getSchedules()
-	{
-	    if (schedules == null) schedules = new Vector();
+	    if (schedules == null) schedules = new ArrayList<Schedule>();
 		return schedules;
 	}
-	
-	public void setSchedules(Vector schedules)
-    {
-        this.schedules = schedules;
-    }
-	
-    /**
-     * Constructs a <code>String</code> with all attributes
-     * in name = value format.
-     *
-     * @return a <code>String</code> representation 
-     * of this object.
-     */
+
     public String toString()
     {
-        return super.toString() + "[items=" + commonItems + "]";
-    }
-    
-    /**
-     * Returns the startTime of the earliest Schedule for a given date
-     * 
-     * @param date The given date
-     * @return The earliest time
-     */
-    public String getEarliestTime( String date ) {
-    	
-    	String earliestTime = null;
-    	
-    	Iterator it = schedules.iterator();
-    	
-    	while(it.hasNext()) {
-    		
-    		Schedule schedule = (Schedule)it.next();
-    		
-    		String startTime = schedule.getStartTime().split("T")[1];
-    		
-    		if(earliestTime == null) {
-    			earliestTime = startTime;
-    		} else if(earliestTime.compareTo(startTime) > 0) {
-    			earliestTime = startTime;
-    		}
-    		
-    	}
-    	
-    	return earliestTime;  	
-    }
-    
-    /**
-     *  Returns the list of StartTimes for the given Date.
-     * 
-     * @param date The date on which this item has a schedule
-     * @return The associated list of StartTimes
-     */
-    public SortedSet<String> getStartTimes(String date) {
-    	
-    	SortedSet<String> startTimes = new TreeSet<String>();
-    	
-    	Iterator it = schedules.iterator();
-    	
-    	while(it.hasNext()) {
-    	
-    		Schedule schedule = (Schedule) it.next();
-    		
-    		String[] values = schedule.getStartTime().split("T");
-    		String startDate = values[0];
-    		
-    		// Consider the StartTime only if their Dates match.
-    		if(date.equals(startDate)) {
-    		
-    			String startTime = values[1];	
-    			startTimes.add(startTime);
-    		}
-    		
-    	}
-    	
-    	return startTimes;
+        return getClass().getName() + "[id=" + id + "title=" + title + ",description=" + description + ",items=" + childItems + "]";
     }
 }

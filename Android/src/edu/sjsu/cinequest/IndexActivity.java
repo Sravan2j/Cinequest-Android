@@ -3,7 +3,6 @@ package edu.sjsu.cinequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -21,8 +20,8 @@ public class IndexActivity extends CinequestActivity {
 
 	private enum IndexType {FILMS, EVENTS}
 
-	private static Vector<CommonItem> mFilms_byTitle;
-	private static Vector<CommonItem> mEvents_byTitle;
+	private static List<CommonItem> mFilms_byTitle;
+	private static List<CommonItem> mEvents_byTitle;
 	private Button filmsButton;
 	private Button eventsButton;
 	private ListView listview;
@@ -117,20 +116,20 @@ public class IndexActivity extends CinequestActivity {
 
 	private void fetchServerData(IndexType indexType) {
 		if (indexType == IndexType.FILMS) {
-			HomeActivity.getQueryManager().getAllFilms(
+			SplashScreenActivity.getQueryManager().getAllFilms(
 					new ProgressMonitorCallback(this) {
 						public void invoke(Object result) {
 							super.invoke(result);
-							mFilms_byTitle = (Vector<CommonItem>) result;
+							mFilms_byTitle = (List<CommonItem>) result;
 							refreshListContents(mFilms_byTitle);
 						}
 					});
 		} else {
-			HomeActivity.getQueryManager().getAllEventsAndForums(
+			SplashScreenActivity.getQueryManager().getAllEvents(
 					new ProgressMonitorCallback(this) {
 						public void invoke(Object result) {
 							super.invoke(result);
-							mEvents_byTitle = (Vector<CommonItem>) result;
+							mEvents_byTitle = (List<CommonItem>) result;
 							refreshListContents(mEvents_byTitle);
 						}
 					});
@@ -187,7 +186,7 @@ public class IndexActivity extends CinequestActivity {
 		int count = 0, numItems = 0, i;
 		String headerTitle = "Found ";
 		CommonItem item = null;
-		ArrayList<CommonItem> list = new ArrayList<CommonItem>();
+		List<CommonItem> list = new ArrayList<CommonItem>();
 		for (Adapter adapter : sections.values()) {
 			numItems = adapter.getCount();
 			for (i = 0; i < numItems; i++) {

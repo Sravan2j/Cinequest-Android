@@ -1,5 +1,16 @@
 package edu.sjsu.cinequest.android;
 
+import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Handler;
+import android.util.Log;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,24 +23,12 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collections;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Handler;
-import android.util.Log;
 import edu.sjsu.cinequest.comm.Cache;
 import edu.sjsu.cinequest.comm.Callback;
 import edu.sjsu.cinequest.comm.CallbackException;
@@ -199,6 +198,9 @@ public class AndroidPlatform extends Platform {
 							+ t.getClass().toString();
 					if (t.getMessage() != null)
 						error += ", Message=" + t.getMessage();
+					StringWriter out = new StringWriter();
+					t.printStackTrace(new PrintWriter(out));
+					error += ", Stack trace=" + out.toString();
 
 					log("AndroidPlatform.invoke: " + error);
 				}
@@ -251,7 +253,6 @@ public class AndroidPlatform extends Platform {
 
 	@Override
 	public MessageDigest getMessageDigestInstance(String name) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

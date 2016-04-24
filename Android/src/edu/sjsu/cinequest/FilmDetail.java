@@ -3,9 +3,7 @@ package edu.sjsu.cinequest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -103,7 +101,7 @@ public class FilmDetail extends CinequestActivity {
 		}
 	}	
 
-	private void showSchedules(Vector<Schedule> schedules)
+	private void showSchedules(List<Schedule> schedules)
 	{
 		if (schedules.size() == 0) {
 			scheduleList.setAdapter(new ScheduleListAdapter(this, schedules));
@@ -122,7 +120,7 @@ public class FilmDetail extends CinequestActivity {
 	}
 
 
-	private void showIncludes(final ArrayList<CommonItem> includes)
+	private void showIncludes(final List<CommonItem> includes)
 	{				
 		if (includes.size() == 0) {
 			return;
@@ -134,7 +132,7 @@ public class FilmDetail extends CinequestActivity {
 		includescnt=adapter.getCount();
 	}
 
-	private void showFilms(ArrayList<? extends CommonItem> films)
+	private void showFilms(List<? extends CommonItem> films)
 	{
 		FilmletListAdapter section = new FilmletListAdapter(this, (List<CommonItem>) films);
 		if (films.size() == 0) {
@@ -165,9 +163,9 @@ public class FilmDetail extends CinequestActivity {
 		ssb.append("\n");
 	}
 
-	private void showImage(final String imageURL, Vector urls) {
+	private void showImage(final String imageURL, List<String> urls) {
 		if (imageURL == null) return;
-		Bitmap bmp = (Bitmap) HomeActivity.getImageManager().getImage(imageURL, new Callback() {
+		Bitmap bmp = (Bitmap) SplashScreenActivity.getImageManager().getImage(imageURL, new Callback() {
 			@Override
 			public void invoke(Object result) {
 				Bitmap bmp = (Bitmap) result;
@@ -182,7 +180,7 @@ public class FilmDetail extends CinequestActivity {
 			public void failure(Throwable t) {	
 				Platform.getInstance().log(t);
 				// Try once more
-				HomeActivity.getImageManager().getImage(imageURL, new Callback() {
+				SplashScreenActivity.getImageManager().getImage(imageURL, new Callback() {
 					@Override
 					public void invoke(Object result) {
 						Bitmap bmp = (Bitmap) result;
@@ -239,7 +237,7 @@ public class FilmDetail extends CinequestActivity {
 
 		tv.setText(createSpannableString(parser));
 
-		showImage(in.getImageURL(), parser.getImageURLs());
+		showImage(in.getImageURL(), parser.getImageURLs()); // TODO: Are these image URLs still used?
 
 
 		SpannableStringBuilder ssb = new SpannableStringBuilder();
@@ -253,11 +251,10 @@ public class FilmDetail extends CinequestActivity {
 		addEntry(ssb, "Country", in.getCountry());
 		addEntry(ssb, "Language", in.getLanguage());
 		addEntry(ssb, "Genre", in.getGenre());
-		addEntry(ssb, "Film Info", in.getFilmInfo());
 
 		((TextView) findViewById(R.id.Properties)).setText(ssb);
 
-		showIncludes(in.getCommonItems());
+		showIncludes(in.getChildItems());
 		showSchedules(in.getSchedules());
 		scheduleList.setAdapter(myMergeAdapter);
 		scheduleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {

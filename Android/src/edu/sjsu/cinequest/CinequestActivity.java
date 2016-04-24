@@ -93,6 +93,18 @@ public class CinequestActivity extends Activity {
 		return adapter;
 	}
 
+    protected ListAdapter createListWithIcons(List<? extends CommonItem> listItems) {
+        int size = listItems.size();
+        String[] imageURLs = new String[size];
+        String[] titles = new String[size];
+        for (int i = 0; i < size; i++) {
+            CommonItem item = listItems.get(i);
+            imageURLs[i] = item.getThumbImageURL();
+            titles[i] = item.getTitle();
+        }
+        return new LazyAdapter(this, imageURLs, titles);
+    }
+
 	/**
 	 * A method to get the first (relevant) letter of a title
 	 * 
@@ -116,17 +128,15 @@ public class CinequestActivity extends Activity {
 	}
 
 	/**
-	 * An adapter for a list of schedule items. These lists occur (1) in the
-	 * Films tab (when sorted by date), Events and Forums tabs, (2) in each film
-	 * detail, and (3) in the Schedule tab.
+	 * An adapter for a list of schedule items without buttons, used in FilmsActivity1.
 	 */
-	protected class ScheduleListAdapter extends ArrayAdapter<Schedule> {
+	protected class ScheduleListAdapter1 extends ArrayAdapter<Schedule> {
 		private static final int RESOURCE_ID = R.layout.listitem_titletimevenue;
 		private DateUtils du = new DateUtils();
 		boolean is24HourFormat = android.text.format.DateFormat
 				.is24HourFormat(getContext());
 
-		public ScheduleListAdapter(Context context, List<Schedule> list) {
+		public ScheduleListAdapter1(Context context, List<Schedule> list) {
 			super(context, RESOURCE_ID, list);
 		}
 
@@ -147,11 +157,8 @@ public class CinequestActivity extends Activity {
 			TextView title = (TextView) v.findViewById(R.id.titletext);
 			TextView time = (TextView) v.findViewById(R.id.timetext);
 			TextView venue = (TextView) v.findViewById(R.id.venuetext);
-			Button button = (Button) v.findViewById(R.id.myschedule_checkbox);
 			final Schedule result = getItem(position);
 			title.setText(result.getTitle());
-			if (result.isSpecialItem())
-				title.setTypeface(null, Typeface.ITALIC);
 			String startTime = du.format(result.getStartTime(),
 					DateUtils.TIME_SHORT);
 			String endTime = du.format(result.getEndTime(),
@@ -166,30 +173,82 @@ public class CinequestActivity extends Activity {
 			}
 			time.setText("Time: " + startTime + " - " + endTime);
 			venue.setText("Venue: " + result.getVenue());
-			formatContents(v, title, time, venue, du, result);
-			v.setTag(result);
-			button.setTag(result);
-			button.setText("-");
-			populateCalendarID();
-			configureCalendarIcon(v, button, result);
-			Button directions = (Button) v.findViewById(R.id.directionsURL);
-			directions.setTag(result);
-			directions.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-
-					Intent intent = new Intent(
-							android.content.Intent.ACTION_VIEW, Uri
-							.parse(result.getDirectionsURL()));
-					startActivity(intent);
-				}
-
-			});
 			return v;
 		}
+	}
 
+		/**
+		 * An adapter for a list of schedule items. These lists occur (1) in the
+		 * Films tab (when sorted by date), Events and Forums tabs, (2) in each film
+		 * detail, and (3) in the Schedule tab.
+		 */
+		protected class ScheduleListAdapter extends ArrayAdapter<Schedule> {
+			private static final int RESOURCE_ID = R.layout.listitem_titletimevenuebuttons;
+			private DateUtils du = new DateUtils();
+			boolean is24HourFormat = android.text.format.DateFormat
+					.is24HourFormat(getContext());
+
+			public ScheduleListAdapter(Context context, List<Schedule> list) {
+				super(context, RESOURCE_ID, list);
+			}
+
+			/*
+             * (non-Javadoc)
+             *
+             * @see android.widget.ArrayAdapter#getView(int, android.view.View,
+             * android.view.ViewGroup)
+             */
+			@Override
+			public View getView(int position, View v, ViewGroup parent) {
+				if (v == null) {
+					LayoutInflater inflater = (LayoutInflater) getContext()
+							.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					v = inflater.inflate(RESOURCE_ID, null);
+				}
+
+				TextView title = (TextView) v.findViewById(R.id.titletext);
+				TextView time = (TextView) v.findViewById(R.id.timetext);
+				TextView venue = (TextView) v.findViewById(R.id.venuetext);
+				Button button = (Button) v.findViewById(R.id.myschedule_checkbox);
+				final Schedule result = getItem(position);
+				title.setText(result.getTitle());
+				if (result.isSpecialItem())
+					title.setTypeface(null, Typeface.ITALIC);
+				String startTime = du.format(result.getStartTime(),
+						DateUtils.TIME_SHORT);
+				String endTime = du.format(result.getEndTime(),
+						DateUtils.TIME_SHORT);
+				if (!is24HourFormat) {
+					startTime = du.formatTime(startTime);
+					if (startTime.length() == 7)
+						startTime = "0" + startTime;
+					endTime = du.formatTime(endTime);
+					if (endTime.length() == 7)
+						endTime = "0" + endTime;
+				}
+				time.setText("Time: " + startTime + " - " + endTime);
+				venue.setText("Venue: " + result.getVenue());
+				formatContents(v, title, time, venue, du, result);
+				v.setTag(result);
+				button.setTag(result);
+				button.setText("-");
+				populateCalendarID();
+				configureCalendarIcon(v, button, result);
+				Button directions = (Button) v.findViewById(R.id.directionsURL);
+				directions.setTag(result);
+				directions.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(
+								android.content.Intent.ACTION_VIEW, Uri
+								.parse(result.getDirectionsURL()));
+						startActivity(intent);
+					}
+
+				});
+				return v;
+			}
 		/**
 		 * Override to change the formatting of the contents
 		 * 
@@ -270,8 +329,6 @@ public class CinequestActivity extends Activity {
 
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
-
 					Schedule s = (Schedule) v.getTag();
 					SimpleDateFormat formatter;
 					if (s.getStartTime().charAt(10) == 'T')
@@ -413,7 +470,7 @@ public class CinequestActivity extends Activity {
 							button.setBackgroundResource(R.drawable.incalendar);
 							button.setHint("exists");
 						} catch (Exception e) {
-							Log.i("CinequestActivity:configureCalendarIcon",
+							Log.i("CinAct:configureCalIcon",
 									"Error while adding Events in Calendar");
 						}
 					}

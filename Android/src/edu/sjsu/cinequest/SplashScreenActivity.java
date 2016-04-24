@@ -7,7 +7,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -23,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import edu.sjsu.cinequest.android.AndroidPlatform;
 import edu.sjsu.cinequest.comm.Callback;
+import edu.sjsu.cinequest.comm.ImageManager;
 import edu.sjsu.cinequest.comm.Platform;
 import edu.sjsu.cinequest.comm.QueryManager;
 /**
@@ -30,6 +34,9 @@ import edu.sjsu.cinequest.comm.QueryManager;
  * registering with cinequest.
  */
 public class SplashScreenActivity extends Activity {
+	private static QueryManager queryManager;
+	private static ImageManager imageManager;
+
 	private LoadData loadData = null;
 	private View mLoginStatusView;
 	private ProgressBar progressBar; // added progress bar
@@ -37,19 +44,49 @@ public class SplashScreenActivity extends Activity {
 	private static String calendarName="Cinequest Calendar";
 	private static String downServerMessage = "Apologies, the server is not responding.<br/>"
 					        + "Please re-open the app, or contact us for help.";
+
+	public static QueryManager getQueryManager() {
+		return queryManager;
+	}
+	public static ImageManager getImageManager() {
+		return imageManager;
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);		
+
+        Platform.setInstance(new AndroidPlatform(getApplicationContext()));
+        queryManager = new QueryManager();
+        imageManager = new ImageManager();
+
+		// TODO: Remove this to turn on test mode
+		// DateUtils.setMode(DateUtils.FESTIVAL_TEST_MODE);
+		Context context = getApplicationContext();
+		try {
+			PackageInfo pi = context.getPackageManager().getPackageInfo(getPackageName(), 0);
+			String version = pi.versionName;
+			setTitle("Cinequest" + (version == null ? "" : " " + version));
+		} catch (PackageManager.NameNotFoundException ex) {
+			// We tried...
+		}
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_splash_screen);
 		mLoginStatusView = findViewById(R.id.login_status);
 		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 		loginStatusMessage = (TextView) findViewById(R.id.login_status_message);
-		Platform.setInstance(new AndroidPlatform(getApplicationContext()));		
 		loadData = new LoadData(); //There might be a problem in three lines
 		loadData.execute((Void) null);
 		showProgress(true); //progress bar shows but nothing is shown
 	}
+
+	protected void onStop(){ // TODO: Is this really called when the app stops?
+		imageManager.close();
+		Platform.getInstance().close();
+		super.onStop();
+	}
+
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private void showProgress(final boolean show) {
 		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
@@ -135,19 +172,17 @@ public class SplashScreenActivity extends Activity {
 				try{
 					Uri uri = getContentResolver().insert(builder.build(), l_event);
 					if (uri == null)
-						Log.i("SplashScreenActivity:LoadData","IllegalArgumentException");
+						Log.i("SplScrActivity:LoadData","IllegalArgumentException");
 				}
 				catch (Exception e){
-					Log.i("SplashScreenActivity:LoadData","Error while creating Cinequest Calendar in Device Calendar");
+					Log.i("SplScrActivity:LoadData","Error while creating Cinequest Calendar in Device Calendar");
 				}
 			}
 			l_managedCursor.close();
 			l_managedCursor=null;
 
-			//Create QueryManager Object and assign it to HomeActivity class queryManager variable. 
-			HomeActivity.setQueryManager(new QueryManager());				
 			//Load News Feed, Festival & Venue Feed
-			HomeActivity.getQueryManager().loadFestival(new Callback(){
+			SplashScreenActivity.getQueryManager().loadFestival(new Callback(){
 				@Override
 				public void invoke(Object result) {								
 					showProgress(false);

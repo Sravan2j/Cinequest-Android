@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="edu.sjsu.cinequest">   
+          package="edu.sjsu.cinequest.comm">   
    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
    <uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
-   <uses-sdk android:minSdkVersion="7" /> <!-- Android 2.1 -->
+   <uses-sdk android:minSdkVersion="15" /> <!-- Android 2.1 -->
      <!--
 <uses-sdk    android:targetSdkVersion="21"/> This is what I used to set the target to API 21 to test in android lolipop, while making an
 emulator running on Android version 5 instead of line #7

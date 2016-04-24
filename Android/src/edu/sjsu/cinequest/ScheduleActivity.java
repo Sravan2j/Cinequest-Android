@@ -121,6 +121,7 @@ public class ScheduleActivity extends CinequestActivity {
 		nothingToday = (TextView) this.findViewById(R.id.msg_for_empty_schedyle);
 		listView = (ListView) findViewById(R.id.schedule_listview);
 		registerForContextMenu(listView);
+		populateSchedule();
 	}
 
 	@Override
@@ -161,7 +162,7 @@ public class ScheduleActivity extends CinequestActivity {
 			}
 		}
 		catch (Exception e){
-			Log.i("ScheduleActivity:populateSchedule","Error while retrieving Cinequest Calendar ID from device Calendar");
+			Log.i("SchAct:populateSchedule","Error while retrieving Cinequest Calendar ID from device Calendar");
 		}
 
 		l_managedCursor.close();
@@ -182,7 +183,7 @@ public class ScheduleActivity extends CinequestActivity {
 			l_managedCursor = this.getContentResolver().query(l_eventUri, l_projection, "calendar_id=" + m_selectedCalendarId, null, "dtstart DESC, dtend DESC");
 		}
 		catch (Exception e){
-			Log.i("ScheduleActivity:populateSchedule","Error while retrieving events from Cinequest Calendar");
+			Log.i("SchAct:populateSchedule","Error while retrieving events from Cinequest Calendar");
 		}
 		if (l_managedCursor.moveToFirst()) {
 			String l_title;
