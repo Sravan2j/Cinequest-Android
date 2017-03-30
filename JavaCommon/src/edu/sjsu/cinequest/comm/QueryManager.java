@@ -36,14 +36,14 @@ public class QueryManager {
 	
 	private String lastUpdated="";
 
-	private static final String imageBase = "http://mobile.cinequest.org/";
+	private static final String imageBase = "https://mobile.cinequest.org/";
 	private static final String mainImageURL = "imgs/mobile/creative.gif";
 	
-	public static final String showsFeedURL = "http://payments.cinequest.org/websales/feed.ashx?guid=d52499c1-3164-429f-b057-384dd7ec4b23&showslist=true";
-	public static final String newsFeedURL = "http://www.cinequest.org/news.php"; // TODO: News no longer used. Move LastUpdated to venues or trending feed
-	public static final String venuesFeedURL = "http://www.cinequest.org/venuelist.php";
+	public static final String showsFeedURL = "https://payments.cinequest.org/websales/feed.ashx?guid=d52499c1-3164-429f-b057-384dd7ec4b23&showslist=true";
+	public static final String newsFeedURL = "https://www.cinequest.org/news.php"; // TODO: News no longer used. Move LastUpdated to venues or trending feed
+	public static final String venuesFeedURL = "https://www.cinequest.org/misc/venuelist.php";
 
-	public static final String trendingFeedURL = "http://www.cinequest.org/mobileCQ.php?type=xml&name=trending";
+	public static final String trendingFeedURL = "https://www.cinequest.org/misc/trending/XML/MobileTrending_Top10Events.xml";
 	private Festival festival = new Festival();
 	private Object festivalLock = new Object();
 	private boolean festivalQueryInProgress = false;
